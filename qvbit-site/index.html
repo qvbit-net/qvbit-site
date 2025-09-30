@@ -6,9 +6,9 @@
   <title>QVB I.T. — Low Voltage & Structured Cabling (South Florida)</title>
   <meta name="description" content="QVB I.T. — Low voltage & structured cabling, ethernet drops, and remote hands for businesses in Broward & Palm Beach Counties." />
   <style>
-    :root{
+    :root {
       --blue:#1E3A8A;
-      --accent:#FACC15;
+      --green:#22C55E;
       --dark:#111827;
       --light:#F9FAFB;
       --white:#FFFFFF;
@@ -35,12 +35,13 @@
       align-items:center;
       justify-content:space-between;
       gap:16px;
+      flex-wrap: wrap;
     }
 
     .logo {
       font-weight:900;
       color:var(--dark);
-      font-size:32px; /* bigger logo */
+      font-size:36px;
     }
 
     nav a {
@@ -51,80 +52,102 @@
     }
 
     nav a:hover {
-      color:var(--accent);
+      color:var(--green);
     }
 
     .cta {
       background:var(--blue);
       color:var(--white);
-      padding:10px 14px;
+      padding:12px 18px;
       border-radius:8px;
       text-decoration:none;
-      transition: background 0.3s ease, color 0.3s ease;
+      font-weight:600;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
     }
 
     .cta:hover {
-      background:var(--accent);
-      color:var(--dark);
+      background:var(--green);
+      color:var(--white);
+      transform: translateY(-2px);
     }
 
     .hero {
       display:flex;
       flex-direction:column;
       gap:18px;
-      padding:48px 0;
+      padding:60px 0;
+      background:linear-gradient(135deg, #E0ECFF, #F9FAFB);
+      border-radius:12px;
+      text-align:center;
     }
 
     h1 {
       margin:0;
-      font-size:28px;
+      font-size:32px;
+      line-height:1.2;
     }
 
     p.lead {
       margin:0;
       color:#555;
+      font-size:18px;
     }
 
     .services {
       background:var(--light);
-      padding:28px;
-      border-radius:10px;
-      margin:22px 0;
+      padding:32px;
+      border-radius:12px;
+      margin:32px 0;
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
+      gap:20px;
     }
 
     .svc {
       background:var(--white);
-      padding:16px;
-      border-radius:8px;
-      box-shadow:0 4px 12px rgba(0,0,0,.04);
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,.06);
       transition: transform 0.3s ease, box-shadow 0.3s ease, border-top 0.3s ease;
       border-top:4px solid transparent;
     }
 
     .svc:hover {
-      transform: translateY(-4px);
-      box-shadow:0 8px 20px rgba(0,0,0,.08);
-      border-top:4px solid var(--accent);
+      transform: translateY(-6px);
+      box-shadow:0 10px 25px rgba(0,0,0,.1);
+      border-top:4px solid var(--green);
     }
 
     .about {
-      padding:18px 0;
+      padding:24px 0;
+    }
+
+    #testimonials {
+      margin:32px 0;
+      text-align:center;
+    }
+
+    #testimonials blockquote {
+      background:#fafafa;
+      padding:16px;
+      border-radius:12px;
+      font-style:italic;
+      box-shadow:0 2px 8px rgba(0,0,0,.05);
     }
 
     footer {
       border-top:1px solid #eee;
-      padding:18px 0;
+      padding:24px 0;
       color:#777;
+      font-size:14px;
     }
 
     .contact-card {
-      background:var(--blue);
+      background:linear-gradient(135deg, #1E3A8A, #3B82F6);
       color:var(--white);
-      padding:20px;
-      border-radius:10px;
+      padding:24px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(0,0,0,.1);
       transition: transform 0.3s ease;
     }
 
@@ -134,77 +157,69 @@
 
     form input, form textarea {
       width:100%;
-      padding:10px;
-      margin:8px 0;
+      padding:12px;
+      margin:10px 0;
       border:1px solid #ddd;
-      border-radius:8px;
+      border-radius:12px;
       transition: border-color 0.3s ease;
+      font-size:16px;
     }
 
     form input:focus, form textarea:focus {
-      border-color: var(--accent);
+      border-color: var(--green);
       outline:none;
     }
 
     form button {
       background:var(--dark);
       color:var(--white);
-      padding:10px 12px;
-      border-radius:8px;
+      padding:12px 18px;
+      border-radius:12px;
       border:none;
       cursor:pointer;
-      transition: background 0.3s ease, color 0.3s ease;
+      font-weight:600;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     form button:hover {
-      background:var(--accent);
-      color:var(--dark);
+      background:var(--green);
+      transform: translateY(-2px);
     }
 
-    /* Desktop larger heading */
-    @media(min-width:900px){
-      h1{font-size:38px}
-      .logo{font-size:40px} /* even bigger on desktop */
-    }
-
-    /* Mobile adjustments */
+    /* Responsive adjustments */
     @media(max-width: 768px) {
       header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        align-items: center;
+        gap:12px;
       }
       nav {
-        display: flex;
+        display:flex;
         flex-direction: column;
-        width: 100%;
+        align-items:center;
+        width:100%;
       }
       nav a {
-        margin-left: 0;
-        margin-bottom: 8px;
+        margin:8px 0;
       }
-      .cta {
-        width: 100%;
-        text-align: center;
+      .hero {
+        padding:40px 16px;
       }
       h1 {
-        font-size:22px;
+        font-size:26px;
       }
       p.lead {
         font-size:16px;
       }
       #contact div {
-        grid-template-columns: 1fr;
-      }
-      form {
-        width: 100%;
+        grid-template-columns:1fr;
       }
     }
 
-    @media(max-width: 480px) {
+    @media(max-width:480px){
       .services {
-        gap: 12px;
-        padding: 16px;
+        padding:16px;
+        gap:12px;
       }
     }
 
@@ -224,9 +239,7 @@
     <section class="hero">
       <h1>Reliable Low Voltage & Structured Cabling Solutions</h1>
       <p class="lead">Serving Broward & Palm Beach Counties with ethernet drops, structured cabling, and remote hands support for small and large businesses.</p>
-      <div style="margin-top:10px">
-        <a href="#contact" class="cta">Request Service Today</a>
-      </div>
+      <a href="#contact" class="cta">Request Service Today</a>
     </section>
 
     <section id="services" class="services" aria-label="services">
@@ -253,19 +266,19 @@
       <p>QVB I.T. provides low voltage and structured cabling solutions across South Florida. Based in Broward County, we specialize in reliable, cost-effective cabling and networking work for businesses of all sizes.</p>
     </section>
 
-    <section id="testimonials" style="margin:22px 0">
+    <section id="testimonials">
       <h2>What Our Clients Say</h2>
-      <blockquote style="background:#fafafa;padding:12px;border-radius:8px">“QVB I.T. made our office move seamless — ethernet drops installed quickly and everything just worked.” — Small Business, Fort Lauderdale</blockquote>
+      <blockquote>“QVB I.T. made our office move seamless — ethernet drops installed quickly and everything just worked.” — Small Business, Fort Lauderdale</blockquote>
     </section>
 
     <section id="contact">
-      <div style="display:grid;grid-template-columns:1fr;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr;gap:20px">
         <div class="contact-card">
           <h3>Let’s Get You Connected</h3>
           <p>📞 (954) 281-2558<br>📧 contact@qvbit.net<br>📍 Serving Broward & Palm Beach Counties</p>
         </div>
 
-        <form action="https://formsubmit.co/contact@qvbit.net" method="POST" style="background:#fff;padding:16px;border-radius:8px">
+        <form action="https://formsubmit.co/contact@qvbit.net" method="POST" style="background:#fff;padding:20px;border-radius:12px">
           <input type="hidden" name="_subject" value="New contact from qvbit.net">
           <input type="text" name="_honey" style="display:none">
           <input type="text" name="name" placeholder="Name" required>
@@ -278,7 +291,7 @@
     </section>
 
     <footer>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div>© <span id="year"></span> QVB I.T. All rights reserved.</div>
         <div><a href="#contact">Contact</a> · <a href="#services">Services</a></div>
       </div>
