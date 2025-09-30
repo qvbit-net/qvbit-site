@@ -5,75 +5,71 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>QVB I.T. — Low Voltage & Structured Cabling (South Florida)</title>
   <meta name="description" content="QVB I.T. — Low voltage & structured cabling, ethernet drops, and remote hands for businesses in Broward & Palm Beach Counties." />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root{
+      --blue:#0057B8;
+      --green:#28a745;
+      --dark:#333333;
+      --light:#F5F5F5;
+      --white:#FFFFFF;
+      --maxw:1100px;
+      --radius:12px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body{margin:0;color:var(--dark);background:var(--white);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:32px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .logo{font-weight:900;color:var(--dark);font-size:28px}
+    nav a{margin-left:18px;color:var(--dark);text-decoration:none;font-weight:500}
+    .cta{background:var(--green);color:var(--white);padding:12px 16px;border-radius:8px;text-decoration:none;font-weight:600}
+    .hero{display:flex;flex-direction:column;gap:18px;padding:48px 0;text-align:center;color:white; background:url('https://images.unsplash.com/photo-1581092580493-4a7f5e947f10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2FibGluZ3xlbnwwfHx8fDE2OTYyNzY2MjY&ixlib=rb-4.0.3&w=1400') center/cover no-repeat;}
+    h1{margin:0;font-size:32px;text-shadow:1px 1px 4px rgba(0,0,0,0.4)}
+    p.lead{margin:0;color:#eee;text-shadow:1px 1px 3px rgba(0,0,0,0.4)}
+    .services{background:var(--light);padding:28px;border-radius:10px;margin:22px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .svc{background:var(--white);padding:16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.04);text-align:center}
+    .svc img{width:60px;margin-bottom:12px;border-radius:8px}
+    .about{padding:18px 0}
+    blockquote{background:#fafafa;padding:12px;border-radius:8px;margin:10px 0;font-style:italic;}
+    footer{border-top:1px solid #eee;padding:18px 0;color:#777;text-align:center}
+    .contact-card{background:var(--blue);color:var(--white);padding:20px;border-radius:10px;text-align:center}
+    form input, form textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:8px}
+    form button{background:var(--green);color:var(--white);padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+    @media(min-width:900px){h1{font-size:42px}}
+  </style>
 </head>
 <body>
-  <header>
-    <div class="logo">QVB I.T.</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="structured-cabling.html">Structured Cabling</a>
-      <a href="network-installation.html">Network Installation</a>
-      <a href="remote-hands.html">Remote Hands</a>
-      <a href="managed-it.html">Managed IT</a>
-      <a href="about.html">About</a>
-      <a href="contact.html" class="cta">Request a Quote</a>
-    </nav>
-  </header>
+  <div class="wrap">
+    <header>
+      <div class="logo">QVB I.T.</div>
+      <nav>
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#contact" class="cta">Request a Quote</a>
+      </nav>
+    </header>
 
-  <section class="hero">
-    <h1>Reliable Low Voltage & Structured Cabling Solutions</h1>
-    <p>Serving Broward & Palm Beach Counties with ethernet drops, structured cabling, and remote hands support for small and large businesses.</p>
-    <a href="#contact" class="cta">Request Service Today</a>
-  </section>
+    <section class="hero">
+      <h1>Reliable Low Voltage & Structured Cabling Solutions</h1>
+      <p class="lead">Serving Broward & Palm Beach Counties with ethernet drops, structured cabling, and remote hands support for small and large businesses.</p>
+      <a href="#contact" class="cta">Request Service Today</a>
+    </section>
 
-  <section id="services" class="services" aria-label="services">
-    <div class="svc">
-      <h3>Structured Cabling & Ethernet Drops</h3>
-      <p>Professional installation for offices, retail, and warehouses. From single drops to full office installations.</p>
-      <a href="structured-cabling.html" class="btn-link">Learn More</a>
-    </div>
-    <div class="svc">
-      <h3>Network Installation & Configuration</h3>
-      <p>Design, configure, and test reliable networks that scale with your business.</p>
-      <a href="network-installation.html" class="btn-link">Learn More</a>
-    </div>
-    <div class="svc">
-      <h3>Remote Hands & On-Site Support</h3>
-      <p>Quick-response technicians for installation, troubleshooting, and equipment moves.</p>
-      <a href="remote-hands.html" class="btn-link">Learn More</a>
-    </div>
-    <div class="svc">
-      <h3>Managed IT Services</h3>
-      <p>Proactive monitoring, maintenance, and custom support plans to keep systems running smoothly.</p>
-      <a href="managed-it.html" class="btn-link">Learn More</a>
-    </div>
-  </section>
-
-  <section id="testimonials">
-    <h2>What Our Clients Say</h2>
-    <blockquote>“QVB I.T. made our office move seamless — ethernet drops installed quickly and everything just worked.” — CRDM, Fort Lauderdale</blockquote>
-    <blockquote>“Professional, fast, and reliable network setup for our warehouse.” — SunTech Supplies, Boca Raton</blockquote>
-    <blockquote>“The remote hands support saved us during a critical installation deadline.” — Coral IT Solutions, Fort Lauderdale</blockquote>
-  </section>
-
-  <section id="contact">
-    <h2>Request a Service</h2>
-    <form action="https://formsubmit.co/contact@qvbit.net" method="POST">
-      <input type="hidden" name="_subject" value="New contact from qvbit.net">
-      <input type="text" name="_honey" style="display:none">
-      <input type="text" name="name" placeholder="Name" required>
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="tel" name="phone" placeholder="Phone">
-      <textarea name="message" placeholder="Tell us about your project" rows="5" required></textarea>
-      <button type="submit">Request Service</button>
-    </form>
-  </section>
-
-  <footer>
-    <p>© <span id="year"></span> QVB I.T. All rights reserved.</p>
-  </footer>
-
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-</body>
-</html>
+    <section id="services" class="services" aria-label="services">
+      <div class="svc">
+        <img src="https://images.unsplash.com/photo-1581092580493-4a7f5e947f10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400" alt="Structured Cabling Icon">
+        <h3>Structured Cabling & Ethernet Drops</h3>
+        <p>Professional installation for offices, retail, and warehouses. From single drops to full office installations.</p>
+      </div>
+      <div class="svc">
+        <img src="https://images.unsplash.com/photo-1581092339651-635d7f0b4aee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400" alt="Network Icon">
+        <h3>Network Installation & Configuration</h3>
+        <p>Design, configure, and test reliable networks that scale with your business.</p>
+      </div>
+      <div class="svc">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400" alt="Remote Hands Icon">
+        <h3>Remote Hands & On-Site Support</h3>
+        <p>Quick-response technicians for installation, troubleshooting, and equipment moves.</p>
+      </div>
+      <div class="svc">
+        <img src="https://images.unsplash.com/photo-1581090700227-6f1c403cd9e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400" alt="Managed IT Icon">
+        <h3>Managed IT Se
