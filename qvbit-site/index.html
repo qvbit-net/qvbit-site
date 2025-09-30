@@ -7,31 +7,170 @@
   <meta name="description" content="QVB I.T. — Low voltage & structured cabling, ethernet drops, and remote hands for businesses in Broward & Palm Beach Counties." />
   <style>
     :root{
-      --blue:#0057B8;
-      --dark:#333333;
-      --light:#F5F5F5;
+      --blue:#1E3A8A;
+      --accent:#FACC15;
+      --dark:#111827;
+      --light:#F9FAFB;
       --white:#FFFFFF;
       --maxw:1100px;
       --radius:12px;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-    body{margin:0;color:var(--dark);background:var(--white);-webkit-font-smoothing:antialiased}
-    .wrap{max-width:var(--maxw);margin:0 auto;padding:32px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .logo{font-weight:700;color:var(--dark);font-size:20px}
-    nav a{margin-left:18px;color:var(--dark);text-decoration:none}
-    .cta{background:var(--blue);color:var(--white);padding:10px 14px;border-radius:8px;text-decoration:none}
-    .hero{display:flex;flex-direction:column;gap:18px;padding:48px 0}
-    h1{margin:0;font-size:28px}
-    p.lead{margin:0;color:#666}
-    .services{background:var(--light);padding:28px;border-radius:10px;margin:22px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-    .svc{background:var(--white);padding:16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.04)}
-    .about{padding:18px 0}
-    footer{border-top:1px solid #eee;padding:18px 0;color:#777}
-    .contact-card{background:var(--blue);color:var(--white);padding:20px;border-radius:10px}
-    form input, form textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:8px}
-    form button{background:var(--dark);color:var(--white);padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
-    @media(min-width:900px){h1{font-size:38px}}
+
+    body {
+      margin:0;
+      color:var(--dark);
+      background:var(--white);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .wrap {
+      max-width:var(--maxw);
+      margin:0 auto;
+      padding:32px;
+    }
+
+    header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .logo {
+      font-weight:700;
+      color:var(--dark);
+      font-size:20px;
+    }
+
+    nav a {
+      margin-left:18px;
+      color:var(--dark);
+      text-decoration:none;
+    }
+
+    .cta {
+      background:var(--blue);
+      color:var(--white);
+      padding:10px 14px;
+      border-radius:8px;
+      text-decoration:none;
+    }
+
+    .hero {
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      padding:48px 0;
+    }
+
+    h1 {
+      margin:0;
+      font-size:28px;
+    }
+
+    p.lead {
+      margin:0;
+      color:#555;
+    }
+
+    .services {
+      background:var(--light);
+      padding:28px;
+      border-radius:10px;
+      margin:22px 0;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+    }
+
+    .svc {
+      background:var(--white);
+      padding:16px;
+      border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,.04);
+    }
+
+    .about {
+      padding:18px 0;
+    }
+
+    footer {
+      border-top:1px solid #eee;
+      padding:18px 0;
+      color:#777;
+    }
+
+    .contact-card {
+      background:var(--blue);
+      color:var(--white);
+      padding:20px;
+      border-radius:10px;
+    }
+
+    form input, form textarea {
+      width:100%;
+      padding:10px;
+      margin:8px 0;
+      border:1px solid #ddd;
+      border-radius:8px;
+    }
+
+    form button {
+      background:var(--dark);
+      color:var(--white);
+      padding:10px 12px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+    }
+
+    /* Desktop larger heading */
+    @media(min-width:900px){
+      h1{font-size:38px}
+    }
+
+    /* Mobile adjustments */
+    @media(max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      nav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      nav a {
+        margin-left: 0;
+        margin-bottom: 8px;
+      }
+      .cta {
+        width: 100%;
+        text-align: center;
+      }
+      h1 {
+        font-size:22px;
+      }
+      p.lead {
+        font-size:16px;
+      }
+      #contact div {
+        grid-template-columns: 1fr;
+      }
+      form {
+        width: 100%;
+      }
+    }
+
+    @media(max-width: 480px) {
+      .services {
+        gap: 12px;
+        padding: 16px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -89,13 +228,7 @@
           <p>📞 (954) 281-2558<br>📧 contact@qvbit.net<br>📍 Serving Broward & Palm Beach Counties</p>
         </div>
 
-        <!-- CONTACT FORM: Option A (quick) uses FormSubmit.co. Replace the email below with your email:
-             action="https://formsubmit.co/contact@qvbit.net"
-             After first submit you'll need to confirm via the email FormSubmit sends you.
-             Option B (recommended for less exposed email): sign up for Formspree and replace action with your Formspree endpoint.
-        -->
         <form action="https://formsubmit.co/contact@qvbit.net" method="POST" style="background:#fff;padding:16px;border-radius:8px">
-          <!-- Spam protection (honeypot) -->
           <input type="hidden" name="_subject" value="New contact from qvbit.net">
           <input type="text" name="_honey" style="display:none">
           <input type="text" name="name" placeholder="Name" required>
