@@ -237,3 +237,59 @@ footer a:hover {
     font-size: 28px;
   }
 }
+
+
+/* ==============================
+   Service / Page Section Styling
+   Applies to all pages except index.html
+============================== */
+.page-section {
+  background: #fff;
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 40px 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.page-section h2 {
+  text-align: center;
+  color: #0077cc;
+  margin-bottom: 25px;
+  font-size: 28px;
+}
+
+.page-section p {
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.page-section ul {
+  list-style-type: disc;
+  padding-left: 30px;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.page-section li {
+  margin-bottom: 12px;
+}
+
+/* Optional: Responsive adjustments */
+@media (max-width: 768px) {
+  .page-section {
+    padding: 30px 20px;
+  }
+
+  .page-section h2 {
+    font-size: 24px;
+  }
+
+  .page-section p,
+  .page-section li {
+    font-size: 15px;
+  }
+}
