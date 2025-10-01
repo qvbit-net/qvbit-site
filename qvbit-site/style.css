@@ -1,38 +1,35 @@
 /* =========================
-   GLOBAL RESET
+   MINIMAL, SAFE FULL CSS FOR QVBIT.NET
 ========================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
+/* 1. Body */
 body {
+    background-color: #cce7ff !important; /* light blue background */
     font-family: Arial, sans-serif;
-    background-color: #cce7ff; /* light blue background */
     color: #333;
     line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
-/* =========================
-   HEADER / LOGO / NAV
-========================= */
+/* 2. Header / Logo */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 40px;
-    background-color: #0077cc; /* darker blue header */
+    background-color: #0077cc !important; /* darker blue header */
     color: #fff;
 }
 
-header h1 {
-    font-size: 32px; /* larger logo */
+header h1, .logo {
+    font-size: 32px !important; /* enlarge logo */
     font-weight: bold;
     letter-spacing: 1px;
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
+/* 3. Navigation */
 nav ul {
     list-style: none;
     display: flex;
@@ -41,28 +38,25 @@ nav ul {
 
 nav ul li a {
     text-decoration: none;
-    color: #fff;
+    color: #fff !important;
     font-weight: 500;
     transition: color 0.3s;
 }
 
 nav ul li a:hover {
-    color: #aeefff;
+    color: #aeefff !important;
 }
 
-/* =========================
-   CONTAINERS
-========================= */
-.container {
+/* 4. Section containers */
+.container, section {
+    background-color: transparent; /* preserve original section styling */
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px 0;
 }
 
-/* =========================
-   HERO SECTION
-========================= */
+/* 5. Hero section */
 .hero {
     text-align: center;
     padding: 60px 20px;
@@ -77,12 +71,9 @@ nav ul li a:hover {
 
 .hero p {
     font-size: 18px;
-    color: #333;
 }
 
-/* =========================
-   SERVICES SECTION
-========================= */
+/* 6. Service cards */
 .services {
     display: flex;
     flex-wrap: wrap;
@@ -115,8 +106,8 @@ nav ul li a:hover {
 
 .service-card p {
     padding: 0 15px 15px 15px;
-    color: #333;
     font-size: 16px;
+    color: #333;
 }
 
 .service-card:hover {
@@ -124,24 +115,7 @@ nav ul li a:hover {
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
-/* =========================
-   FOOTER
-========================= */
-footer {
-    background-color: #0077cc;
-    color: #fff;
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 40px;
-}
-
-footer p {
-    font-size: 14px;
-}
-
-/* =========================
-   BUTTONS
-========================= */
+/* 7. Buttons */
 button, .btn {
     padding: 10px 20px;
     background-color: #00aaff;
@@ -158,9 +132,19 @@ button:hover, .btn:hover {
     background-color: #0077aa;
 }
 
-/* =========================
-   IMAGES
-========================= */
+/* 8. Footer */
+footer {
+    background-color: #0077cc;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+/* 9. Images */
 img {
     max-width: 100%;
     height: auto;
@@ -168,15 +152,13 @@ img {
     object-fit: cover;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* 10. Responsive adjustments */
 @media (max-width: 768px) {
     header {
         flex-direction: column;
         text-align: center;
     }
-    
+
     nav ul {
         flex-direction: column;
         gap: 10px;
