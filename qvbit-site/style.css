@@ -1,260 +1,94 @@
-/* ==========================
-   Root Variables
-========================== */
-:root {
-  --blue: #007BFF;         /* Primary accent color */
-  --green: #28a745;        /* Highlight buttons */
-  --dark: #333333;         /* Text color */
-  --light: #f5f5f5;        /* Light background */
-  --white: #ffffff;
-  --maxw: 1100px;
-  --radius: 12px;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-
-/* ==========================
-   Reset & Body
-========================== */
+/* ===== RESET & BASE STYLES ===== */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  background: var(--light);
-  color: var(--dark);
-  -webkit-font-smoothing: antialiased;
-  line-height: 1.6;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    background-color: #fff;
+    color: #333;
+    padding: 0 20px;
 }
 
-/* ==========================
-   Wrapper
-========================== */
-.wrap {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 32px;
+/* ===== CONTAINERS ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/* ==========================
-   Header & Navigation
-========================== */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 16px;
-}
-
-.logo {
-  font-weight: 800;
-  font-size: 28px;
-  color: var(--dark);
-}
-
-nav a {
-  margin-left: 18px;
-  color: var(--dark);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-nav a:hover {
-  color: var(--blue);
-}
-
-.cta {
-  background: var(--green);
-  color: var(--white);
-  padding: 10px 16px;
-  border-radius: var(--radius);
-  text-decoration: none;
-  font-weight: 600;
-  transition: background 0.3s ease;
-}
-
-.cta:hover {
-  background: #218838; /* Darker green on hover */
-}
-
-/* ==========================
-   Hero Section
-========================== */
-.hero {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 48px 0;
-  text-align: center;
-  background: var(--blue);
-  color: var(--white);
-  border-radius: var(--radius);
-}
-
-.hero h1 {
-  font-size: 36px;
-}
-
-.hero p.lead {
-  font-size: 18px;
-}
-
-/* ==========================
-   Services Section
-========================== */
-.services {
-  background: var(--white);
-  padding: 28px;
-  border-radius: var(--radius);
-  margin: 22px 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.svc {
-  background: var(--light);
-  padding: 16px;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  text-align: center;
-}
-
-.svc h3 {
-  margin-bottom: 8px;
-  color: var(--blue);
-}
-
-.svc p {
-  color: var(--dark);
-}
-
-/* ==========================
-   About Section
-========================== */
-.about {
-  padding: 18px 0;
-  background: var(--white);
-  border-radius: var(--radius);
-  margin-bottom: 22px;
-}
-
-/* ==========================
-   Testimonials
-========================== */
-#testimonials {
-  margin: 22px 0;
-}
-
-blockquote {
-  background: #fafafa;
-  padding: 16px;
-  border-left: 4px solid var(--blue);
-  border-radius: var(--radius);
-  font-style: italic;
-}
-
-/* ==========================
-   Contact Section
-========================== */
-#contact {
-  margin: 22px 0;
-}
-
-.contact-card {
-  background: var(--blue);
-  color: var(--white);
-  padding: 20px;
-  border-radius: var(--radius);
-  text-align: center;
-}
-
-form {
-  background: var(--white);
-  padding: 16px;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-form input, form textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border: 1px solid #ddd;
-  border-radius: var(--radius);
-}
-
-form button {
-  background: var(--green);
-  color: var(--white);
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s ease;
-}
-
-form button:hover {
-  background: #218838;
-}
-
-/* ==========================
-   Footer
-========================== */
-footer {
-  border-top: 1px solid #eee;
-  padding: 18px 0;
-  color: #777;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-footer a {
-  color: var(--dark);
-  text-decoration: none;
-}
-
-footer a:hover {
-  color: var(--blue);
-}
-
-/* ==========================
-   Images
-========================== */
+/* ===== GENERAL IMAGE RULES ===== */
 img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  border-radius: var(--radius);
+    max-width: 100%;       /* Never exceed parent width */
+    height: auto;          /* Keep aspect ratio */
+    display: block;        /* Remove inline spacing */
+    margin: 0 auto;        /* Center images */
+    border-radius: 8px;    /* Optional: rounded corners */
+    object-fit: cover;     /* Contain or cover image nicely */
 }
 
-/* ==========================
-   Media Queries
-========================== */
-@media (min-width: 900px) {
-  .hero h1 {
-    font-size: 48px;
-  }
+/* ===== HERO / LARGE BANNER IMAGES ===== */
+.hero-img {
+    width: 100%;
+    max-height: 500px;      /* Limit height so it’s not huge */
+    object-fit: cover;
+    border-radius: 0;       /* Full-width banners usually no rounded corners */
+    margin-bottom: 30px;
 }
 
-@media (max-width: 600px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+/* ===== SERVICE / SMALL IMAGES ===== */
+.service img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* subtle shadow */
+}
 
-  nav a {
-    margin-left: 0;
-    margin-top: 8px;
-  }
+/* ===== IMAGE GALLERIES ===== */
+.images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;  /* space between images */
+}
 
-  .hero {
-    padding: 32px 16px;
-  }
+.images img {
+    flex: 1 1 calc(33% - 20px); /* 3 images per row on desktop */
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===== SECTIONS ===== */
+section {
+    margin-bottom: 40px;
+}
+
+/* ===== TEXT & IMAGE SPACING ===== */
+p, h1, h2, h3 {
+    margin-bottom: 15px;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 1024px) {
+    .images img {
+        flex: 1 1 calc(50% - 20px); /* 2 images per row on tablet */
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0 10px;
+    }
+
+    .images img {
+        flex: 1 1 100%; /* 1 image per row on mobile */
+    }
+
+    .hero-img {
+        max-height: 300px; /* reduce hero height on mobile */
+    }
 }
