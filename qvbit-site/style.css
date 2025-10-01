@@ -23,7 +23,7 @@ body {
 /* ===== HERO SECTION ===== */
 .hero {
     width: 100%;
-    height: 400px;           /* fixed height */
+    height: 400px;       /* fixed hero height */
     overflow: hidden;
     position: relative;
     margin-bottom: 30px;
@@ -32,38 +32,32 @@ body {
 .hero img {
     width: 100%;
     height: 100%;
-    object-fit: cover;        /* fills hero box */
+    object-fit: cover;    /* fill hero box */
     display: block;
 }
 
-/* ===== SERVICE BOXES ===== */
+/* ===== SERVICE SECTION ===== */
 .services {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;                /* space between boxes */
+    gap: 20px;
     justify-content: center;
 }
 
 .svc {
-    width: 250px;              /* box width */
+    width: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
-.img-box {
+.svc img {
     width: 100%;
-    height: 180px;             /* fixed box height */
-    overflow: hidden;
+    height: 180px;        /* fixed service image height */
+    object-fit: cover;    /* fill box, crop if needed */
     border-radius: 8px;
     margin-bottom: 10px;
-}
-
-.img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;         /* fill box, crop if needed */
-    display: block;
 }
 
 /* ===== IMAGE GALLERIES ===== */
@@ -74,9 +68,10 @@ body {
 }
 
 .images img {
-    flex: 1 1 calc(33% - 20px); /* 3 per row */
-    max-width: 100%;
+    flex: 1 1 calc(33% - 20px);
+    width: 100%;
     height: auto;
+    object-fit: cover;
 }
 
 /* ===== SECTIONS ===== */
@@ -92,7 +87,7 @@ p, h1, h2, h3 {
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 1024px) {
     .images img {
-        flex: 1 1 calc(50% - 20px); /* 2 per row on tablet */
+        flex: 1 1 calc(50% - 20px);
     }
 }
 
@@ -106,24 +101,24 @@ p, h1, h2, h3 {
     }
 
     .svc {
-        width: 45%;              /* 2 per row */
+        width: 45%;
     }
 
-    .img-box {
+    .svc img {
         height: 150px;
     }
 
     .images img {
-        flex: 1 1 100%;          /* 1 per row on mobile */
+        flex: 1 1 100%;
     }
 }
 
 @media (max-width: 480px) {
     .svc {
-        width: 100%;             /* full width on mobile */
+        width: 100%;
     }
 
-    .img-box {
+    .svc img {
         height: 120px;
     }
 }
