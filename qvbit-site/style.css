@@ -29,8 +29,9 @@ header {
 }
 
 header .logo {
-    font-weight: bold;
-    font-size: 36px;
+    font-weight: bold !important;
+    font-size: 32px !important; /* enlarged logo */
+    line-height: 1;
 }
 
 header nav a {
