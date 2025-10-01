@@ -29,8 +29,8 @@ header {
 }
 
 header .logo {
-    font-weight: bold !important;
-    font-size: 32px !important; /* enlarged logo */
+    font-weight: bold;
+    font-size: 32px;
     line-height: 1;
 }
 
