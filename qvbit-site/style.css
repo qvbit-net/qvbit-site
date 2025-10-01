@@ -1,3 +1,4 @@
+
 /* ===== RESET & BASE STYLES ===== */
 * {
     margin: 0;
@@ -8,7 +9,7 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
-    background-color: #f9f9f9; /* subtle off-white background */
+    background-color: #fff;
     color: #333;
     padding: 0 20px;
 }
@@ -26,42 +27,25 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 20px 0;
-    background-color: #004080; /* navy blue header */
-    color: #fff;
-    border-radius: 8px;
 }
 
 header .logo {
-    font-weight: bold !important;
-    font-size: 32px !important;
-    line-height: 1;
-    color: #fff !important;
+    font-weight: bold;
+    font-size: 30px;
 }
 
 header nav a {
     margin-left: 15px;
     text-decoration: none;
-    color: #cce0ff; /* light blue links */
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-header nav a:hover {
-    color: #ffffff; /* white on hover */
+    color: #333;
 }
 
 header nav a.cta {
     font-weight: bold;
-    color: #004080; /* navy text on button */
-    background-color: #ff9900; /* orange CTA button */
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-header nav a.cta:hover {
-    background-color: #e68a00;
     color: #fff;
+    background-color: #0073e6;
+    padding: 8px 12px;
+    border-radius: 4px;
 }
 
 /* ===== HERO ===== */
@@ -71,8 +55,6 @@ header nav a.cta:hover {
     overflow: hidden;
     position: relative;
     margin-bottom: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .hero img {
@@ -82,37 +64,145 @@ header nav a.cta:hover {
     display: block;
 }
 
-.hero h1 {
+.hero h1, .hero p {
     text-align: center;
     margin-top: 15px;
-    color: #004080;
-    font-size: 32px;
-}
-
-.hero p {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 18px;
-    color: #333;
-}
-
-.hero .cta {
-    display: inline-block;
-    margin: 20px auto;
-    background-color: #ff9900;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.hero .cta:hover {
-    background-color: #e68a00;
 }
 
 /* ===== SERVICES ===== */
 .services {
     display: flex;
-    flex-w
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.svc {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+}
+
+.img-box {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.svc h3 {
+    margin-bottom: 10px;
+}
+
+.svc p {
+    margin-bottom: 10px;
+}
+
+.svc a.btn-link {
+    text-decoration: none;
+    color: #0073e6;
+    font-weight: bold;
+}
+
+/* ===== TESTIMONIALS ===== */
+#testimonials {
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+}
+
+#testimonials blockquote {
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+/* ===== CONTACT FORM ===== */
+#contact form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto 40px auto;
+}
+
+#contact input, #contact textarea, #contact button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#contact button {
+    background-color: #0073e6;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#contact button:hover {
+    background-color: #005bb5;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    border-top: 1px solid #ddd;
+}
+
+/* ===== SECTIONS ===== */
+section {
+    margin-bottom: 40px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .svc {
+        width: 45%;
+    }
+    .img-box {
+        height: 150px;
+    }
+    .hero {
+        height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0 10px;
+    }
+    .svc {
+        width: 45%;
+    }
+    .img-box {
+        height: 140px;
+    }
+    .hero {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .svc {
+        width: 100%;
+    }
+    .img-box {
+        height: 120px;
+    }
+    .hero {
+        height: 200px;
+    }
+}
