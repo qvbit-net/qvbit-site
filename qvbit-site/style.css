@@ -14,17 +14,44 @@ body {
     padding: 0 20px;
 }
 
-/* ===== CONTAINERS ===== */
+/* ===== CONTAINER ===== */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* ===== HERO SECTION ===== */
+/* ===== HEADER ===== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+header .logo {
+    font-weight: bold;
+    font-size: 30px;
+}
+
+header nav a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+header nav a.cta {
+    font-weight: bold;
+    color: #fff;
+    background-color: #0073e6;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+/* ===== HERO ===== */
 .hero {
     width: 100%;
-    height: 400px;           /* fixed height */
+    height: 400px;
     overflow: hidden;
     position: relative;
     margin-bottom: 30px;
@@ -33,51 +60,106 @@ body {
 .hero img {
     width: 100%;
     height: 100%;
-    object-fit: cover;        /* fills hero box */
+    object-fit: cover;
     display: block;
 }
 
-/* ===== SERVICE BOXES ===== */
+.hero h1, .hero p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* ===== SERVICES ===== */
 .services {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;                /* space between boxes */
+    gap: 20px;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .svc {
-    width: 250px;              /* box width */
+    width: 250px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    text-align: center;
 }
 
 .img-box {
     width: 100%;
-    height: 180px;             /* fixed box height */
+    height: 180px;
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 10px;
+    flex-shrink: 0;
 }
 
 .img-box img {
     width: 100%;
     height: 100%;
-    object-fit: cover;         /* fill box, crop if needed */
+    object-fit: cover;
     display: block;
 }
 
-/* ===== IMAGE GALLERIES ===== */
-.images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+.svc h3 {
+    margin-bottom: 10px;
 }
 
-.images img {
-    flex: 1 1 calc(33% - 20px); /* 3 per row */
-    max-width: 100%;
-    height: auto;
+.svc p {
+    margin-bottom: 10px;
+}
+
+.svc a.btn-link {
+    text-decoration: none;
+    color: #0073e6;
+    font-weight: bold;
+}
+
+/* ===== TESTIMONIALS ===== */
+#testimonials {
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+}
+
+#testimonials blockquote {
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+/* ===== CONTACT FORM ===== */
+#contact form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto 40px auto;
+}
+
+#contact input, #contact textarea, #contact button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#contact button {
+    background-color: #0073e6;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#contact button:hover {
+    background-color: #005bb5;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    border-top: 1px solid #ddd;
 }
 
 /* ===== SECTIONS ===== */
@@ -85,15 +167,16 @@ section {
     margin-bottom: 40px;
 }
 
-/* ===== TEXT & IMAGE SPACING ===== */
-p, h1, h2, h3 {
-    margin-bottom: 15px;
-}
-
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
-    .images img {
-        flex: 1 1 calc(50% - 20px); /* 2 per row on tablet */
+    .svc {
+        width: 45%;
+    }
+    .img-box {
+        height: 150px;
+    }
+    .hero {
+        height: 300px;
     }
 }
 
@@ -101,30 +184,25 @@ p, h1, h2, h3 {
     body {
         padding: 0 10px;
     }
-
+    .svc {
+        width: 45%;
+    }
+    .img-box {
+        height: 140px;
+    }
     .hero {
         height: 250px;
-    }
-
-    .svc {
-        width: 45%;              /* 2 per row */
-    }
-
-    .img-box {
-        height: 150px;
-    }
-
-    .images img {
-        flex: 1 1 100%;          /* 1 per row on mobile */
     }
 }
 
 @media (max-width: 480px) {
     .svc {
-        width: 100%;             /* full width on mobile */
+        width: 100%;
     }
-
     .img-box {
         height: 120px;
+    }
+    .hero {
+        height: 200px;
     }
 }
