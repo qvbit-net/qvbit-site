@@ -1,4 +1,4 @@
-/* ===== RESET & BASE STYLES ===== */
+/* ===== RESET ===== */
 * {
     margin: 0;
     padding: 0;
@@ -6,37 +6,33 @@
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, sans-serif;
     line-height: 1.6;
-    background-color: #fff;
-    color: #333;
     padding: 0 20px;
 }
 
-/* ===== CONTAINERS ===== */
+/* ===== CONTAINER ===== */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* ===== HERO SECTION ===== */
+/* ===== HERO ===== */
 .hero {
     width: 100%;
-    height: 400px;       /* fixed hero height */
+    height: 400px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 30px;
 }
 
 .hero img {
     width: 100%;
     height: 100%;
-    object-fit: cover;    /* fill hero box */
-    display: block;
+    object-fit: cover;
 }
 
-/* ===== SERVICE SECTION ===== */
+/* ===== SERVICES ===== */
 .services {
     display: flex;
     flex-wrap: wrap;
@@ -49,67 +45,40 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
 }
 
-.svc img {
+.img-box {
     width: 100%;
-    height: 180px;        /* fixed service image height */
-    object-fit: cover;    /* fill box, crop if needed */
+    height: 180px;       /* Fixed height */
+    overflow: hidden;
     border-radius: 8px;
     margin-bottom: 10px;
 }
 
-/* ===== IMAGE GALLERIES ===== */
-.images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.images img {
-    flex: 1 1 calc(33% - 20px);
+.img-box img {
     width: 100%;
-    height: auto;
-    object-fit: cover;
+    height: 100%;
+    object-fit: cover;    /* Ensures image fills container */
+    display: block;
 }
 
-/* ===== SECTIONS ===== */
-section {
-    margin-bottom: 40px;
-}
-
-/* ===== TEXT & IMAGE SPACING ===== */
-p, h1, h2, h3 {
+/* ===== TEXT & SPACING ===== */
+h1,h2,h3,p {
     margin-bottom: 15px;
 }
 
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 1024px) {
-    .images img {
-        flex: 1 1 calc(50% - 20px);
-    }
-}
-
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-    body {
-        padding: 0 10px;
-    }
-
-    .hero {
-        height: 250px;
-    }
-
     .svc {
         width: 45%;
     }
 
-    .svc img {
+    .img-box {
         height: 150px;
     }
 
-    .images img {
-        flex: 1 1 100%;
+    .hero {
+        height: 250px;
     }
 }
 
@@ -118,7 +87,7 @@ p, h1, h2, h3 {
         width: 100%;
     }
 
-    .svc img {
+    .img-box {
         height: 120px;
     }
 }
