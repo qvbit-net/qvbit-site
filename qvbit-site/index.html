@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- ===== HEADER ===== -->
   <header>
     <div class="logo">QVB I.T.</div>
     <nav>
@@ -21,57 +22,63 @@
     </nav>
   </header>
 
-  <section class="hero">
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero container">
+    <img src="images/hero.jpg" alt="Reliable Low Voltage & Structured Cabling">
     <h1>Reliable Low Voltage & Structured Cabling Solutions</h1>
     <p>Serving Broward & Palm Beach Counties with ethernet drops, structured cabling, and remote hands support for small and large businesses.</p>
     <a href="#contact" class="cta">Request Service Today</a>
   </section>
 
+  <!-- ===== SERVICES SECTION ===== -->
   <section id="services" class="services" aria-label="services">
-  <div class="svc">
-    <div class="img-box">
-      <img src="images/service1.jpg" alt="Structured Cabling">
+    <div class="svc">
+      <div class="img-box">
+        <img src="images/service1.jpg" alt="Structured Cabling">
+      </div>
+      <h3>Structured Cabling & Ethernet Drops</h3>
+      <p>Professional installation for offices, retail, and warehouses. From single drops to full office installations.</p>
+      <a href="structured-cabling.html" class="btn-link">Learn More</a>
     </div>
-    <h3>Structured Cabling & Ethernet Drops</h3>
-    <p>Professional installation for offices, retail, and warehouses. From single drops to full office installations.</p>
-    <a href="structured-cabling.html" class="btn-link">Learn More</a>
-  </div>
 
-  <div class="svc">
-    <div class="img-box">
-      <img src="images/service2.jpg" alt="Network Installation">
+    <div class="svc">
+      <div class="img-box">
+        <img src="images/service2.jpg" alt="Network Installation">
+      </div>
+      <h3>Network Installation & Configuration</h3>
+      <p>Design, configure, and test reliable networks that scale with your business.</p>
+      <a href="network-installation.html" class="btn-link">Learn More</a>
     </div>
-    <h3>Network Installation & Configuration</h3>
-    <p>Design, configure, and test reliable networks that scale with your business.</p>
-    <a href="network-installation.html" class="btn-link">Learn More</a>
-  </div>
 
-  <div class="svc">
-    <div class="img-box">
-      <img src="images/service3.jpg" alt="Remote Hands">
+    <div class="svc">
+      <div class="img-box">
+        <img src="images/service3.jpg" alt="Remote Hands">
+      </div>
+      <h3>Remote Hands & On-Site Support</h3>
+      <p>Quick-response technicians for installation, troubleshooting, and equipment moves.</p>
+      <a href="remote-hands.html" class="btn-link">Learn More</a>
     </div>
-    <h3>Remote Hands & On-Site Support</h3>
-    <p>Quick-response technicians for installation, troubleshooting, and equipment moves.</p>
-    <a href="remote-hands.html" class="btn-link">Learn More</a>
-  </div>
 
-  <div class="svc">
-    <div class="img-box">
-      <img src="images/service4.jpg" alt="Managed IT Services">
+    <div class="svc">
+      <div class="img-box">
+        <img src="images/service4.jpg" alt="Managed IT Services">
+      </div>
+      <h3>Managed IT Services</h3>
+      <p>Proactive monitoring, maintenance, and custom support plans to keep systems running smoothly.</p>
+      <a href="managed-it.html" class="btn-link">Learn More</a>
     </div>
-    <h3>Managed IT Services</h3>
-    <p>Proactive monitoring, maintenance, and custom support plans to keep systems running smoothly.</p>
-    <a href="managed-it.html" class="btn-link">Learn More</a>
-  </div>
-</section>
-  <section id="testimonials">
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section id="testimonials" class="container">
     <h2>What Our Clients Say</h2>
     <blockquote>“QVB I.T. made our office move seamless — ethernet drops installed quickly and everything just worked.” — CRDM, Fort Lauderdale</blockquote>
     <blockquote>“Professional, fast, and reliable network setup for our warehouse.” — SunTech Supplies, Boca Raton</blockquote>
     <blockquote>“The remote hands support saved us during a critical installation deadline.” — Coral IT Solutions, Fort Lauderdale</blockquote>
   </section>
 
-  <section id="contact">
+  <!-- ===== CONTACT FORM ===== -->
+  <section id="contact" class="container">
     <h2>Request a Service</h2>
     <form action="https://formsubmit.co/contact@qvbit.net" method="POST">
       <input type="hidden" name="_subject" value="New contact from qvbit.net">
@@ -84,11 +91,11 @@
     </form>
   </section>
 
-  <footer>
+  <!-- ===== FOOTER ===== -->
+  <footer class="container">
     <p>© <span id="year"></span> QVB I.T. All rights reserved.</p>
   </footer>
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
-
