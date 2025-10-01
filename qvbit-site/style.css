@@ -1,4 +1,6 @@
-/* ===== RESET & BASE STYLES ===== */
+/* =========================
+   GLOBAL RESET
+========================= */
 * {
     margin: 0;
     padding: 0;
@@ -6,113 +8,183 @@
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.6;
-    background-color: #f9f9f9; /* subtle off-white background */
+    font-family: Arial, sans-serif;
+    background-color: #cce7ff; /* light blue background */
     color: #333;
-    padding: 0 20px;
+    line-height: 1.6;
 }
 
-/* ===== CONTAINER ===== */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* ===== HEADER ===== */
+/* =========================
+   HEADER / LOGO / NAV
+========================= */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    background-color: #004080; /* navy blue header */
+    padding: 20px 40px;
+    background-color: #0077cc; /* darker blue header */
     color: #fff;
-    border-radius: 8px;
 }
 
-header .logo {
-    font-weight: bold !important;
-    font-size: 32px !important;
-    line-height: 1;
-    color: #fff !important;
-}
-
-header nav a {
-    margin-left: 15px;
-    text-decoration: none;
-    color: #cce0ff; /* light blue links */
+header h1 {
+    font-size: 32px; /* larger logo */
     font-weight: bold;
+    letter-spacing: 1px;
+    color: #ffffff;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
     transition: color 0.3s;
 }
 
-header nav a:hover {
-    color: #ffffff; /* white on hover */
+nav ul li a:hover {
+    color: #aeefff;
 }
 
-header nav a.cta {
-    font-weight: bold;
-    color: #004080; /* navy text on button */
-    background-color: #ff9900; /* orange CTA button */
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background-color 0.3s, color 0.3s;
+/* =========================
+   CONTAINERS
+========================= */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
 }
 
-header nav a.cta:hover {
-    background-color: #e68a00;
-    color: #fff;
-}
-
-/* ===== HERO ===== */
+/* =========================
+   HERO SECTION
+========================= */
 .hero {
-    width: 100%;
-    height: 400px;
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.hero img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.hero h1 {
     text-align: center;
-    margin-top: 15px;
-    color: #004080;
-    font-size: 32px;
+    padding: 60px 20px;
+    background-color: #b3e0ff;
+}
+
+.hero h2 {
+    font-size: 28px;
+    color: #0077cc;
+    margin-bottom: 20px;
 }
 
 .hero p {
-    text-align: center;
-    margin-top: 10px;
     font-size: 18px;
     color: #333;
 }
 
-.hero .cta {
-    display: inline-block;
-    margin: 20px auto;
-    background-color: #ff9900;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.hero .cta:hover {
-    background-color: #e68a00;
-}
-
-/* ===== SERVICES ===== */
+/* =========================
+   SERVICES SECTION
+========================= */
 .services {
     display: flex;
-    flex-w
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.service-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    flex: 1 1 300px;
+    max-width: 350px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.service-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.service-card h3 {
+    padding: 15px;
+    font-size: 20px;
+    color: #0077cc;
+}
+
+.service-card p {
+    padding: 0 15px 15px 15px;
+    color: #333;
+    font-size: 16px;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer {
+    background-color: #0077cc;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+button, .btn {
+    padding: 10px 20px;
+    background-color: #00aaff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+button:hover, .btn:hover {
+    background-color: #0077aa;
+}
+
+/* =========================
+   IMAGES
+========================= */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .services {
+        flex-direction: column;
+        gap: 30px;
+    }
+}
