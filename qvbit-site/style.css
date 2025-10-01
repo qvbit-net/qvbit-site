@@ -20,44 +20,61 @@ body {
     padding: 20px;
 }
 
-/* ===== GENERAL IMAGE RULES ===== */
-img {
-    max-width: 100%;       /* Never exceed parent width */
-    height: auto;          /* Keep aspect ratio */
-    display: block;        /* Remove inline spacing */
-    margin: 0 auto;        /* Center images */
-    border-radius: 8px;    /* Optional: rounded corners */
-    object-fit: cover;     /* Contain or cover image nicely */
-}
-
-/* ===== HERO / LARGE BANNER IMAGES ===== */
-.hero-img {
+/* ===== HERO SECTION ===== */
+.hero {
     width: 100%;
-    max-height: 500px;      /* Limit height so it’s not huge */
-    object-fit: cover;
-    border-radius: 0;       /* Full-width banners usually no rounded corners */
+    height: 400px;           /* fixed height */
+    overflow: hidden;
+    position: relative;
     margin-bottom: 30px;
 }
 
-/* ===== SERVICE / SMALL IMAGES ===== */
-.service img {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-    margin-bottom: 20px;
+.hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;        /* fills hero box */
+    display: block;
+}
+
+/* ===== SERVICE BOXES ===== */
+.services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;                /* space between boxes */
+    justify-content: center;
+}
+
+.svc {
+    width: 250px;              /* box width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.img-box {
+    width: 100%;
+    height: 180px;             /* fixed box height */
+    overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* subtle shadow */
+    margin-bottom: 10px;
+}
+
+.img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;         /* fill box, crop if needed */
+    display: block;
 }
 
 /* ===== IMAGE GALLERIES ===== */
 .images {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;  /* space between images */
+    gap: 20px;
 }
 
 .images img {
-    flex: 1 1 calc(33% - 20px); /* 3 images per row on desktop */
+    flex: 1 1 calc(33% - 20px); /* 3 per row */
     max-width: 100%;
     height: auto;
 }
@@ -75,7 +92,7 @@ p, h1, h2, h3 {
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 1024px) {
     .images img {
-        flex: 1 1 calc(50% - 20px); /* 2 images per row on tablet */
+        flex: 1 1 calc(50% - 20px); /* 2 per row on tablet */
     }
 }
 
@@ -84,11 +101,29 @@ p, h1, h2, h3 {
         padding: 0 10px;
     }
 
-    .images img {
-        flex: 1 1 100%; /* 1 image per row on mobile */
+    .hero {
+        height: 250px;
     }
 
-    .hero-img {
-        max-height: 300px; /* reduce hero height on mobile */
+    .svc {
+        width: 45%;              /* 2 per row */
+    }
+
+    .img-box {
+        height: 150px;
+    }
+
+    .images img {
+        flex: 1 1 100%;          /* 1 per row on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .svc {
+        width: 100%;             /* full width on mobile */
+    }
+
+    .img-box {
+        height: 120px;
     }
 }
