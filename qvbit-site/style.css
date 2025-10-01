@@ -13,153 +13,53 @@ body {
     padding: 0 20px;
 }
 
-/* ===== CONTAINER ===== */
+/* ===== CONTAINERS ===== */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* ===== HEADER ===== */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
+/* ===== GENERAL IMAGE RULES ===== */
+img {
+    max-width: 100%;       /* Never exceed parent width */
+    height: auto;          /* Keep aspect ratio */
+    display: block;        /* Remove inline spacing */
+    margin: 0 auto;        /* Center images */
+    border-radius: 8px;    /* Optional: rounded corners */
+    object-fit: cover;     /* Contain or cover image nicely */
 }
 
-header .logo {
-    font-weight: bold;
-    font-size: 32px;
-    line-height: 1;
-}
-
-header nav a {
-    margin-left: 15px;
-    text-decoration: none;
-    color: #333;
-}
-
-header nav a.cta {
-    font-weight: bold;
-    color: #fff;
-    background-color: #0073e6;
-    padding: 8px 12px;
-    border-radius: 4px;
-}
-
-/* ===== HERO ===== */
-.hero {
+/* ===== HERO / LARGE BANNER IMAGES ===== */
+.hero-img {
     width: 100%;
-    height: 400px;
-    overflow: hidden;
-    position: relative;
+    max-height: 500px;      /* Limit height so it’s not huge */
+    object-fit: cover;
+    border-radius: 0;       /* Full-width banners usually no rounded corners */
     margin-bottom: 30px;
 }
 
-.hero img {
-    width: 100%;
-    height: 100%;
+/* ===== SERVICE / SMALL IMAGES ===== */
+.service img {
+    max-width: 100%;
+    height: auto;
     object-fit: cover;
-    display: block;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* subtle shadow */
 }
 
-.hero h1, .hero p {
-    text-align: center;
-    margin-top: 15px;
-}
-
-/* ===== SERVICES ===== */
-.services {
+/* ===== IMAGE GALLERIES ===== */
+.images {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    align-items: flex-start;
+    gap: 20px;  /* space between images */
 }
 
-.svc {
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-}
-
-.img-box {
-    width: 100%;
-    height: 180px;
-    overflow: hidden;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    flex-shrink: 0;
-}
-
-.img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.svc h3 {
-    margin-bottom: 10px;
-}
-
-.svc p {
-    margin-bottom: 10px;
-}
-
-.svc a.btn-link {
-    text-decoration: none;
-    color: #0073e6;
-    font-weight: bold;
-}
-
-/* ===== TESTIMONIALS ===== */
-#testimonials {
-    max-width: 800px;
-    margin: 0 auto 40px auto;
-    text-align: center;
-}
-
-#testimonials blockquote {
-    margin-bottom: 20px;
-    font-style: italic;
-}
-
-/* ===== CONTACT FORM ===== */
-#contact form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 500px;
-    margin: 0 auto 40px auto;
-}
-
-#contact input, #contact textarea, #contact button {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-#contact button {
-    background-color: #0073e6;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
-
-#contact button:hover {
-    background-color: #005bb5;
-}
-
-/* ===== FOOTER ===== */
-footer {
-    text-align: center;
-    padding: 20px 0;
-    border-top: 1px solid #ddd;
+.images img {
+    flex: 1 1 calc(33% - 20px); /* 3 images per row on desktop */
+    max-width: 100%;
+    height: auto;
 }
 
 /* ===== SECTIONS ===== */
@@ -167,16 +67,15 @@ section {
     margin-bottom: 40px;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== TEXT & IMAGE SPACING ===== */
+p, h1, h2, h3 {
+    margin-bottom: 15px;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 1024px) {
-    .svc {
-        width: 45%;
-    }
-    .img-box {
-        height: 150px;
-    }
-    .hero {
-        height: 300px;
+    .images img {
+        flex: 1 1 calc(50% - 20px); /* 2 images per row on tablet */
     }
 }
 
@@ -184,25 +83,12 @@ section {
     body {
         padding: 0 10px;
     }
-    .svc {
-        width: 45%;
-    }
-    .img-box {
-        height: 140px;
-    }
-    .hero {
-        height: 250px;
-    }
-}
 
-@media (max-width: 480px) {
-    .svc {
-        width: 100%;
+    .images img {
+        flex: 1 1 100%; /* 1 image per row on mobile */
     }
-    .img-box {
-        height: 120px;
-    }
-    .hero {
-        height: 200px;
+
+    .hero-img {
+        max-height: 300px; /* reduce hero height on mobile */
     }
 }
