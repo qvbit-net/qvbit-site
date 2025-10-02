@@ -293,3 +293,16 @@ footer a:hover {
     font-size: 15px;
   }
 }
+
+
+footer .social-icon img {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-left: 5px;
+  transition: transform 0.3s;
+}
+
+footer .social-icon:hover img {
+  transform: scale(1.2);
+}
