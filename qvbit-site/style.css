@@ -306,38 +306,3 @@ footer .social-icon img {
 footer .social-icon:hover img {
   transform: scale(1.2);
 }
-
-.hero {
-  position: relative;
-  background: url("images/qvbit website background.png") center/cover no-repeat;
-  padding: 80px 20px;
-  text-align: center;
-  color: white;
-  overflow: hidden;
-}
-
-/* Blurred background layer */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("images/qvbit website background.png") center/cover no-repeat;
-  filter: blur(8px) brightness(0.65); /* blur + darken for readable text */
-  transform: scale(1.1); /* prevent blur edges */
-  z-index: 1;
-}
-
-/* Light blue overlay (optional, matches your brand) */
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 90, 200, 0.20); /* soft blue overlay */
-  z-index: 2;
-}
-
-/* Text above the blur */
-.hero * {
-  position: relative;
-  z-index: 3;
-}
