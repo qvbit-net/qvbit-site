@@ -307,33 +307,3 @@ footer .social-icon:hover img {
   transform: scale(1.2);
 }
 
-header {
-  position: relative;
-  background-image: url("images/qvbit website background.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 20px 0;
-  color: white;
-  overflow: hidden;
-}
-
-/* Blur + dark overlay on header background */
-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("images/qvbit website background.png");
-  background-size: cover;
-  background-position: center;
-  filter: blur(6px) brightness(0.45);  /* blur + darken */
-  transform: scale(1.1); /* prevents edge cropping */
-  z-index: 1;
-}
-
-/* Keeps all header content ABOVE the blur */
-header * {
-  position: relative;
-  z-index: 2;
-  color: white;
-}
