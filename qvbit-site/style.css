@@ -30,6 +30,10 @@ header .logo {
   color: #0077cc;
 }
 
+header {
+  flex-wrap: wrap;
+}
+
 nav a {
   margin-left: 20px;
   text-decoration: none;
