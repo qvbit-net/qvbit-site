@@ -453,7 +453,7 @@ function Login() {
 
         <div className="brand-mark">
           <img
-            src="/crm/images/qvb-it-logo.JPG"
+            src="/crm/images/QVB IT LOGO2.jpg"
             alt="QVB I.T."
           />
         </div>
@@ -792,6 +792,7 @@ function GlobalSearch() {
   )
 }
 
+
 /* =========================================================
    EMAIL COMPOSER
 ========================================================= */
@@ -854,9 +855,7 @@ function EmailComposer({
       const result = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        throw new Error(
-          result?.error || 'The email could not be sent.'
-        )
+        throw new Error(result?.error || 'The email could not be sent.')
       }
 
       await logCrmActivity({
@@ -875,70 +874,46 @@ function EmailComposer({
       setSubject('')
       setMessage('')
 
-      if (onSent) {
-        await onSent(result)
-      }
+      if (onSent) await onSent(result)
     } catch (sendError) {
-      setError(
-        sendError?.message ||
-          'The email could not be sent.'
-      )
+      setError(sendError?.message || 'The email could not be sent.')
     } finally {
       setSending(false)
     }
   }
 
   return (
-    <section
-      className="panel"
-      style={{ marginBottom: '18px' }}
-    >
+    <section className="panel" style={{ marginBottom: '18px' }}>
       <div className="panel-header">
         <div>
           <h2>Send Email</h2>
-          <p>
-            Send a message through QVB I.T.'s Brevo account.
-          </p>
+          <p>Send a message through QVB I.T.'s Brevo account.</p>
         </div>
       </div>
 
       {error && (
-        <div
-          className="error-box"
-          style={{ marginBottom: '14px' }}
-        >
+        <div className="error-box" style={{ marginBottom: '14px' }}>
           {error}
         </div>
       )}
 
       {success && (
-        <div
-          className="alert"
-          style={{ marginBottom: '14px' }}
-        >
+        <div className="alert" style={{ marginBottom: '14px' }}>
           {success}
         </div>
       )}
 
-      <form
-        onSubmit={sendEmail}
-        className="stack-form"
-      >
+      <form onSubmit={sendEmail} className="stack-form">
         <label>
           To
-          <input
-            value={to || ''}
-            readOnly
-          />
+          <input value={to || ''} readOnly />
         </label>
 
         <label>
           Subject *
           <input
             value={subject}
-            onChange={(event) =>
-              setSubject(event.target.value)
-            }
+            onChange={(event) => setSubject(event.target.value)}
             placeholder="Subject"
             required
           />
@@ -948,23 +923,14 @@ function EmailComposer({
           Message *
           <textarea
             value={message}
-            onChange={(event) =>
-              setMessage(event.target.value)
-            }
+            onChange={(event) => setMessage(event.target.value)}
             rows={8}
             placeholder="Type your message..."
             required
           />
         </label>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: '10px',
-            justifyContent: 'flex-end',
-            flexWrap: 'wrap',
-          }}
-        >
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
           {onCancel && (
             <button
               className="secondary-button"
@@ -976,11 +942,7 @@ function EmailComposer({
             </button>
           )}
 
-          <button
-            className="primary-button"
-            type="submit"
-            disabled={sending}
-          >
+          <button className="primary-button" type="submit" disabled={sending}>
             <Mail size={16} />
             {sending ? 'Sending…' : 'Send Email'}
           </button>
@@ -989,6 +951,9 @@ function EmailComposer({
     </section>
   )
 }
+
+
+
 /* =========================================================
    MAIN SHELL
 ========================================================= */
@@ -1017,7 +982,7 @@ function Shell({ session }) {
           <div className="sidebar-brand">
 
             <img
-              src="/crm/images/qvb-it-logo.JPG"
+              src="/crm/images/QVB IT LOGO2.jpg"
               alt="QVB I.T."
             />
 
@@ -1326,33 +1291,18 @@ function NavItem({
   end,
 }) {
   const location = useLocation()
-  const navigate = useNavigate()
 
   const active = end
     ? location.pathname === to
     : location.pathname.startsWith(to)
 
-  function handleClick(event) {
-    // These are CRM application controls, not document links.
-    // Prevent the browser from requesting /crm/<route> from Cloudflare.
-    event.preventDefault()
-    event.stopPropagation()
-
-    if (onNavigate) {
-      onNavigate()
-    }
-
-    navigate(to)
-  }
-
   return (
-    <button
-      type="button"
+    <a
       className={`nav-item ${
         active ? 'active' : ''
       }`}
-      onClick={handleClick}
-      aria-current={active ? 'page' : undefined}
+      href={to}
+      onClick={onNavigate}
     >
       <Icon size={18} />
 
@@ -1363,7 +1313,7 @@ function NavItem({
       {active && (
         <ChevronRight size={15} />
       )}
-    </button>
+    </a>
   )
 }
 
@@ -4756,26 +4706,16 @@ function CustomerDetail() {
             }}
           >
             <button
-               className="secondary-button"
-               type="button"
-               onClick={() =>
-                 setShowEmailComposer(
-                   (current) => !current
-                 )
-               }
-               disabled={!customer.email}
-               title={
-                 customer.email
-                   ? 'Send an email to this customer'
-                   : 'Add an email address to this customer first'
-               }
+              className="secondary-button"
+              type="button"
+              onClick={() => setShowEmailComposer((current) => !current)}
+              disabled={!customer.email}
+              title={customer.email ? 'Send an email to this customer' : 'Add an email address to this customer first'}
             >
               <Mail size={16} />
-              {showEmailComposer
-                ? 'Close Email'
-                : 'Send Email'}
+              {showEmailComposer ? 'Close Email' : 'Send Email'}
             </button>
-            
+
             <button
               className="secondary-button"
               type="button"
@@ -4814,33 +4754,23 @@ function CustomerDetail() {
         </div>
       )}
 
-      {showEmailComposer &&
-  !editing && (
-    <EmailComposer
-      to={customer.email}
-      customerId={customerId}
-      onCancel={() =>
-        setShowEmailComposer(false)
-      }
-      onSent={async () => {
-        setShowEmailComposer(false)
-
-        const activityResult =
-          await fetchCrmActivities({
-            customerId,
-            orderColumn: 'activity_date',
-            ascending: false,
-            limit: 100,
-          })
-
-        if (!activityResult.error) {
-          setActivities(
-            activityResult.data || []
-          )
-        }
-      }}
-    />
-  )}
+      {showEmailComposer && !editing && (
+        <EmailComposer
+          to={customer.email}
+          customerId={customerId}
+          onCancel={() => setShowEmailComposer(false)}
+          onSent={async () => {
+            setShowEmailComposer(false)
+            const activityResult = await fetchCrmActivities({
+              customerId,
+              orderColumn: 'activity_date',
+              ascending: false,
+              limit: 100,
+            })
+            if (!activityResult.error) setActivities(activityResult.data || [])
+          }}
+        />
+      )}
 
       {editing ? (
 
@@ -6454,6 +6384,7 @@ function QuoteDetail() {
   const [deleting, setDeleting] = useState(false)
   const [editing, setEditing] = useState(false)
   const [error, setError] = useState('')
+  const [showEmailComposer, setShowEmailComposer] = useState(false)
   const [taxRate, setTaxRate] = useState('0')
 
   const [form, setForm] = useState({
@@ -6474,7 +6405,7 @@ function QuoteDetail() {
     const [quoteResult, customersResult, servicesResult, itemsResult, jobResult] = await Promise.all([
       supabase
         .from('quotes')
-        .select('*, customers(company_name), opportunities(opportunity_number, title, stage)')
+        .select('*, customers(company_name, email), opportunities(opportunity_number, title, stage)')
         .eq('id', quoteId)
         .single(),
       supabase
@@ -6583,7 +6514,7 @@ function QuoteDetail() {
       .from('quotes')
       .update(payload)
       .eq('id', quoteId)
-      .select('*, customers(company_name)')
+      .select('*, customers(company_name, email)')
       .single()
 
     if (updateError) {
@@ -6641,7 +6572,7 @@ function QuoteDetail() {
       .from('quotes')
       .update({ status })
       .eq('id', quoteId)
-      .select('*, customers(company_name)')
+      .select('*, customers(company_name, email)')
       .single()
 
     if (updateError) {
@@ -6828,6 +6759,15 @@ function QuoteDetail() {
               </button>
             )}
             {!editing && (
+              <button
+                className="secondary-button"
+                onClick={() => setShowEmailComposer(true)}
+              >
+                <Mail size={16} />
+                Send Email
+              </button>
+            )}
+            {!editing && (
               <button className="secondary-button" onClick={() => setEditing(true)}>
                 <Pencil size={16} />
                 Edit
@@ -6864,6 +6804,16 @@ function QuoteDetail() {
       />
 
       {error && <div className="error-box" style={{ marginBottom: '18px' }}>{error}</div>}
+
+      {showEmailComposer && (
+        <EmailComposer
+          to={quote.customers?.email}
+          customerId={quote.customer_id}
+          quoteId={quote.id}
+          onCancel={() => setShowEmailComposer(false)}
+          onSent={() => setShowEmailComposer(false)}
+        />
+      )}
 
       {quote.opportunities && (
         <section className="panel" style={{ marginBottom: '18px' }}>
@@ -10866,6 +10816,7 @@ function InvoiceDetail() {
   const [saving, setSaving] = useState(false)
   const [editing, setEditing] = useState(false)
   const [showPaymentForm, setShowPaymentForm] = useState(false)
+  const [showEmailComposer, setShowEmailComposer] = useState(false)
   const [error, setError] = useState('')
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
@@ -10898,7 +10849,7 @@ function InvoiceDetail() {
     const [invoiceResult, customerResult, jobsResult, paymentsResult] = await Promise.all([
       supabase
         .from('invoices')
-        .select('*, customers(company_name), jobs(job_number, title)')
+        .select('*, customers(company_name, email), jobs(job_number, title)')
         .eq('id', invoiceId)
         .single(),
       supabase
@@ -11219,6 +11170,16 @@ function InvoiceDetail() {
               </button>
             )}
             {!editing && (
+              <button
+                className="secondary-button"
+                onClick={() => setShowEmailComposer(true)}
+                disabled={saving}
+              >
+                <Mail size={17} />
+                Send Email
+              </button>
+            )}
+            {!editing && (
               <button className="secondary-button" onClick={() => setEditing(true)} disabled={saving}>
                 <Pencil size={17} />
                 Edit
@@ -11236,6 +11197,16 @@ function InvoiceDetail() {
         <div className="error-box" style={{ marginBottom: '18px' }}>
           {error}
         </div>
+      )}
+
+      {showEmailComposer && (
+        <EmailComposer
+          to={invoice.customers?.email}
+          customerId={invoice.customer_id}
+          invoiceId={invoice.id}
+          onCancel={() => setShowEmailComposer(false)}
+          onSent={() => setShowEmailComposer(false)}
+        />
       )}
 
       {showPaymentForm && !editing && invoice.status !== 'void' && invoiceBalance(invoice) > 0 && (
@@ -12025,7 +11996,7 @@ function PrintCompanyHeader() {
     <div className="print-brand">
       <img
         className="print-logo"
-        src="/crm/images/qvb-it-logo.JPG"
+        src="/crm/images/QVB IT LOGO2.jpg"
         alt="QVB I.T."
       />
 
@@ -13252,6 +13223,7 @@ function Documents() {
 const activityTypes = [
   'call',
   'email',
+  'email_sent',
   'meeting',
   'follow_up',
   'site_visit',
