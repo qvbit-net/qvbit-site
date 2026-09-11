@@ -794,167 +794,6 @@ function GlobalSearch() {
 
 
 /* =========================================================
-   EMAIL COMPOSER
-========================================================= */
-
-function EmailComposer({
-  to,
-  customerId = null,
-  leadId = null,
-  quoteId = null,
-  invoiceId = null,
-  jobId = null,
-  onSent,
-  onCancel,
-}) {
-  const [subject, setSubject] = useState('')
-  const [message, setMessage] = useState('')
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-
-  async function sendEmail(event) {
-    event.preventDefault()
-    setError('')
-    setSuccess('')
-
-    const recipient = String(to || '').trim()
-    const cleanSubject = subject.trim()
-    const cleanMessage = message.trim()
-
-    if (!recipient) {
-      setError('This customer does not have an email address.')
-      return
-    }
-
-    if (!cleanSubject) {
-      setError('Subject is required.')
-      return
-    }
-
-    if (!cleanMessage) {
-      setError('Message is required.')
-      return
-    }
-
-    setSending(true)
-
-    try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: recipient,
-          subject: cleanSubject,
-          text: cleanMessage,
-        }),
-      })
-
-      const result = await response.json().catch(() => ({}))
-
-      if (!response.ok) {
-        throw new Error(result?.error || 'The email could not be sent.')
-      }
-
-      await logCrmActivity({
-        customer_id: customerId,
-        lead_id: leadId,
-        job_id: jobId,
-        quote_id: quoteId,
-        invoice_id: invoiceId,
-        activity_type: 'email_sent',
-        subject: `Email sent: ${cleanSubject}`,
-        body: `Email sent to ${recipient}.\n\n${cleanMessage}`,
-        activity_date: localNowIso(),
-      })
-
-      setSuccess(`Email sent to ${recipient}.`)
-      setSubject('')
-      setMessage('')
-
-      if (onSent) await onSent(result)
-    } catch (sendError) {
-      setError(sendError?.message || 'The email could not be sent.')
-    } finally {
-      setSending(false)
-    }
-  }
-
-  return (
-    <section className="panel" style={{ marginBottom: '18px' }}>
-      <div className="panel-header">
-        <div>
-          <h2>Send Email</h2>
-          <p>Send a message through QVB I.T.'s Brevo account.</p>
-        </div>
-      </div>
-
-      {error && (
-        <div className="error-box" style={{ marginBottom: '14px' }}>
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert" style={{ marginBottom: '14px' }}>
-          {success}
-        </div>
-      )}
-
-      <form onSubmit={sendEmail} className="stack-form">
-        <label>
-          To
-          <input value={to || ''} readOnly />
-        </label>
-
-        <label>
-          Subject *
-          <input
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
-            placeholder="Subject"
-            required
-          />
-        </label>
-
-        <label>
-          Message *
-          <textarea
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            rows={8}
-            placeholder="Type your message..."
-            required
-          />
-        </label>
-
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-          {onCancel && (
-            <button
-              className="secondary-button"
-              type="button"
-              onClick={onCancel}
-              disabled={sending}
-            >
-              Cancel
-            </button>
-          )}
-
-          <button className="primary-button" type="submit" disabled={sending}>
-            <Mail size={16} />
-            {sending ? 'Sending…' : 'Send Email'}
-          </button>
-        </div>
-      </form>
-    </section>
-  )
-}
-
-
-
-/* =========================================================
    MAIN SHELL
 ========================================================= */
 
@@ -1291,10 +1130,21 @@ function NavItem({
   end,
 }) {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const active = end
     ? location.pathname === to
     : location.pathname.startsWith(to)
+
+  function handleClick(event) {
+    event.preventDefault()
+
+    if (onNavigate) {
+      onNavigate()
+    }
+
+    navigate(to)
+  }
 
   return (
     <a
@@ -1302,7 +1152,7 @@ function NavItem({
         active ? 'active' : ''
       }`}
       href={to}
-      onClick={onNavigate}
+      onClick={handleClick}
     >
       <Icon size={18} />
 
@@ -4251,7 +4101,6 @@ function CustomerDetail() {
   const [documents, setDocuments] = useState([])
   const [payments, setPayments] = useState([])
   const [activities, setActivities] = useState([])
-  const [showEmailComposer, setShowEmailComposer] = useState(false)
 
   const [loading, setLoading] = useState(true)
   const [activityLoading, setActivityLoading] = useState(true)
@@ -4708,17 +4557,6 @@ function CustomerDetail() {
             <button
               className="secondary-button"
               type="button"
-              onClick={() => setShowEmailComposer((current) => !current)}
-              disabled={!customer.email}
-              title={customer.email ? 'Send an email to this customer' : 'Add an email address to this customer first'}
-            >
-              <Mail size={16} />
-              {showEmailComposer ? 'Close Email' : 'Send Email'}
-            </button>
-
-            <button
-              className="secondary-button"
-              type="button"
               onClick={() => navigate(`/crm/customers/${customerId}/statement`)}
             >
               <Printer size={16} />
@@ -4752,24 +4590,6 @@ function CustomerDetail() {
         <div className="alert">
           {error}
         </div>
-      )}
-
-      {showEmailComposer && !editing && (
-        <EmailComposer
-          to={customer.email}
-          customerId={customerId}
-          onCancel={() => setShowEmailComposer(false)}
-          onSent={async () => {
-            setShowEmailComposer(false)
-            const activityResult = await fetchCrmActivities({
-              customerId,
-              orderColumn: 'activity_date',
-              ascending: false,
-              limit: 100,
-            })
-            if (!activityResult.error) setActivities(activityResult.data || [])
-          }}
-        />
       )}
 
       {editing ? (
@@ -13182,7 +13002,6 @@ function Documents() {
 const activityTypes = [
   'call',
   'email',
-  'email_sent',
   'meeting',
   'follow_up',
   'site_visit',
