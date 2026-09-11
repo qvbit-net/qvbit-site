@@ -37,4 +37,8 @@ echo "Copying built CRM..."
 
 cp -R crm/dist/. _site/crm/
 
+echo "Configuring CRM SPA fallback..."
+
+cp _site/crm/index.html _site/crm/404.html
+
 echo "QVB I.T. deployment build complete."
