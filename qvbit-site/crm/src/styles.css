@@ -39,7 +39,7 @@ input:focus { border-color: #6d7f9e; box-shadow: 0 0 0 3px rgba(75, 95, 126, .1)
 .sidebar nav { flex: 1; }
 .nav-label { padding: 0 10px 8px; color: #69778e; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; font-weight: 800; }
 .settings-label { margin-top: 25px; }
-.nav-item { min-height: 42px; margin: 2px 0; padding: 0 10px; border-radius: 8px; display: flex; align-items: center; gap: 11px; color: #9eabbe; font-size: 13px; font-weight: 650; }
+.nav-item { min-height: 42px; width: 100%; margin: 2px 0; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; box-shadow: none; appearance: none; -webkit-appearance: none; display: flex; align-items: center; justify-content: flex-start; gap: 11px; color: #9eabbe; font: inherit; font-size: 13px; font-weight: 650; text-align: left; cursor: pointer; }
 .nav-item svg:last-child { margin-left: auto; opacity: .65; }
 .nav-item:hover { background: #162137; color: white; }
 .nav-item.active { background: #202d43; color: white; }
