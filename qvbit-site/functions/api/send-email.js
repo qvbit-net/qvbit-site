@@ -1,7 +1,16 @@
 export async function onRequestPost(context) {
   try {
     const requestData = await context.request.json();
-    const { recipient, recipientName, subject, htmlContent, activityType, clientId } = requestData;
+    
+    // Support flexible parameter names from front-end
+    const recipient = requestData.recipient || requestData.to;
+    const recipientName = requestData.recipientName || recipient;
+    const subject = requestData.subject;
+    const htmlContent = requestData.htmlContent || requestData.body || requestData.message;
+    const activityType = requestData.activityType || 'email_sent';
+    const clientId = requestData.clientId || null;
+
+    const senderEmail = context.env.QVB_CRM_FROM_EMAIL || 'billing@qvbit.net';
 
     // 1. Send Email via Brevo API
     const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -12,46 +21,51 @@ export async function onRequestPost(context) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'QVB I.T.', email: 'contact@qvbit.net' },
-        to: [{ email: recipient, name: recipientName || recipient }],
+        sender: { name: 'QVB I.T.', email: senderEmail },
+        to: [{ email: recipient, name: recipientName }],
         subject: subject,
-        htmlContent: htmlContent,
+        htmlContent: `<p>${htmlContent.replace(/\n/g, '<br>')}</p>`,
       }),
     });
 
     if (!brevoResponse.ok) {
-      const errorText = await brevoResponse.text();
-      return new Response(JSON.stringify({ error: 'Brevo send failed', details: errorText }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const errorDetails = await brevoResponse.text();
+      console.error('Brevo Error:', errorDetails);
+      return new Response(
+        JSON.stringify({ error: 'Brevo send failed', details: errorDetails }), 
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    // 2. Log Activity to Supabase
-    const supabaseUrl = context.env.SUPABASE_URL;
-    const supabaseKey = context.env.SUPABASE_SERVICE_ROLE_KEY;
+    // 2. Log Activity to Supabase (Wrapped in try/catch so it won't break email delivery if logging fails)
+    try {
+      const supabaseUrl = context.env.VITE_SUPABASE_URL;
+      const supabaseKey = context.env.SUPABASE_SERVICE_ROLE_KEY || context.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-    if (supabaseUrl && supabaseKey) {
-      await fetch(`${supabaseUrl}/rest/v1/activity_logs`, {
-        method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal',
-        },
-        body: JSON.stringify({
-          client_id: clientId || null,
-          activity_type: activityType || 'email_sent',
-          recipient: recipient,
-          subject: subject,
-          details: `Email sent to ${recipient} with subject "${subject}"`,
-        }),
-      });
+      if (supabaseUrl && supabaseKey) {
+        await fetch(`${supabaseUrl}/rest/v1/activity_logs`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal',
+          },
+          body: JSON.stringify({
+            client_id: clientId,
+            activity_type: activityType,
+            recipient: recipient,
+            subject: subject,
+            details: `Email sent to ${recipient} with subject "${subject}"`,
+          }),
+        });
+      }
+    } catch (logErr) {
+      console.error('Activity logging skipped/failed:', logErr.message);
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: 'Email sent and logged successfully' }),
+      JSON.stringify({ success: true, message: 'Email sent successfully' }),
       { headers: { 'Content-Type': 'application/json' } }
     );
 
