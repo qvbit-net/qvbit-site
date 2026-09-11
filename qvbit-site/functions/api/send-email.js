@@ -2,14 +2,19 @@ export async function onRequestPost(context) {
   try {
     const requestData = await context.request.json();
     
-    // Support flexible parameter names from front-end
+    // Fallbacks for variable names sent by frontend
     const recipient = requestData.recipient || requestData.to;
     const recipientName = requestData.recipientName || recipient;
-    const subject = requestData.subject;
-    const htmlContent = requestData.htmlContent || requestData.body || requestData.message;
+    const subject = requestData.subject || 'Notification from QVB I.T.';
+    
+    // Extract body text safely
+    const rawContent = requestData.htmlContent || requestData.body || requestData.message || requestData.text || '';
+    const formattedHtml = typeof rawContent === 'string' && rawContent.length > 0 
+      ? `<p>${rawContent.replace(/\n/g, '<br>')}</p>` 
+      : '<p></p>';
+
     const activityType = requestData.activityType || 'email_sent';
     const clientId = requestData.clientId || null;
-
     const senderEmail = context.env.QVB_CRM_FROM_EMAIL || 'billing@qvbit.net';
 
     // 1. Send Email via Brevo API
@@ -24,20 +29,19 @@ export async function onRequestPost(context) {
         sender: { name: 'QVB I.T.', email: senderEmail },
         to: [{ email: recipient, name: recipientName }],
         subject: subject,
-        htmlContent: `<p>${htmlContent.replace(/\n/g, '<br>')}</p>`,
+        htmlContent: formattedHtml,
       }),
     });
 
     if (!brevoResponse.ok) {
       const errorDetails = await brevoResponse.text();
-      console.error('Brevo Error:', errorDetails);
       return new Response(
         JSON.stringify({ error: 'Brevo send failed', details: errorDetails }), 
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // 2. Log Activity to Supabase (Wrapped in try/catch so it won't break email delivery if logging fails)
+    // 2. Log Activity to Supabase
     try {
       const supabaseUrl = context.env.VITE_SUPABASE_URL;
       const supabaseKey = context.env.SUPABASE_SERVICE_ROLE_KEY || context.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -61,7 +65,7 @@ export async function onRequestPost(context) {
         });
       }
     } catch (logErr) {
-      console.error('Activity logging skipped/failed:', logErr.message);
+      console.error('Activity logging skipped:', logErr.message);
     }
 
     return new Response(
