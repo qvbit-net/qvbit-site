@@ -2,7 +2,6 @@ import React, { Component, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import {
   BrowserRouter,
-  Link,
   Navigate,
   Route,
   Routes,
@@ -1131,24 +1130,33 @@ function NavItem({
   end,
 }) {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const active = end
     ? location.pathname === to
     : location.pathname.startsWith(to)
 
-  function handleClick() {
+  function handleClick(event) {
+    // These are CRM application controls, not document links.
+    // Prevent the browser from requesting /crm/<route> from Cloudflare.
+    event.preventDefault()
+    event.stopPropagation()
+
     if (onNavigate) {
       onNavigate()
     }
+
+    navigate(to)
   }
 
   return (
-    <Link
+    <button
+      type="button"
       className={`nav-item ${
         active ? 'active' : ''
       }`}
-      to={to}
       onClick={handleClick}
+      aria-current={active ? 'page' : undefined}
     >
       <Icon size={18} />
 
@@ -1159,7 +1167,7 @@ function NavItem({
       {active && (
         <ChevronRight size={15} />
       )}
-    </Link>
+    </button>
   )
 }
 
@@ -2034,14 +2042,14 @@ function Dashboard() {
         description="A live view of QVB I.T. sales, operations, and receivables."
         action={
           <div className="quick-actions">
-            <Link className="secondary-button" to="/crm/leads">
+            <a className="secondary-button" href="/crm/leads">
               <Plus size={16} />
               New lead
-            </Link>
-            <Link className="primary-button" to="/crm/customers">
+            </a>
+            <a className="primary-button" href="/crm/customers">
               <Plus size={16} />
               New customer
-            </Link>
+            </a>
           </div>
         }
       />
@@ -2117,20 +2125,20 @@ function Dashboard() {
                   <h2>Overdue invoices</h2>
                   <p>Accounts needing attention.</p>
                 </div>
-                <Link className="text-link" to="/crm/accounts-receivable">View A/R <ChevronRight size={15} /></Link>
+                <a className="text-link" href="/crm/accounts-receivable">View A/R <ChevronRight size={15} /></a>
               </div>
 
               {overdueInvoices.length ? (
                 <div className="upcoming-list">
                   {overdueInvoices.map((invoice) => (
-                    <Link className="upcoming-item" to={`/crm/invoices/${invoice.id}`} key={invoice.id}>
+                    <a className="upcoming-item" href={`/crm/invoices/${invoice.id}`} key={invoice.id}>
                       <div className="upcoming-icon"><ReceiptText size={17} /></div>
                       <div className="upcoming-copy">
                         <strong>{invoice.invoice_number || 'Invoice'}</strong>
                         <span>{invoice.customerName} · {invoice.overdueDays} day{invoice.overdueDays === 1 ? '' : 's'} overdue</span>
                       </div>
                       <strong>{money(invoice.balance)}</strong>
-                    </Link>
+                    </a>
                   ))}
                 </div>
               ) : (
@@ -2146,7 +2154,7 @@ function Dashboard() {
                   <h2>Follow-ups needing attention</h2>
                   <p>Open customer and operational follow-ups.</p>
                 </div>
-                <Link className="text-link" to="/crm/follow-ups">View follow-ups <ChevronRight size={15} /></Link>
+                <a className="text-link" href="/crm/follow-ups">View follow-ups <ChevronRight size={15} /></a>
               </div>
 
               {openFollowUps.length ? (
@@ -2156,14 +2164,14 @@ function Dashboard() {
                     const overdueItem = dueDay && dueDay < today
                     const dueLabel = item.due_date ? activityDateTime(item.due_date) : 'No due date'
                     return (
-                      <Link className="upcoming-item" to="/crm/follow-ups" key={item.id}>
+                      <a className="upcoming-item" href="/crm/follow-ups" key={item.id}>
                         <div className="upcoming-icon"><CheckCircle2 size={17} /></div>
                         <div className="upcoming-copy">
                           <strong>{item.subject}</strong>
                           <span>{item.customers?.company_name || 'Customer'} · {overdueItem ? `Overdue · ${dueLabel}` : dueLabel}{item.assigned_to ? ` · ${item.assigned_to}` : ''}</span>
                         </div>
                         <span>{priorityLabel(item.priority)}</span>
-                      </Link>
+                      </a>
                     )
                   })}
                 </div>
@@ -2178,20 +2186,20 @@ function Dashboard() {
                   <h2>Upcoming work</h2>
                   <p>Jobs scheduled over the next seven days.</p>
                 </div>
-                <Link className="text-link" to="/crm/jobs">View jobs <ChevronRight size={15} /></Link>
+                <a className="text-link" href="/crm/jobs">View jobs <ChevronRight size={15} /></a>
               </div>
 
               {upcomingJobs.length ? (
                 <div className="upcoming-list">
                   {upcomingJobs.map((job) => (
-                    <Link className="upcoming-item" to={`/crm/jobs/${job.id}`} key={job.id}>
+                    <a className="upcoming-item" href={`/crm/jobs/${job.id}`} key={job.id}>
                       <div className="upcoming-icon"><CalendarClock size={17} /></div>
                       <div className="upcoming-copy">
                         <strong>{job.title}</strong>
                         <span>{job.customers?.company_name || 'Customer'} · {date(job.scheduled_date)}{job.scheduled_start ? ` · ${job.scheduled_start.slice(0, 5)}` : ''}</span>
                       </div>
                       <ArrowUpRight size={15} />
-                    </Link>
+                    </a>
                   ))}
                 </div>
               ) : (
@@ -2205,7 +2213,7 @@ function Dashboard() {
                   <h2>Top customers</h2>
                   <p>Customers ranked by total invoiced.</p>
                 </div>
-                <Link className="text-link" to="/crm/customers">View customers <ChevronRight size={15} /></Link>
+                <a className="text-link" href="/crm/customers">View customers <ChevronRight size={15} /></a>
               </div>
 
               {topCustomers.length ? (
@@ -2235,7 +2243,7 @@ function Dashboard() {
                 <h2>Recent leads</h2>
                 <p>Newest opportunities entering the pipeline.</p>
               </div>
-              <Link className="text-link" to="/crm/leads">View all <ChevronRight size={15} /></Link>
+              <a className="text-link" href="/crm/leads">View all <ChevronRight size={15} /></a>
             </div>
 
             {recentLeads.length ? (
@@ -2276,9 +2284,9 @@ function StatCard({
   link,
 }) {
   return (
-    <Link
+    <a
       className="stat-card"
-      to={link}
+      href={link}
     >
 
       <div className="stat-icon">
@@ -2302,7 +2310,7 @@ function StatCard({
         size={17}
       />
 
-    </Link>
+    </a>
   )
 }
 
