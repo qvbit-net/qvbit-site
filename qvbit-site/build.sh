@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Always run from the directory where this script lives.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
@@ -37,8 +36,9 @@ echo "Copying built CRM..."
 
 cp -R crm/dist/. _site/crm/
 
-echo "Configuring CRM SPA fallback..."
+echo "Copying CRM public images explicitly..."
 
-cp _site/crm/index.html _site/crm/404.html
+mkdir -p _site/crm/images
+cp -R crm/public/images/. _site/crm/images/
 
 echo "QVB I.T. deployment build complete."
