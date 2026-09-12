@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 const roles = [
@@ -11,6 +12,7 @@ const roles = [
 ]
 
 export default function SettingsUsers() {
+  const navigate = useNavigate()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -152,9 +154,14 @@ export default function SettingsUsers() {
     <section className="page-section">
       <div className="page-header">
         <div><div className="eyebrow">Settings</div><h1>Users & Permissions</h1><p className="muted">Manage CRM access using role-based permissions.</p></div>
-        {isOwner && <button className="primary-button" onClick={() => { setInviteOpen((current) => !current); setError(''); setSuccess('') }}>
-          {inviteOpen ? 'Cancel' : 'Add User'}
-        </button>}
+        {isOwner && <div className="action-row">
+          <button className="secondary-button" type="button" onClick={() => navigate('/crm/settings/audit-log')}>
+            Audit Log
+          </button>
+          <button className="primary-button" onClick={() => { setInviteOpen((current) => !current); setError(''); setSuccess('') }}>
+            {inviteOpen ? 'Cancel' : 'Add User'}
+          </button>
+        </div>}
       </div>
 
       <div className="info-box"><strong>Security policy:</strong> Only Owner / Super Admin accounts may manage users, assign roles, disable accounts, or permanently delete records. New users are invited as Read Only until you assign another role.</div>
