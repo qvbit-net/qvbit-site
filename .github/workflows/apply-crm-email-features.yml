@@ -1,0 +1,36 @@
+name: Apply CRM email feature patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'qvbit-site/crm/.automation/patch-email-features.py'
+      - '.github/workflows/apply-crm-email-features.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Apply frontend patch
+        run: python3 qvbit-site/crm/.automation/patch-email-features.py
+
+      - name: Validate CRM build
+        working-directory: qvbit-site/crm
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Commit frontend integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f qvbit-site/crm/.automation/patch-email-features.py .github/workflows/apply-crm-email-features.yml
+          git add qvbit-site/crm/src/main.jsx
+          git commit -m "Integrate CRM email addresses and attachments"
+          git push
