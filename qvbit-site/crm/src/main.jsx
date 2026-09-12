@@ -59,6 +59,7 @@ import EmailAddressManager from './components/EmailAddressManager'
 import EmailAttachmentPicker from './components/EmailAttachmentPicker'
 import Ticketing from './components/Ticketing'
 import SettingsUsers from './components/SettingsUsers'
+import SettingsAuditLog from './components/SettingsAuditLog'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -1259,14 +1260,26 @@ function Shell({ session }) {
           </div>
 
           {(!roleReady || isOwner) && (
-            <NavItem
-              to="/crm/settings"
-              label="Settings"
-              icon={Settings}
-              onNavigate={() =>
-                setMobileOpen(false)
-              }
-            />
+            <>
+              <NavItem
+                to="/crm/settings"
+                label="Settings"
+                icon={Settings}
+                onNavigate={() =>
+                  setMobileOpen(false)
+                }
+              />
+              {isOwner && (
+                <NavItem
+                  to="/crm/settings/audit-log"
+                  label="Audit Log"
+                  icon={ShieldCheck}
+                  onNavigate={() =>
+                    setMobileOpen(false)
+                  }
+                />
+              )}
+            </>
           )}
 
         </nav>
@@ -1491,6 +1504,11 @@ function Shell({ session }) {
             <Route
               path="follow-ups"
               element={<FollowUps />}
+            />
+
+            <Route
+              path="settings/audit-log"
+              element={<SettingsAuditLog />}
             />
 
             <Route
