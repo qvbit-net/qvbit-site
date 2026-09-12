@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   update-site:
-    if: ${{ !contains(github.event.head_commit.message, 'Update public site navigation') }}
+    if: ${{ !contains(github.event.head_commit.message, 'Update public site CTAs and remove service request sections') }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -39,8 +39,21 @@ jobs:
                   flags=re.IGNORECASE,
               )
 
+              # Remove homepage hero CTA that points to the removed contact section.
+              text = re.sub(
+                  r'\s*<a\s+href=["\']#contact["\'][^>]*>\s*Request Service Today\s*</a>\s*',
+                  '\n',
+                  text,
+                  flags=re.IGNORECASE,
+              )
+
               # Replace every public-site Request a Quote CTA with the support destination.
-              text = re.sub(r'>\s*Request a Quote\s*<', '>\n   Submit Support Request\n<', text, flags=re.IGNORECASE)
+              text = re.sub(
+                  r'>\s*Request a Quote\s*<',
+                  '>\n   Submit Support Request\n<',
+                  text,
+                  flags=re.IGNORECASE,
+              )
               text = text.replace('href="contact.html"', 'href="https://www.qvbit.net/support"')
               text = text.replace("href='contact.html'", "href='https://www.qvbit.net/support'")
 
@@ -58,12 +71,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE 'Request a Service|Request Service' qvbit-site --include='*.html' --exclude='support.html'; then
-            echo 'Unexpected service-request text remains.'
-            exit 1
-          fi
-          if grep -RIn 'Request a Quote' qvbit-site --include='*.html' --exclude='support.html'; then
-            echo 'Unexpected Request a Quote text remains.'
+          if grep -RInE 'Request a Service|Request Service|Request a Quote' qvbit-site --include='*.html' --exclude='support.html'; then
+            echo 'Unexpected legacy CTA text remains.'
             exit 1
           fi
           count=$(grep -RIl 'https://www.qvbit.net/support' qvbit-site --include='*.html' --exclude='support.html' | wc -l)
