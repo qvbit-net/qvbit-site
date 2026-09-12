@@ -1,0 +1,40 @@
+name: Apply sidebar scroll fix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sidebar-scroll.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Update sidebar navigation styles
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/styles.css')
+          text = path.read_text()
+          old = '.sidebar nav { flex: 1; }'
+          new = '.sidebar nav { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #334155 transparent; }'
+          if old not in text:
+              raise SystemExit('Expected sidebar nav rule was not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          rm .github/workflows/sidebar-scroll.yml
+
+      - name: Commit and push changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/styles.css .github/workflows/sidebar-scroll.yml
+          git commit -m 'Enable scrolling in CRM sidebar navigation'
+          git push
