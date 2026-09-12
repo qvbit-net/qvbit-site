@@ -55,7 +55,7 @@ export default function SettingsUsers() {
 
     const { data, error: loadError } = await supabase
       .from('user_profiles')
-      .select('id, display_name, role, is_active, created_at')
+      .select('id, email, display_name, role, is_active, created_at')
       .order('created_at', { ascending: true })
 
     if (loadError) setError(loadError.message)
@@ -82,7 +82,7 @@ export default function SettingsUsers() {
   async function deleteUser(user) {
     if (!isOwner || user.id === currentUserId || deleting) return
 
-    const label = user.display_name || 'this user'
+    const label = user.display_name || user.email || 'this user'
     const confirmed = window.confirm(
       `Delete ${label}? This permanently removes the user's CRM account and access. This action cannot be undone.`,
     )
@@ -180,7 +180,7 @@ export default function SettingsUsers() {
       </div>}
 
       {isOwner && <>
-        <div className="card"><h2>Team members</h2>{loading ? <p className="muted">Loading users…</p> : users.length === 0 ? <p className="muted">No user profiles found.</p> : <div className="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>{users.map((user) => { const isSelf = user.id === currentUserId; const isBusy = saving === user.id || deleting === user.id; return <tr key={user.id}><td><strong>{user.display_name || 'Unnamed user'}</strong><div className="muted">{isSelf ? 'Current account' : user.id}</div></td><td><select value={user.role || 'read_only'} disabled={isBusy || isSelf} onChange={(event) => updateUser(user.id, { role: event.target.value })}>{roles.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}</select></td><td><span className={user.is_active === false ? 'status-badge danger' : 'status-badge success'}>{user.is_active === false ? 'Disabled' : 'Active'}</span></td><td>{isSelf ? <span className="muted">Current account</span> : <div className="action-row"><button className="secondary-button" disabled={isBusy} onClick={() => updateUser(user.id, { is_active: user.is_active === false })}>{saving === user.id ? 'Saving…' : user.is_active === false ? 'Enable' : 'Disable'}</button><button className="secondary-button danger-button" disabled={isBusy} onClick={() => deleteUser(user)}>{deleting === user.id ? 'Deleting…' : 'Delete'}</button></div>}</td></tr> })}</tbody></table></div>}</div>
+        <div className="card"><h2>Team members</h2>{loading ? <p className="muted">Loading users…</p> : users.length === 0 ? <p className="muted">No user profiles found.</p> : <div className="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>{users.map((user) => { const isSelf = user.id === currentUserId; const isBusy = saving === user.id || deleting === user.id; return <tr key={user.id}><td><strong>{user.display_name || 'Unnamed user'}</strong><div className="muted">{user.email || (isSelf ? 'Current account' : 'Email unavailable')}</div></td><td><select value={user.role || 'read_only'} disabled={isBusy || isSelf} onChange={(event) => updateUser(user.id, { role: event.target.value })}>{roles.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}</select></td><td><span className={user.is_active === false ? 'status-badge danger' : 'status-badge success'}>{user.is_active === false ? 'Disabled' : 'Active'}</span></td><td>{isSelf ? <span className="muted">Current account</span> : <div className="action-row"><button className="secondary-button" disabled={isBusy} onClick={() => updateUser(user.id, { is_active: user.is_active === false })}>{saving === user.id ? 'Saving…' : user.is_active === false ? 'Enable' : 'Disable'}</button><button className="secondary-button danger-button" disabled={isBusy} onClick={() => deleteUser(user)}>{deleting === user.id ? 'Deleting…' : 'Delete'}</button></div>}</td></tr> })}</tbody></table></div>}</div>
         <div className="card"><h2>Role reference</h2><div className="stack-list">{roles.map((role) => <div className="list-row" key={role.value}><strong>{role.label}</strong><span className="muted">{role.description}</span></div>)}</div></div>
       </>}
     </section>
