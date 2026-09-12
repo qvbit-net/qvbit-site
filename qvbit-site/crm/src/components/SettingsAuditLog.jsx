@@ -94,13 +94,9 @@ export default function SettingsAuditLog() {
       if (!normalizedQuery) return true
 
       const actor = actors[entry.actor_id] || entry.actor_id || ''
-      const searchable = [
-        actor,
-        entry.action,
-        entry.module,
-        entry.record_id,
-        formatDetails(entry.details),
-      ].join(' ').toLowerCase()
+      const searchable = [actor, entry.action, entry.module, entry.record_id, formatDetails(entry.details)]
+        .join(' ')
+        .toLowerCase()
 
       return searchable.includes(normalizedQuery)
     })
@@ -128,30 +124,24 @@ export default function SettingsAuditLog() {
 
       <div className="card">
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 1fr) 180px 180px', gap: '10px', marginBottom: '14px' }}>
-          <label style={{ position: 'relative' }}>
-            <span className="sr-only">Search audit log</span>
+          <div style={{ position: 'relative' }}>
             <Search size={16} style={{ position: 'absolute', left: '11px', top: '12px', color: '#64748b' }} />
             <input
+              aria-label="Search audit log"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search actor, action, module, record…"
               style={{ paddingLeft: '34px' }}
             />
-          </label>
-          <label>
-            <span className="sr-only">Filter by action</span>
-            <select value={actionFilter} onChange={(event) => setActionFilter(event.target.value)}>
-              <option value="all">All actions</option>
-              {actions.map((action) => <option key={action} value={action}>{formatAction(action)}</option>)}
-            </select>
-          </label>
-          <label>
-            <span className="sr-only">Filter by module</span>
-            <select value={moduleFilter} onChange={(event) => setModuleFilter(event.target.value)}>
-              <option value="all">All modules</option>
-              {modules.map((module) => <option key={module} value={module}>{formatAction(module)}</option>)}
-            </select>
-          </label>
+          </div>
+          <select aria-label="Filter by action" value={actionFilter} onChange={(event) => setActionFilter(event.target.value)}>
+            <option value="all">All actions</option>
+            {actions.map((action) => <option key={action} value={action}>{formatAction(action)}</option>)}
+          </select>
+          <select aria-label="Filter by module" value={moduleFilter} onChange={(event) => setModuleFilter(event.target.value)}>
+            <option value="all">All modules</option>
+            {modules.map((module) => <option key={module} value={module}>{formatAction(module)}</option>)}
+          </select>
         </div>
 
         {loading ? (
@@ -179,7 +169,7 @@ export default function SettingsAuditLog() {
                     <td><strong>{formatAction(entry.action)}</strong></td>
                     <td>{entry.module || '—'}</td>
                     <td>{entry.record_id || '—'}</td>
-                    <td style={{ maxWidth: '520px' }}>{formatDetails(entry.details)}</td>
+                    <td style={{ maxWidth: '520px', overflowWrap: 'anywhere' }}>{formatDetails(entry.details)}</td>
                   </tr>
                 ))}
               </tbody>
