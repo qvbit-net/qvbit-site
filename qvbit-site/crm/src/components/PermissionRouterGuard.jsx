@@ -33,12 +33,12 @@ function moduleForPath(pathname) {
   return routeModules[pathname] || null
 }
 
-export default function PermissionRouterGuard({ permissions = {}, isOwner = false }) {
+export default function PermissionRouterGuard({ permissions = {}, isOwner = false, ready = false }) {
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (isOwner) return
+    if (!ready || isOwner) return
 
     const module = moduleForPath(location.pathname)
     if (!module) return
@@ -47,7 +47,7 @@ export default function PermissionRouterGuard({ permissions = {}, isOwner = fals
     if (!allowed && location.pathname !== '/crm/') {
       navigate('/crm/', { replace: true })
     }
-  }, [location.pathname, permissions, isOwner, navigate])
+  }, [location.pathname, permissions, isOwner, ready, navigate])
 
   return null
 }
