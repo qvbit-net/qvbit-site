@@ -198,6 +198,42 @@ async function fetchCrmActivities({
    NAVIGATION
 ========================================================= */
 
+const CRM_UI_MODULES = {
+  '/crm/': 'dashboard',
+  '/crm/leads': 'leads',
+  '/crm/opportunities': 'opportunities',
+  '/crm/customers': 'customers',
+  '/crm/quotes': 'quotes',
+  '/crm/jobs': 'jobs',
+  '/crm/invoices': 'invoices',
+  '/crm/accounts-receivable': 'accounts_receivable',
+  '/crm/expenses': 'expenses',
+  '/crm/inventory': 'inventory',
+  '/crm/services': 'services',
+  '/crm/tickets': 'tickets',
+  '/crm/reports': 'profitability',
+  '/crm/time-tracking': 'time_tracking',
+  '/crm/calendar': 'calendar',
+  '/crm/documents': 'documents',
+  '/crm/purchase-orders': 'purchase_orders',
+  '/crm/activity': 'activity',
+  '/crm/follow-ups': 'follow_ups',
+}
+
+function canAccessPath(pathname, permissions, isOwner) {
+  if (isOwner) return true
+  if (pathname === '/crm/settings' || pathname.startsWith('/crm/settings/')) return false
+  if (pathname.startsWith('/crm/leads/')) return permissions.leads?.can_view === true
+  if (pathname.startsWith('/crm/opportunities/')) return permissions.opportunities?.can_view === true
+  if (pathname.startsWith('/crm/customers/')) return permissions.customers?.can_view === true
+  if (pathname.startsWith('/crm/quotes/')) return permissions.quotes?.can_view === true
+  if (pathname.startsWith('/crm/jobs/')) return permissions.jobs?.can_view === true
+  if (pathname.startsWith('/crm/invoices/')) return permissions.invoices?.can_view === true
+  const module = CRM_UI_MODULES[pathname]
+  if (!module) return true
+  return permissions[module]?.can_view === true
+}
+
 const navItems = [
   {
     to: '/crm/',
@@ -1118,8 +1154,43 @@ function EmailComposer({
 
 function Shell({ session }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [permissions, setPermissions] = useState({})
+  const [isOwner, setIsOwner] = useState(false)
+  const [roleReady, setRoleReady] = useState(false)
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    let mounted = true
+
+    async function loadAccess() {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role, is_active')
+        .eq('id', session.user.id)
+        .maybeSingle()
+
+      const role = profile?.is_active === false ? 'read_only' : (profile?.role || 'read_only')
+      const owner = role === 'owner'
+      let nextPermissions = {}
+
+      if (!owner) {
+        const { data } = await supabase
+          .from('crm_permissions')
+          .select('module, can_view, can_create, can_update, can_delete')
+          .eq('role', role)
+        for (const permission of data || []) nextPermissions[permission.module] = permission
+      }
+
+      if (!mounted) return
+      setPermissions(nextPermissions)
+      setIsOwner(owner)
+      setRoleReady(true)
+    }
+
+    loadAccess()
+    return () => { mounted = false }
+  }, [session.user.id])
 
   async function signOut() {
     await supabase.auth.signOut()
@@ -1166,7 +1237,7 @@ function Shell({ session }) {
             Workspace
           </div>
 
-          {navItems.map((item) => {
+          {navItems.filter((item) => !roleReady || isOwner || item.to === '/crm/' || permissions[CRM_UI_MODULES[item.to]]?.can_view === true).map((item) => {
             const Icon = item.icon
 
             return (
@@ -1185,14 +1256,16 @@ function Shell({ session }) {
             System
           </div>
 
-          <NavItem
-            to="/crm/settings"
-            label="Settings"
-            icon={Settings}
-            onNavigate={() =>
-              setMobileOpen(false)
-            }
-          />
+          {(!roleReady || isOwner) && (
+            <NavItem
+              to="/crm/settings"
+              label="Settings"
+              icon={Settings}
+              onNavigate={() =>
+                setMobileOpen(false)
+              }
+            />
+          )}
 
         </nav>
 
@@ -1268,6 +1341,12 @@ function Shell({ session }) {
         </header>
 
         <main className="content">
+
+          {!roleReady ? (
+            <div className="loading-screen">Checking CRM permissions…</div>
+          ) : null}
+
+          <PermissionRouterGuard permissions={permissions} isOwner={isOwner} />
 
           <Routes>
 
@@ -1440,6 +1519,20 @@ function Shell({ session }) {
 /* =========================================================
    NAV ITEM
 ========================================================= */
+
+function PermissionRouterGuard({ permissions, isOwner }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (canAccessPath(location.pathname, permissions, isOwner)) return
+    if (location.pathname !== '/crm/') {
+      navigate('/crm/', { replace: true })
+    }
+  }, [location.pathname, permissions, isOwner, navigate])
+
+  return null
+}
 
 function NavItem({
   to,
