@@ -34,6 +34,11 @@ cp favicon.png _site/
 
 cp -R images _site/images
 
+# Cloudflare Pages Functions must be present in the deployment output.
+if [ -d functions ]; then
+  cp -R functions _site/functions
+fi
+
 echo "Copying built CRM..."
 
 cp -R crm/dist/. _site/crm/
