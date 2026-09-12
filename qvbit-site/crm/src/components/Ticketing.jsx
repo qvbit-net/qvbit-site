@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
 import EmailAttachmentPicker from './EmailAttachmentPicker'
+import './ticketing.css'
 
 const STATUSES = ['open', 'in_progress', 'waiting_on_customer', 'resolved', 'closed']
 const PRIORITIES = ['critical', 'high', 'normal', 'low']
@@ -111,7 +112,7 @@ export default function Ticketing() {
     )
   }
 
-  return <div className="page-stack">
+  return <div className="page-stack ticketing-workspace">
     <div className="page-header"><div><div className="eyebrow">Service desk</div><h1>Tickets</h1><p className="muted">Create, track, document, and respond to support issues.</p></div><button className="primary-button" onClick={() => setShowNew(true)}>New ticket</button></div>
     {error && <div className="error-box">{error}</div>}
     <div className="two-column-layout" style={{ gridTemplateColumns: selected ? 'minmax(260px, 0.8fr) minmax(0, 1.5fr)' : '1fr' }}>
