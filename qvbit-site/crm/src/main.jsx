@@ -58,6 +58,7 @@ import { supabase } from './supabase'
 import EmailAddressManager from './components/EmailAddressManager'
 import EmailAttachmentPicker from './components/EmailAttachmentPicker'
 import Ticketing from './components/Ticketing'
+import SettingsUsers from './components/SettingsUsers'
 import './styles.css'
 
 
@@ -1331,12 +1332,7 @@ function Shell({ session }) {
 
             <Route
               path="settings"
-              element={
-                <ComingSoon
-                  title="Settings"
-                  description="CRM preferences and user administration will be added after the core workflow."
-                />
-              }
+              element={<SettingsUsers />}
             />
 
             <Route
