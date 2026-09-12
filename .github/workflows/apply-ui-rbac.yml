@@ -1,0 +1,72 @@
+name: Apply UI RBAC
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-ui-rbac.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply role-aware navigation and page guards
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text(encoding='utf-8')
+
+          if 'const CRM_UI_MODULES =' not in text:
+              anchor = 'const navItems = ['
+              insert = '''const CRM_UI_MODULES = {\n  '/crm/': 'dashboard',\n  '/crm/leads': 'leads',\n  '/crm/opportunities': 'opportunities',\n  '/crm/customers': 'customers',\n  '/crm/quotes': 'quotes',\n  '/crm/jobs': 'jobs',\n  '/crm/invoices': 'invoices',\n  '/crm/accounts-receivable': 'accounts_receivable',\n  '/crm/expenses': 'expenses',\n  '/crm/inventory': 'inventory',\n  '/crm/services': 'services',\n  '/crm/tickets': 'tickets',\n  '/crm/reports': 'profitability',\n  '/crm/time-tracking': 'time_tracking',\n  '/crm/calendar': 'calendar',\n  '/crm/documents': 'documents',\n  '/crm/purchase-orders': 'purchase_orders',\n  '/crm/activity': 'activity',\n  '/crm/follow-ups': 'follow_ups',\n}\n\nfunction canAccessPath(pathname, permissions, isOwner) {\n  if (isOwner) return true\n  if (pathname === '/crm/settings' || pathname.startsWith('/crm/settings/')) return false\n  if (pathname.startsWith('/crm/leads/')) return permissions.leads?.can_view === true\n  if (pathname.startsWith('/crm/opportunities/')) return permissions.opportunities?.can_view === true\n  if (pathname.startsWith('/crm/customers/')) return permissions.customers?.can_view === true\n  if (pathname.startsWith('/crm/quotes/')) return permissions.quotes?.can_view === true\n  if (pathname.startsWith('/crm/jobs/')) return permissions.jobs?.can_view === true\n  if (pathname.startsWith('/crm/invoices/')) return permissions.invoices?.can_view === true\n  const module = CRM_UI_MODULES[pathname]\n  if (!module) return true\n  return permissions[module]?.can_view === true\n}\n\n'''
+              if anchor not in text:
+                  raise SystemExit('nav anchor not found')
+              text = text.replace(anchor, insert + anchor, 1)
+
+          old_shell = '''function Shell({ session }) {\n  const [mobileOpen, setMobileOpen] = useState(false)\n\n  const navigate = useNavigate()\n'''
+          new_shell = '''function Shell({ session }) {\n  const [mobileOpen, setMobileOpen] = useState(false)\n  const [permissions, setPermissions] = useState({})\n  const [isOwner, setIsOwner] = useState(false)\n  const [roleReady, setRoleReady] = useState(false)\n\n  const navigate = useNavigate()\n\n  useEffect(() => {\n    let mounted = true\n\n    async function loadAccess() {\n      const { data: profile } = await supabase\n        .from('user_profiles')\n        .select('role, is_active')\n        .eq('id', session.user.id)\n        .maybeSingle()\n\n      const role = profile?.is_active === false ? 'read_only' : (profile?.role || 'read_only')\n      const owner = role === 'owner'\n      let nextPermissions = {}\n\n      if (!owner) {\n        const { data } = await supabase\n          .from('crm_permissions')\n          .select('module, can_view, can_create, can_update, can_delete')\n          .eq('role', role)\n        for (const permission of data || []) nextPermissions[permission.module] = permission\n      }\n\n      if (!mounted) return\n      setPermissions(nextPermissions)\n      setIsOwner(owner)\n      setRoleReady(true)\n    }\n\n    loadAccess()\n    return () => { mounted = false }\n  }, [session.user.id])\n'''
+          if old_shell not in text:
+              raise SystemExit('Shell anchor not found')
+          text = text.replace(old_shell, new_shell, 1)
+
+          old_nav = '''          {navItems.map((item) => {\n            const Icon = item.icon\n\n            return (\n              <NavItem\n                key={item.to}\n                {...item}\n                Icon={Icon}\n                onNavigate={() =>\n                  setMobileOpen(false)\n                }\n              />\n            )\n          })}'''
+          new_nav = '''          {navItems.filter((item) => !roleReady || isOwner || item.to === '/crm/' || permissions[CRM_UI_MODULES[item.to]]?.can_view === true).map((item) => {\n            const Icon = item.icon\n\n            return (\n              <NavItem\n                key={item.to}\n                {...item}\n                Icon={Icon}\n                onNavigate={() =>\n                  setMobileOpen(false)\n                }\n              />\n            )\n          })}'''
+          if old_nav not in text:
+              raise SystemExit('nav render anchor not found')
+          text = text.replace(old_nav, new_nav, 1)
+
+          old_settings = '''          <NavItem\n            to="/crm/settings"\n            label="Settings"\n            icon={Settings}\n            onNavigate={() =>\n              setMobileOpen(false)\n            }\n          />'''
+          new_settings = '''          {(!roleReady || isOwner) && (\n            <NavItem\n              to="/crm/settings"\n              label="Settings"\n              icon={Settings}\n              onNavigate={() =>\n                setMobileOpen(false)\n              }\n            />\n          )}'''
+          if old_settings not in text:
+              raise SystemExit('settings nav anchor not found')
+          text = text.replace(old_settings, new_settings, 1)
+
+          marker = '''        <main className="content">\n\n          <Routes>'''
+          replacement = '''        <main className="content">\n\n          {!roleReady ? (\n            <div className="loading-screen">Checking CRM permissions…</div>\n          ) : null}\n\n          <PermissionRouterGuard permissions={permissions} isOwner={isOwner} />\n\n          <Routes>'''
+          if marker not in text:
+              raise SystemExit('content marker not found')
+          text = text.replace(marker, replacement, 1)
+
+          marker2 = '''function NavItem({\n  to,'''
+          guard = '''function PermissionRouterGuard({ permissions, isOwner }) {\n  const location = useLocation()\n  const navigate = useNavigate()\n\n  useEffect(() => {\n    if (canAccessPath(location.pathname, permissions, isOwner)) return\n    if (location.pathname !== '/crm/') {\n      navigate('/crm/', { replace: true })\n    }\n  }, [location.pathname, permissions, isOwner, navigate])\n\n  return null\n}\n\n''' + marker2
+          if 'function PermissionRouterGuard(' not in text:
+              if marker2 not in text:
+                  raise SystemExit('NavItem marker not found')
+              text = text.replace(marker2, guard, 1)
+
+          path.write_text(text, encoding='utf-8')
+
+      - name: Remove temporary workflow and commit
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/apply-ui-rbac.yml
+          git add qvbit-site/crm/src/main.jsx
+          git commit -m 'Make CRM UI role aware'
+          git push
