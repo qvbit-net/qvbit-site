@@ -1,0 +1,35 @@
+name: Fix CRM UI RBAC build
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-ui-rbac-build.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove duplicate guard and fix readiness
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text(encoding='utf-8')
+          duplicate = '''/* =========================================================\n   NAV ITEM\n========================================================= */\n\nfunction PermissionRouterGuard({ permissions, isOwner }) {\n  const location = useLocation()\n  const navigate = useNavigate()\n\n  useEffect(() => {\n    if (canAccessPath(location.pathname, permissions, isOwner)) return\n    if (location.pathname !== '/crm/') {\n      navigate('/crm/', { replace: true })\n    }\n  }, [location.pathname, permissions, isOwner, navigate])\n\n'''
+          if duplicate not in text:
+              raise SystemExit('duplicate guard block not found')
+          text = text.replace(duplicate, '''/* =========================================================\n   NAV ITEM\n========================================================= */\n\n''', 1)
+          path.write_text(text, encoding='utf-8')
+      - name: Commit and remove workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/main.jsx
+          git rm .github/workflows/fix-ui-rbac-build.yml
+          git commit -m 'Fix CRM UI permission guard build'
+          git push
