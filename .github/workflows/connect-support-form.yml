@@ -1,0 +1,56 @@
+name: Connect support form to CRM
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update support form
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('qvbit-site/support.html')
+          s = p.read_text()
+          s = s.replace('<form class="support-form" action="https://formsubmit.co/contact@qvbit.net" method="POST">', '<form class="support-form" id="support-request-form">')
+          start = "    document.getElementById('year').textContent = new Date().getFullYear();"
+          addition = r'''    const supportForm = document.getElementById('support-request-form');
+    if (supportForm) {
+      supportForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const button = supportForm.querySelector('button[type="submit"]');
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Submitting…';
+        const payload = Object.fromEntries(new FormData(supportForm).entries());
+        try {
+          const response = await fetch('/api/create-ticket', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || 'Could not submit the support request.');
+          window.location.href = '/support.html?submitted=1';
+        } catch (error) {
+          alert(error.message);
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      });
+    }
+'''
+          if 'const supportForm = document.getElementById' not in s:
+              s = s.replace(start, start + '\n' + addition)
+          p.write_text(s)
+          PY
+      - name: Commit and remove workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/support.html qvbit-site/functions/api/create-ticket.js
+          git commit -m 'Route support form submissions into CRM tickets' || true
+          git push
+          rm -f .github/workflows/connect-support-form.yml
+          git add .github/workflows/connect-support-form.yml
+          git commit -m 'Remove support form integration workflow' || true
+          git push || true
