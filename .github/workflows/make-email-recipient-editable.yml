@@ -1,0 +1,43 @@
+name: Make email recipient editable
+
+on:
+  push:
+    paths:
+      - '.github/workflows/make-email-recipient-editable.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update recipient field
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text()
+          old = """          {emailOptions.length > 1 ? (\n            <select value={selectedTo} onChange={(event) => setSelectedTo(event.target.value)} disabled={sending}>\n              {emailOptions.map((item) => (\n                <option key={item.id} value={item.email}>\n                  {item.email}{item.label ? ` · ${item.label}` : ''}{item.is_primary ? ' · Primary' : ''}\n                </option>\n              ))}\n            </select>\n          ) : (\n            <input value={selectedTo || to || ''} readOnly />\n          )}"""
+          new = """          <input\n            type=\"email\"\n            value={selectedTo}\n            onChange={(event) => setSelectedTo(event.target.value)}\n            placeholder=\"Email address\"\n            list=\"crm-email-options\"\n            disabled={sending}\n            required\n          />\n          {emailOptions.length > 0 && (\n            <datalist id=\"crm-email-options\">\n              {emailOptions.map((item) => (\n                <option key={item.id} value={item.email}>\n                  {item.label || (item.is_primary ? 'Primary' : '')}\n                </option>\n              ))}\n            </datalist>\n          )}"""
+          if old not in text:
+              raise SystemExit('Target recipient field was not found; no changes made.')
+          path.write_text(text.replace(old, new, 1))
+          print('Updated the To field to accept typed email addresses with saved-address suggestions.')
+          PY
+      - name: Build CRM
+        run: |
+          cd qvbit-site/crm
+          npm install
+          npm run build
+      - name: Commit and remove workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/main.jsx
+          git commit -m 'Allow typing email recipients in composer'
+          git push
+          git rm .github/workflows/make-email-recipient-editable.yml
+          git commit -m 'Remove temporary email recipient workflow'
+          git push
