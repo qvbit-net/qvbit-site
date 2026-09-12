@@ -1,0 +1,36 @@
+name: Fix permission guard tail
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-guard-tail.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove stray guard tail
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text(encoding='utf-8')
+          stray = '''/* =========================================================\n   NAV ITEM\n========================================================= */\n\n  return null\n}\n\nfunction NavItem({'''
+          replacement = '''/* =========================================================\n   NAV ITEM\n========================================================= */\n\nfunction NavItem({'''
+          if stray not in text:
+              raise SystemExit('stray guard tail not found')
+          text = text.replace(stray, replacement, 1)
+          path.write_text(text, encoding='utf-8')
+      - name: Commit and remove workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/main.jsx
+          git rm .github/workflows/fix-guard-tail.yml
+          git commit -m 'Fix CRM permission guard syntax'
+          git push
