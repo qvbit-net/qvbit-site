@@ -82,7 +82,7 @@ jobs:
 
       - name: Verify placement patch
         run: |
-          test "$(grep -c 'EmailAddressManager' qvbit-site/crm/src/main.jsx)" -eq 1
+          test "$(grep -c '<EmailAddressManager' qvbit-site/crm/src/main.jsx)" -eq 1
           grep -q 'customer-email-grid-item' qvbit-site/crm/src/main.jsx
           grep -q 'customer-email-grid-item' qvbit-site/crm/src/styles.css
           test -f qvbit-site/_site/crm/index.html
