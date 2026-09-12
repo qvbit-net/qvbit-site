@@ -1523,17 +1523,6 @@ function Shell({ session }) {
    NAV ITEM
 ========================================================= */
 
-function PermissionRouterGuard({ permissions, isOwner }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (canAccessPath(location.pathname, permissions, isOwner)) return
-    if (location.pathname !== '/crm/') {
-      navigate('/crm/', { replace: true })
-    }
-  }, [location.pathname, permissions, isOwner, navigate])
-
   return null
 }
 
