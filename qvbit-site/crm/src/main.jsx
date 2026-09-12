@@ -461,7 +461,7 @@ function Login() {
 
         <div className="brand-mark">
           <img
-            src="/crm/images/QVB IT LOGO2.jpg"
+            src="/crm/images/qvb-it-logo.JPG"
             alt="QVB I.T."
           />
         </div>
@@ -1058,7 +1058,7 @@ function Shell({ session }) {
           <div className="sidebar-brand">
 
             <img
-              src="/crm/images/QVB IT LOGO2.jpg"
+              src="/crm/images/qvb-it-logo.JPG"
               alt="QVB I.T."
             />
 
@@ -12139,7 +12139,7 @@ function PrintCompanyHeader() {
     <div className="print-brand">
       <img
         className="print-logo"
-        src="/crm/images/QVB IT LOGO2.jpg"
+        src="/crm/images/qvb-it-logo.JPG"
         alt="QVB I.T."
       />
 
