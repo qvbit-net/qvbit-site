@@ -1,0 +1,46 @@
+name: Wire CRM access enforcer
+
+on:
+  push:
+    paths:
+      - '.github/workflows/wire-access-enforcer.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  wire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire component
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text(encoding='utf-8')
+
+          import_line = "import AccessEnforcer from './components/AccessEnforcer'"
+          if import_line not in text:
+              anchor = "import PermissionRouterGuard from './components/PermissionRouterGuard'\n"
+              if anchor not in text:
+                  raise SystemExit('PermissionRouterGuard import anchor not found')
+              text = text.replace(anchor, anchor + import_line + '\n', 1)
+
+          old = '          <PermissionRouterGuard permissions={permissions} isOwner={isOwner} />\n'
+          new = '          <PermissionRouterGuard permissions={permissions} isOwner={isOwner} ready={roleReady} />\n          <AccessEnforcer permissions={permissions} isOwner={isOwner} ready={roleReady} />\n'
+          if old not in text:
+              raise SystemExit('PermissionRouterGuard render anchor not found')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8')
+
+      - name: Commit and remove workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/main.jsx
+          git rm .github/workflows/wire-access-enforcer.yml
+          git commit -m 'Wire CRM access enforcer'
+          git push
