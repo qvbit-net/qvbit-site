@@ -1,0 +1,73 @@
+name: Fix CRM logo asset references
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-crm-logo.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-logo:
+    if: ${{ !contains(github.event.head_commit.message, 'Fix CRM logo asset references') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Replace all legacy CRM logo references
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              'QVB IT LOGO2.jpg': 'qvb-it-logo.JPG',
+              'qvb-it-logo.jpg': 'qvb-it-logo.JPG',
+              'qvb-it-logo.jpeg': 'qvb-it-logo.JPG',
+          }
+
+          files = [
+              Path('qvbit-site/crm/src/main.jsx'),
+              Path('qvbit-site/crm/src/styles.css'),
+              Path('qvbit-site/crm/index.html'),
+          ]
+
+          changed = []
+          for path in files:
+              if not path.exists():
+                  continue
+              original = path.read_text()
+              updated = original
+              for old, new in replacements.items():
+                  updated = updated.replace(old, new)
+              if updated != original:
+                  path.write_text(updated)
+                  changed.append(str(path))
+
+          if not changed:
+              raise SystemExit('No legacy logo references were found to replace.')
+          print('Updated:', ', '.join(changed))
+          PY
+
+      - name: Build and verify logo asset
+        shell: bash
+        run: |
+          bash qvbit-site/build.sh
+          test -f qvbit-site/crm/public/images/qvb-it-logo.JPG
+          test -f qvbit-site/crm/dist/images/qvb-it-logo.JPG
+          if grep -R -q 'QVB IT LOGO2.jpg\|qvb-it-logo.jpg\|qvb-it-logo.jpeg' qvbit-site/crm/src qvbit-site/crm/index.html; then
+            echo 'Legacy logo reference remains.'
+            exit 1
+          fi
+          echo 'CRM logo asset verified at /crm/images/qvb-it-logo.JPG'
+
+      - name: Commit source fix
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/main.jsx qvbit-site/crm/src/styles.css qvbit-site/crm/index.html
+          git commit -m 'Use qvb-it-logo asset in CRM'
+          git push
