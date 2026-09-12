@@ -151,3 +151,6 @@ td span { color: #8a95a6; margin-top: 3px; font-size: 11px; }
   .service-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 450px) { .stat-grid { grid-template-columns: 1fr; } .login-card { padding: 26px 21px; } }
+
+.customer-email-grid-item { grid-column: 2; min-width: 0; }
+@media (max-width: 900px) { .customer-email-grid-item { grid-column: 1; } }
