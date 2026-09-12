@@ -59,6 +59,7 @@ import EmailAddressManager from './components/EmailAddressManager'
 import EmailAttachmentPicker from './components/EmailAttachmentPicker'
 import Ticketing from './components/Ticketing'
 import SettingsUsers from './components/SettingsUsers'
+import PermissionRouterGuard from './components/PermissionRouterGuard'
 import './styles.css'
 
 
