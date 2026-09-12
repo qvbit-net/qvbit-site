@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="QVB I.T. customer support portal for technical assistance, service issues, and support requests in South Florida." />
+  <title>QVB I.T. Support | Technical Assistance & Service Requests</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .support-hero { max-width: 960px; margin: 48px auto 24px; padding: 0 20px; text-align: center; }
+    .support-hero h1 { font-size: 38px; color: #111; margin-bottom: 12px; }
+    .support-hero p { max-width: 760px; margin: 0 auto; font-size: 18px; color: #444; }
+    .support-grid { max-width: 960px; margin: 0 auto 50px; padding: 0 20px; display: grid; grid-template-columns: 1fr 1.35fr; gap: 24px; align-items: start; }
+    .support-card { background: #fff; border-radius: 10px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .support-card h2 { color: #0077cc; margin-bottom: 12px; font-size: 24px; }
+    .support-card h3 { margin: 22px 0 7px; color: #222; }
+    .support-card p { color: #444; margin-bottom: 12px; }
+    .support-card ul { padding-left: 20px; color: #444; }
+    .support-card li { margin-bottom: 8px; }
+    .support-contact { display: grid; gap: 10px; margin-top: 18px; }
+    .support-contact a { color: #0077cc; font-weight: 600; text-decoration: none; }
+    .support-contact a:hover { text-decoration: underline; }
+    .support-form { display: grid; gap: 14px; }
+    .support-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .support-form label { display: grid; gap: 6px; font-weight: 600; color: #333; }
+    .support-form input, .support-form select, .support-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font: inherit; background: #fff; }
+    .support-form textarea { min-height: 150px; resize: vertical; }
+    .support-form button { background: #0077cc; color: #fff; padding: 14px; border: 0; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; }
+    .support-form button:hover { background: #005fa3; }
+    .support-note { font-size: 13px; color: #666; margin: 0 !important; }
+    .support-alert { background: #f5f9fd; border-left: 4px solid #0077cc; padding: 12px 14px; margin-top: 18px; color: #444; font-size: 14px; }
+    @media (max-width: 800px) { .support-grid { grid-template-columns: 1fr; } .support-form .row { grid-template-columns: 1fr; } .support-hero h1 { font-size: 30px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="logo">QVB I.T.</div>
+      <div class="contact-info">
+        <p><strong>Structured Cabling Installations and I.T Services.</strong></p>
+        <p><a href="mailto:contact@qvbit.net">contact@qvbit.net</a> | <a href="tel:5619078248">561-90-QVBIT</a></p>
+        <p><a href="tel:5619078248">561-907-8248</a></p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="structured-cabling.html">Structured Cabling</a>
+      <a href="managed-it.html">Managed IT</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Request a Quote</a>
+      <a href="support.html" class="cta">Support</a>
+    </nav>
+  </header>
+
+  <section class="support-hero">
+    <h1>QVB I.T. Support</h1>
+    <p>Need technical assistance, troubleshooting, or help with an existing service? Submit a support request and tell us what is happening. We will review the request and follow up using the contact information you provide.</p>
+  </section>
+
+  <section class="support-grid">
+    <aside class="support-card">
+      <h2>Get help</h2>
+      <p>For the fastest response, include the affected system, location, symptoms, and when the issue started.</p>
+
+      <h3>For urgent issues</h3>
+      <p>If a business-critical system is down or you need immediate assistance, call us directly.</p>
+      <div class="support-contact">
+        <a href="tel:5619078248">561-907-8248</a>
+        <a href="mailto:contact@qvbit.net">contact@qvbit.net</a>
+      </div>
+
+      <h3>Useful information to include</h3>
+      <ul>
+        <li>What is not working and what you expected to happen</li>
+        <li>Which device, user, site, or network is affected</li>
+        <li>Any error message or recent change</li>
+        <li>Whether the issue affects one person or multiple users</li>
+      </ul>
+
+      <div class="support-alert">Please do not submit passwords, MFA codes, private keys, payment information, or other credentials through this form.</div>
+    </aside>
+
+    <section class="support-card">
+      <h2>Submit a support request</h2>
+      <form class="support-form" action="https://formsubmit.co/contact@qvbit.net" method="POST">
+        <input type="hidden" name="_subject" value="QVB I.T. Support Request">
+        <input type="hidden" name="_next" value="https://qvbit.net/support.html?submitted=1">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+        <div class="row">
+          <label>Name
+            <input type="text" name="name" autocomplete="name" required>
+          </label>
+          <label>Company
+            <input type="text" name="company" autocomplete="organization">
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Email
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <label>Phone
+            <input type="tel" name="phone" autocomplete="tel">
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Issue type
+            <select name="issue_type" required>
+              <option value="">Select one</option>
+              <option>Network / Internet</option>
+              <option>Computer / Workstation</option>
+              <option>Email / Microsoft 365</option>
+              <option>Server / Cloud</option>
+              <option>Wi-Fi</option>
+              <option>Printer / Peripheral</option>
+              <option>Security</option>
+              <option>Website / Domain</option>
+              <option>On-site / Remote Hands</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Priority
+            <select name="priority" required>
+              <option value="">Select one</option>
+              <option>Critical - business stopped</option>
+              <option>High - major impact</option>
+              <option>Normal - workaround available</option>
+              <option>Low - general assistance</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Subject
+          <input type="text" name="subject" placeholder="Brief description of the issue" required>
+        </label>
+
+        <label>Describe the issue
+          <textarea name="message" placeholder="What is happening? Include error messages, affected equipment or users, and anything that changed recently." required></textarea>
+        </label>
+
+        <label>Preferred contact method
+          <select name="preferred_contact">
+            <option>Email</option>
+            <option>Phone</option>
+            <option>Either</option>
+          </select>
+        </label>
+
+        <p class="support-note">By submitting this request, you are asking QVB I.T. to contact you regarding the support issue described above.</p>
+        <button type="submit">Submit Support Request</button>
+      </form>
+    </section>
+  </section>
+
+  <footer>
+    <div class="footer-contact">
+      <p><strong>Contact Us</strong></p>
+      <p>Email: <a href="mailto:contact@qvbit.net">contact@qvbit.net</a></p>
+      <p>Phone: <a href="tel:5619078248">561-907-8248</a></p>
+      <p>Website: <a href="https://qvbit.net">https://qvbit.net</a></p>
+    </div>
+    <p>© <span id="year"></span> QVB I.T. — All rights reserved.</p>
+    <img src="images/Service-Disabled Veteran-Owned-Certified.png" alt="SDVOSB" width="140" height="auto">
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    if (new URLSearchParams(window.location.search).get('submitted') === '1') {
+      const note = document.createElement('div');
+      note.className = 'support-alert';
+      note.style.maxWidth = '960px';
+      note.style.margin = '24px auto';
+      note.textContent = 'Your support request was submitted. QVB I.T. will follow up using the contact information you provided.';
+      document.querySelector('.support-hero').after(note);
+    }
+  </script>
+</body>
+</html>
