@@ -1,0 +1,35 @@
+name: Verify CRM build
+
+on:
+  push:
+    paths:
+      - '.github/workflows/verify-crm-build.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: qvbit-site/crm/package-lock.json
+      - name: Install dependencies
+        working-directory: qvbit-site/crm
+        run: npm ci
+      - name: Build CRM
+        working-directory: qvbit-site/crm
+        run: npm run build
+      - name: Remove temporary workflow
+        if: always()
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/verify-crm-build.yml
+          git commit -m 'Verify CRM production build' || true
+          git push || true
