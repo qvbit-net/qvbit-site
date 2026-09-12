@@ -1,0 +1,68 @@
+name: Finalize Owner audit log UI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Wire audit log into main.jsx and remove temporary workflows
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('qvbit-site/crm/src/main.jsx')
+          s = p.read_text(encoding='utf-8')
+
+          if "import SettingsAuditLog from './components/SettingsAuditLog'" not in s:
+              anchor = "import SettingsUsers from './components/SettingsUsers'\n"
+              if anchor not in s:
+                  raise SystemExit('SettingsUsers import anchor not found')
+              s = s.replace(anchor, anchor + "import SettingsAuditLog from './components/SettingsAuditLog'\n", 1)
+
+          if 'to="/crm/settings/audit-log"' not in s:
+              anchor = '''          {(!roleReady || isOwner) && (\n            <NavItem\n              to="/crm/settings"\n              label="Settings"\n              icon={Settings}\n              onNavigate={() =>\n                setMobileOpen(false)\n              }\n            />\n          )}'''
+              replacement = '''          {(!roleReady || isOwner) && (\n            <>\n              <NavItem\n                to="/crm/settings"\n                label="Settings"\n                icon={Settings}\n                onNavigate={() =>\n                  setMobileOpen(false)\n                }\n              />\n              {isOwner && (\n                <NavItem\n                  to="/crm/settings/audit-log"\n                  label="Audit Log"\n                  icon={ShieldCheck}\n                  onNavigate={() =>\n                    setMobileOpen(false)\n                  }\n                />\n              )}\n            </>\n          )}'''
+              if anchor not in s:
+                  raise SystemExit('Settings nav anchor not found')
+              s = s.replace(anchor, replacement, 1)
+
+          if 'path="settings/audit-log"' not in s:
+              anchor = '''            <Route\n              path="settings"\n              element={<SettingsUsers />}\n            />'''
+              replacement = '''            <Route\n              path="settings/audit-log"\n              element={<SettingsAuditLog />}\n            />\n\n            <Route\n              path="settings"\n              element={<SettingsUsers />}\n            />'''
+              if anchor not in s:
+                  raise SystemExit('Settings route anchor not found')
+              s = s.replace(anchor, replacement, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          rm -f .github/workflows/permission-dashboard-fix.yml
+          rm -f .github/workflows/add-ticket-delete.yml
+          rm -f .github/workflows/inspect-email-composer.yml
+
+      - name: Build CRM
+        working-directory: qvbit-site/crm
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Commit final changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/main.jsx qvbit-site/crm/src/components/SettingsAuditLog.jsx qvbit-site/crm/src/components/SettingsUsers.jsx qvbit-site/crm/sql/2026-09-12-audit-log-record-changes.sql .github/workflows
+          git commit -m 'Complete Owner audit log and clean temporary workflows' || true
+          git rm .github/workflows/finalize-audit-ui.yml || true
+          git commit -m 'Remove temporary audit log workflow' || true
+          git push
