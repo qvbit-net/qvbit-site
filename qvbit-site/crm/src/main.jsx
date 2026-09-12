@@ -1523,9 +1523,6 @@ function Shell({ session }) {
    NAV ITEM
 ========================================================= */
 
-  return null
-}
-
 function NavItem({
   to,
   label,
