@@ -406,6 +406,11 @@ function App() {
       />
 
       <Route
+        path="/crm/set-password"
+        element={<SetPassword />}
+      />
+
+      <Route
         path="/crm/*"
         element={
           session ? (
@@ -422,6 +427,82 @@ function App() {
       />
       </Routes>
     </CrmErrorBoundary>
+  )
+}
+
+
+/* =========================================================
+   SET PASSWORD
+========================================================= */
+
+function SetPassword() {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [checkingSession, setCheckingSession] = useState(true)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+    supabase.auth.getSession().then(({ data, error: sessionError }) => {
+      if (!mounted) return
+      if (sessionError) setError(sessionError.message)
+      else if (!data?.session) setError('This invitation link is invalid or has expired. Please ask the Owner to send a new invitation.')
+      else setEmail(data.session.user?.email || '')
+      setCheckingSession(false)
+    }).catch(() => {
+      if (!mounted) return
+      setError('Unable to verify the invitation. Please request a new invitation.')
+      setCheckingSession(false)
+    })
+    return () => { mounted = false }
+  }, [])
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setError('')
+    if (password.length < 8) { setError('Your password must be at least 8 characters long.'); return }
+    if (password !== confirmPassword) { setError('The passwords do not match.'); return }
+    setBusy(true)
+    const { error: updateError } = await supabase.auth.updateUser({ password })
+    if (updateError) { setError(updateError.message); setBusy(false); return }
+    setSuccess(true)
+    setBusy(false)
+    setTimeout(() => navigate('/crm/', { replace: true }), 900)
+  }
+
+  return (
+    <main className="login-page">
+      <section className="login-card">
+        <div className="brand-mark"><img src="/crm/images/qvb-it-logo.JPG" alt="QVB I.T." /></div>
+        <div className="eyebrow"><ShieldCheck size={14} /> Secure account setup</div>
+        <h1>Create your password</h1>
+        {checkingSession ? (
+          <p className="muted">Verifying your invitation…</p>
+        ) : error && !success ? (
+          <>
+            <div className="error-box" style={{ marginTop: '20px' }}>{error}</div>
+            <button type="button" className="secondary-button full" style={{ marginTop: '16px' }} onClick={() => navigate('/crm/login', { replace: true })}>Return to login</button>
+          </>
+        ) : success ? (
+          <div className="info-box" style={{ marginTop: '20px' }}>Password created successfully. Taking you into the CRM…</div>
+        ) : (
+          <>
+            <p className="muted">Set the password you will use to sign in to QVB I.T. CRM.</p>
+            <p className="muted" style={{ marginTop: '8px', fontSize: '12px' }}>{email}</p>
+            <form onSubmit={handleSubmit} className="stack-form">
+              <label>New password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" minLength={8} required /></label>
+              <label>Confirm password<input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" minLength={8} required /></label>
+              {error && <div className="error-box">{error}</div>}
+              <button className="primary-button full" disabled={busy}>{busy ? 'Saving password…' : 'Create Password'}</button>
+            </form>
+          </>
+        )}
+      </section>
+    </main>
   )
 }
 
