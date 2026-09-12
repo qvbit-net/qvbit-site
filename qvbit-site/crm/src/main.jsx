@@ -57,6 +57,7 @@ import {
 import { supabase } from './supabase'
 import EmailAddressManager from './components/EmailAddressManager'
 import EmailAttachmentPicker from './components/EmailAttachmentPicker'
+import Ticketing from './components/Ticketing'
 import './styles.css'
 
 
@@ -252,6 +253,11 @@ const navItems = [
     to: '/crm/services',
     label: 'Services',
     icon: Package,
+  },
+  {
+    to: '/crm/tickets',
+    label: 'Tickets',
+    icon: MessageSquare,
   },
   {
     to: '/crm/reports',
@@ -1236,6 +1242,11 @@ function Shell({ session }) {
             <Route
               path="services"
               element={<Services />}
+            />
+
+            <Route
+              path="tickets"
+              element={<Ticketing />}
             />
 
             <Route
