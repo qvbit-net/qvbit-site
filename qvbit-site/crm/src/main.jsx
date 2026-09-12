@@ -55,6 +55,8 @@ import {
 } from 'lucide-react'
 
 import { supabase } from './supabase'
+import EmailAddressManager from './components/EmailAddressManager'
+import EmailAttachmentPicker from './components/EmailAttachmentPicker'
 import './styles.css'
 
 
@@ -809,16 +811,59 @@ function EmailComposer({
 }) {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
+  const [attachments, setAttachments] = useState([])
+  const [emailOptions, setEmailOptions] = useState([])
+  const [selectedTo, setSelectedTo] = useState(String(to || '').trim())
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadEmailOptions() {
+      const fallback = String(to || '').trim()
+      if (!customerId) {
+        setEmailOptions(fallback ? [{ id: 'legacy', email: fallback, label: 'Primary', is_primary: true }] : [])
+        setSelectedTo(fallback)
+        return
+      }
+
+      const { data, error: emailError } = await supabase
+        .from('customer_emails')
+        .select('id, email, label, is_primary')
+        .eq('customer_id', customerId)
+        .order('is_primary', { ascending: false })
+        .order('created_at', { ascending: true })
+
+      if (cancelled) return
+
+      if (emailError) {
+        console.warn('QVB I.T. CRM: customer email addresses could not be loaded:', emailError.message)
+        const fallbackOptions = fallback ? [{ id: 'legacy', email: fallback, label: 'Primary', is_primary: true }] : []
+        setEmailOptions(fallbackOptions)
+        setSelectedTo(fallback)
+        return
+      }
+
+      const options = data?.length
+        ? data
+        : (fallback ? [{ id: 'legacy', email: fallback, label: 'Primary', is_primary: true }] : [])
+
+      setEmailOptions(options)
+      setSelectedTo((current) => options.some((item) => item.email === current) ? current : (options[0]?.email || ''))
+    }
+
+    loadEmailOptions()
+    return () => { cancelled = true }
+  }, [customerId, to])
 
   async function sendEmail(event) {
     event.preventDefault()
     setError('')
     setSuccess('')
 
-    const recipient = String(to || '').trim()
+    const recipient = String(selectedTo || to || '').trim()
     const cleanSubject = subject.trim()
     const cleanMessage = message.trim()
 
@@ -849,6 +894,7 @@ function EmailComposer({
           to: recipient,
           subject: cleanSubject,
           text: cleanMessage,
+          attachments: attachments.map(({ name, content, mimeType }) => ({ name, content, mimeType })),
         }),
       })
 
@@ -873,6 +919,7 @@ function EmailComposer({
       setSuccess(`Email sent to ${recipient}.`)
       setSubject('')
       setMessage('')
+      setAttachments([])
 
       if (onSent) await onSent(result)
     } catch (sendError) {
@@ -906,7 +953,17 @@ function EmailComposer({
       <form onSubmit={sendEmail} className="stack-form">
         <label>
           To
-          <input value={to || ''} readOnly />
+          {emailOptions.length > 1 ? (
+            <select value={selectedTo} onChange={(event) => setSelectedTo(event.target.value)} disabled={sending}>
+              {emailOptions.map((item) => (
+                <option key={item.id} value={item.email}>
+                  {item.email}{item.label ? ` · ${item.label}` : ''}{item.is_primary ? ' · Primary' : ''}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input value={selectedTo || to || ''} readOnly />
+          )}
         </label>
 
         <label>
@@ -929,6 +986,12 @@ function EmailComposer({
             required
           />
         </label>
+
+        <EmailAttachmentPicker
+          attachments={attachments}
+          onChange={setAttachments}
+          disabled={sending}
+        />
 
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
           {onCancel && (
@@ -4709,8 +4772,7 @@ function CustomerDetail() {
               className="secondary-button"
               type="button"
               onClick={() => setShowEmailComposer((current) => !current)}
-              disabled={!customer.email}
-              title={customer.email ? 'Send an email to this customer' : 'Add an email address to this customer first'}
+              title="Send an email to this customer"
             >
               <Mail size={16} />
               {showEmailComposer ? 'Close Email' : 'Send Email'}
@@ -4752,6 +4814,14 @@ function CustomerDetail() {
         <div className="alert">
           {error}
         </div>
+      )}
+
+      {!editing && (
+        <EmailAddressManager
+          customerId={customerId}
+          legacyEmail={customer.email}
+          onPrimaryChange={(email) => setCustomer((current) => current ? { ...current, email } : current)}
+        />
       )}
 
       {showEmailComposer && !editing && (
