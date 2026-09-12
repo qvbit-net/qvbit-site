@@ -2297,15 +2297,7 @@ function Dashboard() {
               <strong>{money(stats.overdue)}</strong>
               <span>Past-due invoice balance</span>
             </div>
-            <div className="customer-email-grid-item">
-    {!editing && (
-            <EmailAddressManager
-              customerId={customerId}
-              legacyEmail={customer.email}
-              onPrimaryChange={(email) => setCustomer((current) => current ? { ...current, email } : current)}
-            />
-          )}
-  </div>
+            
 </div>
 
           <div className="dashboard-grid">
@@ -5261,7 +5253,17 @@ function CustomerDetail() {
 
             </section>
 
-          </div>
+          
+<div className="customer-email-grid-item">
+    {!editing && (
+            <EmailAddressManager
+              customerId={customerId}
+              legacyEmail={customer.email}
+              onPrimaryChange={(email) => setCustomer((current) => current ? { ...current, email } : current)}
+            />
+          )}
+  </div>
+</div>
 
           {/* QUOTES */}
 
