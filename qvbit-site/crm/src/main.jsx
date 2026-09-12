@@ -953,16 +953,23 @@ function EmailComposer({
       <form onSubmit={sendEmail} className="stack-form">
         <label>
           To
-          {emailOptions.length > 1 ? (
-            <select value={selectedTo} onChange={(event) => setSelectedTo(event.target.value)} disabled={sending}>
+          <input
+            type="email"
+            value={selectedTo}
+            onChange={(event) => setSelectedTo(event.target.value)}
+            placeholder="Email address"
+            list="crm-email-options"
+            disabled={sending}
+            required
+          />
+          {emailOptions.length > 0 && (
+            <datalist id="crm-email-options">
               {emailOptions.map((item) => (
                 <option key={item.id} value={item.email}>
-                  {item.email}{item.label ? ` · ${item.label}` : ''}{item.is_primary ? ' · Primary' : ''}
+                  {item.label || (item.is_primary ? 'Primary' : '')}
                 </option>
               ))}
-            </select>
-          ) : (
-            <input value={selectedTo || to || ''} readOnly />
+            </datalist>
           )}
         </label>
 
