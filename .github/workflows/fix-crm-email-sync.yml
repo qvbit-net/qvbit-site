@@ -1,0 +1,59 @@
+name: Fix CRM legacy email synchronization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-crm-email-sync.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Edit Customer email synchronization
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text(encoding='utf-8')
+
+          old = """    if (error) {\n      setError(error.message)\n    } else {\n      setCustomer(data)\n"""
+          new = """    if (error) {\n      setError(error.message)\n    } else {\n      // Keep the normalized customer_emails table aligned with the legacy\n      // customers.email field used by the original Edit Customer form.\n      const normalizedEmail = form.email.trim().toLowerCase()\n      const { data: primaryEmail, error: primaryEmailError } = await supabase\n        .from('customer_emails')\n        .select('id')\n        .eq('customer_id', customerId)\n        .eq('is_primary', true)\n        .maybeSingle()\n\n      if (primaryEmailError) {\n        setError(`Customer saved, but the primary email could not be synchronized: ${primaryEmailError.message}`)\n      } else if (normalizedEmail) {\n        if (primaryEmail?.id) {\n          const { error: syncError } = await supabase\n            .from('customer_emails')\n            .update({\n              email: normalizedEmail,\n              label: 'Primary',\n              updated_at: localNowIso(),\n            })\n            .eq('id', primaryEmail.id)\n\n          if (syncError) {\n            setError(`Customer saved, but the primary email could not be synchronized: ${syncError.message}`)\n          }\n        } else {\n          const { error: syncError } = await supabase\n            .from('customer_emails')\n            .insert({\n              customer_id: customerId,\n              email: normalizedEmail,\n              label: 'Primary',\n              is_primary: true,\n            })\n\n          if (syncError) {\n            setError(`Customer saved, but the primary email could not be synchronized: ${syncError.message}`)\n          }\n        }\n      } else {\n        const { error: clearPrimaryError } = await supabase\n          .from('customer_emails')\n          .update({ is_primary: false, updated_at: localNowIso() })\n          .eq('customer_id', customerId)\n          .eq('is_primary', true)\n\n        if (clearPrimaryError) {\n          setError(`Customer saved, but the primary email could not be cleared: ${clearPrimaryError.message}`)\n        }\n      }\n\n      setCustomer(data)\n"""
+
+          if old not in text:
+              raise SystemExit('saveChanges success block not found')
+
+          if "normalizedEmail = form.email.trim().toLowerCase()" in text:
+              raise SystemExit('Email synchronization patch already present')
+
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          print('Legacy customer email synchronization patched')
+          PY
+
+      - name: Install dependencies
+        working-directory: qvbit-site/crm
+        run: npm install --no-audit --no-fund
+
+      - name: Build CRM
+        working-directory: qvbit-site/crm
+        run: npm run build
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qvbit-site/crm/src/main.jsx
+          git rm -f .github/workflows/fix-crm-email-sync.yml
+          git commit -m "Sync legacy customer email with primary email"
+          git push origin HEAD:main
