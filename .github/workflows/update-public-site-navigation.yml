@@ -1,0 +1,80 @@
+name: Update public site navigation
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-site:
+    if: ${{ !contains(github.event.head_commit.message, 'Update public site navigation') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Remove service request sections and update support links
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path('qvbit-site')
+          changed = []
+
+          for path in sorted(root.glob('*.html')):
+              if path.name == 'support.html':
+                  continue
+
+              text = path.read_text(encoding='utf-8')
+              original = text
+
+              # Remove the bottom Request a Service section wherever present.
+              text = re.sub(
+                  r'\s*<section\s+id=["\']contact["\'][\s\S]*?</section>\s*',
+                  '\n\n',
+                  text,
+                  flags=re.IGNORECASE,
+              )
+
+              # Replace every public-site Request a Quote CTA with the support destination.
+              text = re.sub(r'>\s*Request a Quote\s*<', '>\n   Submit Support Request\n<', text, flags=re.IGNORECASE)
+              text = text.replace('href="contact.html"', 'href="https://www.qvbit.net/support"')
+              text = text.replace("href='contact.html'", "href='https://www.qvbit.net/support'")
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
+
+          if not changed:
+              raise SystemExit('No public HTML files required changes.')
+
+          print('Updated files:')
+          print('\n'.join(changed))
+
+      - name: Verify changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE 'Request a Service|Request Service' qvbit-site --include='*.html' --exclude='support.html'; then
+            echo 'Unexpected service-request text remains.'
+            exit 1
+          fi
+          if grep -RIn 'Request a Quote' qvbit-site --include='*.html' --exclude='support.html'; then
+            echo 'Unexpected Request a Quote text remains.'
+            exit 1
+          fi
+          count=$(grep -RIl 'https://www.qvbit.net/support' qvbit-site --include='*.html' --exclude='support.html' | wc -l)
+          test "$count" -ge 1
+          echo "Support links verified in $count HTML files."
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/*.html
+          git commit -m 'Update public site CTAs and remove service request sections'
+          git push
