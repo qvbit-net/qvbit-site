@@ -16,6 +16,7 @@ export default function SettingsUsers() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [saving, setSaving] = useState('')
+  const [deleting, setDeleting] = useState('')
   const [isOwner, setIsOwner] = useState(false)
   const [currentUserId, setCurrentUserId] = useState('')
   const [inviteOpen, setInviteOpen] = useState(false)
@@ -76,6 +77,35 @@ export default function SettingsUsers() {
       setSuccess('User permissions updated.')
     }
     setSaving('')
+  }
+
+  async function deleteUser(user) {
+    if (!isOwner || user.id === currentUserId || deleting) return
+
+    const label = user.display_name || 'this user'
+    const confirmed = window.confirm(
+      `Delete ${label}? This permanently removes the user's CRM account and access. This action cannot be undone.`,
+    )
+    if (!confirmed) return
+
+    setDeleting(user.id)
+    setError('')
+    setSuccess('')
+
+    const { data, error: deleteError } = await supabase.rpc('owner_delete_user', {
+      target_user_id: user.id,
+    })
+
+    if (deleteError) {
+      setError(deleteError.message)
+    } else if (data?.success) {
+      setUsers((current) => current.filter((currentUser) => currentUser.id !== user.id))
+      setSuccess(`${data.email || label} was deleted.`)
+    } else {
+      setError('The user could not be deleted.')
+    }
+
+    setDeleting('')
   }
 
   async function inviteUser(event) {
@@ -150,7 +180,7 @@ export default function SettingsUsers() {
       </div>}
 
       {isOwner && <>
-        <div className="card"><h2>Team members</h2>{loading ? <p className="muted">Loading users…</p> : users.length === 0 ? <p className="muted">No user profiles found.</p> : <div className="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>{users.map((user) => { const isSelf = user.id === currentUserId; return <tr key={user.id}><td><strong>{user.display_name || 'Unnamed user'}</strong><div className="muted">{isSelf ? 'Current account' : user.id}</div></td><td><select value={user.role || 'read_only'} disabled={saving === user.id || isSelf} onChange={(event) => updateUser(user.id, { role: event.target.value })}>{roles.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}</select></td><td><span className={user.is_active === false ? 'status-badge danger' : 'status-badge success'}>{user.is_active === false ? 'Disabled' : 'Active'}</span></td><td>{isSelf ? <span className="muted">Current account</span> : <button className="secondary-button" disabled={saving === user.id} onClick={() => updateUser(user.id, { is_active: user.is_active === false })}>{user.is_active === false ? 'Enable' : 'Disable'}</button>}</td></tr> })}</tbody></table></div>}</div>
+        <div className="card"><h2>Team members</h2>{loading ? <p className="muted">Loading users…</p> : users.length === 0 ? <p className="muted">No user profiles found.</p> : <div className="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody>{users.map((user) => { const isSelf = user.id === currentUserId; const isBusy = saving === user.id || deleting === user.id; return <tr key={user.id}><td><strong>{user.display_name || 'Unnamed user'}</strong><div className="muted">{isSelf ? 'Current account' : user.id}</div></td><td><select value={user.role || 'read_only'} disabled={isBusy || isSelf} onChange={(event) => updateUser(user.id, { role: event.target.value })}>{roles.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}</select></td><td><span className={user.is_active === false ? 'status-badge danger' : 'status-badge success'}>{user.is_active === false ? 'Disabled' : 'Active'}</span></td><td>{isSelf ? <span className="muted">Current account</span> : <div className="action-row"><button className="secondary-button" disabled={isBusy} onClick={() => updateUser(user.id, { is_active: user.is_active === false })}>{saving === user.id ? 'Saving…' : user.is_active === false ? 'Enable' : 'Disable'}</button><button className="secondary-button danger-button" disabled={isBusy} onClick={() => deleteUser(user)}>{deleting === user.id ? 'Deleting…' : 'Delete'}</button></div>}</td></tr> })}</tbody></table></div>}</div>
         <div className="card"><h2>Role reference</h2><div className="stack-list">{roles.map((role) => <div className="list-row" key={role.value}><strong>{role.label}</strong><span className="muted">{role.description}</span></div>)}</div></div>
       </>}
     </section>
