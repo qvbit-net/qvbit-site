@@ -4538,6 +4538,58 @@ function CustomerDetail() {
     if (error) {
       setError(error.message)
     } else {
+      // Keep the normalized customer_emails table aligned with the legacy
+      // customers.email field used by the original Edit Customer form.
+      const normalizedEmail = form.email.trim().toLowerCase()
+      const { data: primaryEmail, error: primaryEmailError } = await supabase
+        .from('customer_emails')
+        .select('id')
+        .eq('customer_id', customerId)
+        .eq('is_primary', true)
+        .maybeSingle()
+
+      if (primaryEmailError) {
+        setError(`Customer saved, but the primary email could not be synchronized: ${primaryEmailError.message}`)
+      } else if (normalizedEmail) {
+        if (primaryEmail?.id) {
+          const { error: syncError } = await supabase
+            .from('customer_emails')
+            .update({
+              email: normalizedEmail,
+              label: 'Primary',
+              updated_at: localNowIso(),
+            })
+            .eq('id', primaryEmail.id)
+
+          if (syncError) {
+            setError(`Customer saved, but the primary email could not be synchronized: ${syncError.message}`)
+          }
+        } else {
+          const { error: syncError } = await supabase
+            .from('customer_emails')
+            .insert({
+              customer_id: customerId,
+              email: normalizedEmail,
+              label: 'Primary',
+              is_primary: true,
+            })
+
+          if (syncError) {
+            setError(`Customer saved, but the primary email could not be synchronized: ${syncError.message}`)
+          }
+        }
+      } else {
+        const { error: clearPrimaryError } = await supabase
+          .from('customer_emails')
+          .update({ is_primary: false, updated_at: localNowIso() })
+          .eq('customer_id', customerId)
+          .eq('is_primary', true)
+
+        if (clearPrimaryError) {
+          setError(`Customer saved, but the primary email could not be cleared: ${clearPrimaryError.message}`)
+        }
+      }
+
       setCustomer(data)
       setForm({
         company_name: data.company_name || '',
