@@ -1,0 +1,105 @@
+name: Move customer email section
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/move-customer-email-section.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Move email section
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          main_path = Path('qvbit-site/crm/src/main.jsx')
+          css_path = Path('qvbit-site/crm/src/styles.css')
+          text = main_path.read_text(encoding='utf-8')
+
+          # Extract the EmailAddressManager invocation, regardless of whether its props
+          # are formatted on one line or several lines.
+          pattern = re.compile(r'(?ms)^\s*<EmailAddressManager\b.*?\n\s*/>\s*\n')
+          matches = list(pattern.finditer(text))
+          if len(matches) != 1:
+              raise SystemExit(f'Expected exactly one EmailAddressManager invocation, found {len(matches)}')
+          email_block = matches[0].group(0).strip() + '\n'
+          text = text[:matches[0].start()] + text[matches[0].end():]
+
+          marker = 'Contact Information'
+          marker_pos = text.find(marker)
+          if marker_pos < 0:
+              raise SystemExit('Contact Information marker not found')
+
+          # Find the two-column information grid containing Business/Contact Information.
+          grid_pos = text.rfind('className="metric-grid"', 0, marker_pos)
+          if grid_pos < 0:
+              raise SystemExit('metric-grid containing Contact Information not found')
+          grid_open = text.rfind('<div', 0, grid_pos)
+          if grid_open < 0:
+              raise SystemExit('metric-grid opening div not found')
+
+          # Find the matching closing div for the metric-grid. This source region is JSX;
+          # count literal div tags to avoid relying on fragile line-specific formatting.
+          tag_re = re.compile(r'<div\b[^>]*>|</div>')
+          depth = 0
+          grid_end = None
+          for m in tag_re.finditer(text, grid_open):
+              tag = m.group(0)
+              if tag.startswith('<div') and not tag.rstrip().endswith('/>'):
+                  depth += 1
+              elif tag == '</div>':
+                  depth -= 1
+                  if depth == 0:
+                      grid_end = m.start()
+                      break
+          if grid_end is None:
+              raise SystemExit('Could not find end of metric-grid')
+
+          wrapper = (
+              "  <div className=\"customer-email-grid-item\">\n"
+              + "    " + email_block.replace('\n', '\n    ').rstrip() + "\n"
+              + "  </div>\n"
+          )
+          text = text[:grid_end] + wrapper + text[grid_end:]
+          main_path.write_text(text, encoding='utf-8')
+
+          css = css_path.read_text(encoding='utf-8')
+          rule = '.customer-email-grid-item { grid-column: 2; min-width: 0; }\n'
+          if '.customer-email-grid-item {' not in css:
+              css += '\n' + rule
+              # Keep the email card in the single column on smaller screens.
+              css += '@media (max-width: 900px) { .customer-email-grid-item { grid-column: 1; } }\n'
+          css_path.write_text(css, encoding='utf-8')
+          PY
+
+      - name: Build CRM and deployment
+        working-directory: qvbit-site
+        run: bash build.sh
+
+      - name: Verify placement patch
+        run: |
+          test "$(grep -c 'EmailAddressManager' qvbit-site/crm/src/main.jsx)" -eq 1
+          grep -q 'customer-email-grid-item' qvbit-site/crm/src/main.jsx
+          grep -q 'customer-email-grid-item' qvbit-site/crm/src/styles.css
+          test -f qvbit-site/_site/crm/index.html
+
+      - name: Commit and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qvbit-site/crm/src/main.jsx qvbit-site/crm/src/styles.css
+          git rm .github/workflows/move-customer-email-section.yml
+          git commit -m "Move customer email section under contact information"
+          git push origin HEAD:main
