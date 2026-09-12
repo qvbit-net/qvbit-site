@@ -24,12 +24,14 @@
     .support-form { display: grid; gap: 14px; }
     .support-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .support-form label { display: grid; gap: 6px; font-weight: 600; color: #333; }
-    .support-form input, .support-form select, .support-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font: inherit; background: #fff; }
+    .support-form input, .support-form select, .support-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font: inherit; background: #fff; box-sizing: border-box; }
     .support-form textarea { min-height: 150px; resize: vertical; }
     .support-form button { background: #0077cc; color: #fff; padding: 14px; border: 0; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; }
     .support-form button:hover { background: #005fa3; }
+    .support-form button:disabled { opacity: .7; cursor: wait; }
     .support-note { font-size: 13px; color: #666; margin: 0 !important; }
     .support-alert { background: #f5f9fd; border-left: 4px solid #0077cc; padding: 12px 14px; margin-top: 18px; color: #444; font-size: 14px; }
+    .support-error { background: #fff1f1; border-left-color: #c62828; }
     @media (max-width: 800px) { .support-grid { grid-template-columns: 1fr; } .support-form .row { grid-template-columns: 1fr; } .support-hero h1 { font-size: 30px; } }
   </style>
 </head>
@@ -62,119 +64,67 @@
     <aside class="support-card">
       <h2>Get help</h2>
       <p>For the fastest response, include the affected system, location, symptoms, and when the issue started.</p>
-
       <h3>For urgent issues</h3>
       <p>If a business-critical system is down or you need immediate assistance, call us directly.</p>
-      <div class="support-contact">
-        <a href="tel:5619078248">561-907-8248</a>
-        <a href="mailto:contact@qvbit.net">contact@qvbit.net</a>
-      </div>
-
+      <div class="support-contact"><a href="tel:5619078248">561-907-8248</a><a href="mailto:contact@qvbit.net">contact@qvbit.net</a></div>
       <h3>Useful information to include</h3>
-      <ul>
-        <li>What is not working and what you expected to happen</li>
-        <li>Which device, user, site, or network is affected</li>
-        <li>Any error message or recent change</li>
-        <li>Whether the issue affects one person or multiple users</li>
-      </ul>
-
+      <ul><li>What is not working and what you expected to happen</li><li>Which device, user, site, or network is affected</li><li>Any error message or recent change</li><li>Whether the issue affects one person or multiple users</li></ul>
       <div class="support-alert">Please do not submit passwords, MFA codes, private keys, payment information, or other credentials through this form.</div>
     </aside>
 
     <section class="support-card">
       <h2>Submit a support request</h2>
-      <form class="support-form" action="https://formsubmit.co/contact@qvbit.net" method="POST">
-        <input type="hidden" name="_subject" value="QVB I.T. Support Request">
-        <input type="hidden" name="_next" value="https://qvbit.net/support.html?submitted=1">
+      <form class="support-form" id="support-request-form">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-
-        <div class="row">
-          <label>Name
-            <input type="text" name="name" autocomplete="name" required>
-          </label>
-          <label>Company
-            <input type="text" name="company" autocomplete="organization">
-          </label>
-        </div>
-
-        <div class="row">
-          <label>Email
-            <input type="email" name="email" autocomplete="email" required>
-          </label>
-          <label>Phone
-            <input type="tel" name="phone" autocomplete="tel">
-          </label>
-        </div>
-
-        <div class="row">
-          <label>Issue type
-            <select name="issue_type" required>
-              <option value="">Select one</option>
-              <option>Network / Internet</option>
-              <option>Computer / Workstation</option>
-              <option>Email / Microsoft 365</option>
-              <option>Server / Cloud</option>
-              <option>Wi-Fi</option>
-              <option>Printer / Peripheral</option>
-              <option>Security</option>
-              <option>Website / Domain</option>
-              <option>On-site / Remote Hands</option>
-              <option>Other</option>
-            </select>
-          </label>
-          <label>Priority
-            <select name="priority" required>
-              <option value="">Select one</option>
-              <option>Critical - business stopped</option>
-              <option>High - major impact</option>
-              <option>Normal - workaround available</option>
-              <option>Low - general assistance</option>
-            </select>
-          </label>
-        </div>
-
-        <label>Subject
-          <input type="text" name="subject" placeholder="Brief description of the issue" required>
-        </label>
-
-        <label>Describe the issue
-          <textarea name="message" placeholder="What is happening? Include error messages, affected equipment or users, and anything that changed recently." required></textarea>
-        </label>
-
-        <label>Preferred contact method
-          <select name="preferred_contact">
-            <option>Email</option>
-            <option>Phone</option>
-            <option>Either</option>
-          </select>
-        </label>
-
+        <div class="row"><label>Name<input type="text" name="name" autocomplete="name" required></label><label>Company<input type="text" name="company" autocomplete="organization"></label></div>
+        <div class="row"><label>Email<input type="email" name="email" autocomplete="email" required></label><label>Phone<input type="tel" name="phone" autocomplete="tel"></label></div>
+        <div class="row"><label>Issue type<select name="issue_type" required><option value="">Select one</option><option>Network / Internet</option><option>Computer / Workstation</option><option>Email / Microsoft 365</option><option>Server / Cloud</option><option>Wi-Fi</option><option>Printer / Peripheral</option><option>Security</option><option>Website / Domain</option><option>On-site / Remote Hands</option><option>Other</option></select></label><label>Priority<select name="priority" required><option value="">Select one</option><option>Critical - business stopped</option><option>High - major impact</option><option>Normal - workaround available</option><option>Low - general assistance</option></select></label></div>
+        <label>Subject<input type="text" name="subject" placeholder="Brief description of the issue" required></label>
+        <label>Describe the issue<textarea name="message" placeholder="What is happening? Include error messages, affected equipment or users, and anything that changed recently." required></textarea></label>
+        <label>Preferred contact method<select name="preferred_contact"><option>Email</option><option>Phone</option><option>Either</option></select></label>
         <p class="support-note">By submitting this request, you are asking QVB I.T. to contact you regarding the support issue described above.</p>
+        <div id="support-form-status" class="support-alert" role="status" aria-live="polite" hidden></div>
         <button type="submit">Submit Support Request</button>
       </form>
     </section>
   </section>
 
   <footer>
-    <div class="footer-contact">
-      <p><strong>Contact Us</strong></p>
-      <p>Email: <a href="mailto:contact@qvbit.net">contact@qvbit.net</a></p>
-      <p>Phone: <a href="tel:5619078248">561-907-8248</a></p>
-      <p>Website: <a href="https://qvbit.net">https://qvbit.net</a></p>
-    </div>
+    <div class="footer-contact"><p><strong>Contact Us</strong></p><p>Email: <a href="mailto:contact@qvbit.net">contact@qvbit.net</a></p><p>Phone: <a href="tel:5619078248">561-907-8248</a></p><p>Website: <a href="https://qvbit.net">https://qvbit.net</a></p></div>
     <p>© <span id="year"></span> QVB I.T. — All rights reserved.</p>
     <img src="images/Service-Disabled Veteran-Owned-Certified.png" alt="SDVOSB" width="140" height="auto">
   </footer>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
-    if (new URLSearchParams(window.location.search).get('submitted') === '1') {
-      const note = document.createElement('div');
-      note.className = 'support-alert';
-      note.style.maxWidth = '960px';
-      note.style.margin = '24px auto';
-      note.textContent = 'Your support request was submitted. QVB I.T. will follow up using the contact information you provided.';
-      document.querySelector('.support-hero').after(note);
+    const supportForm = document.getElementById('support-request-form');
+    const supportStatus = document.getElementById('support-form-status');
+    if (supportForm) {
+      supportForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const button = supportForm.querySelector('button[type="submit"]');
+        const originalText = button.textContent;
+        supportStatus.hidden = true;
+        supportStatus.classList.remove('support-error');
+        button.disabled = true;
+        button.textContent = 'Submitting…';
+        const payload = Object.fromEntries(new FormData(supportForm).entries());
+        try {
+          const response = await fetch('/api/create-ticket', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(payload) });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || 'Could not submit the support request.');
+          supportForm.reset();
+          supportStatus.textContent = 'Your support request was submitted successfully. QVB I.T. will follow up using the contact information you provided.';
+          supportStatus.hidden = false;
+          button.textContent = 'Request Submitted';
+        } catch (error) {
+          supportStatus.textContent = error.message || 'Could not submit the support request. Please call 561-907-8248.';
+          supportStatus.classList.add('support-error');
+          supportStatus.hidden = false;
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      });
     }
   </script>
 </body>
