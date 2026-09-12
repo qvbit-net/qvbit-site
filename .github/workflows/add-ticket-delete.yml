@@ -1,0 +1,74 @@
+name: Add completed ticket deletion
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add delete ticket action
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('qvbit-site/crm/src/components/Ticketing.jsx')
+          text = path.read_text()
+          old = """  async function addNote(event) {"""
+          new = """  async function deleteTicket() {
+            if (!selected || !['resolved', 'closed'].includes(selected.status)) return
+            if (!window.confirm(`Delete ticket #${selected.ticket_number}? This cannot be undone.`)) return
+            setBusy(true); setError('')
+            try {
+              const childDeletes = await Promise.all([
+                supabase.from('ticket_notes').delete().eq('ticket_id', selected.id),
+                supabase.from('ticket_messages').delete().eq('ticket_id', selected.id),
+                supabase.from('ticket_attachments').delete().eq('ticket_id', selected.id),
+              ])
+              const childError = childDeletes.find((result) => result.error)?.error
+              if (childError) throw childError
+              const { error: deleteError } = await supabase.from('tickets').delete().eq('id', selected.id)
+              if (deleteError) throw deleteError
+              setSelected(null); setNotes([]); setMessages([])
+              await loadTickets()
+            } catch (deleteError) {
+              setError(deleteError.message || 'Ticket could not be deleted.')
+            } finally {
+              setBusy(false)
+            }
+          }
+
+          async function addNote(event) {"""
+          if old not in text:
+            raise SystemExit('Could not locate addNote insertion point')
+          text = text.replace(old, new, 1)
+          old = """</select></div><div className=\"detail-grid\">"""
+          new = """</select>{['resolved', 'closed'].includes(selected.status) && <button type=\"button\" className=\"danger-button\" onClick={deleteTicket} disabled={busy}>Delete ticket</button>}</div><div className=\"detail-grid\">"""
+          if old not in text:
+            raise SystemExit('Could not locate detail header insertion point')
+          text = text.replace(old, new, 1)
+          path.write_text(text)
+
+          css = Path('qvbit-site/crm/src/components/ticketing.css')
+          styles = css.read_text()
+          rule = '.danger-button { border: 1px solid #f0caca; background: #fff1f1; color: #a33d3d; border-radius: 8px; padding: 10px 12px; font-weight: 800; cursor: pointer; }\n.danger-button:hover { background: #ffe4e4; }\n'
+          if '.danger-button {' not in styles:
+            css.write_text(styles + rule)
+          PY
+      - name: Build CRM
+        run: bash qvbit-site/build.sh
+      - name: Verify
+        run: |
+          grep -q "async function deleteTicket" qvbit-site/crm/src/components/Ticketing.jsx
+          grep -q "Delete ticket" qvbit-site/crm/src/components/Ticketing.jsx
+          grep -q "danger-button" qvbit/crm/src/components/ticketing.css 2>/dev/null || grep -q "danger-button" qvbit-site/crm/src/components/ticketing.css
+          test -f qvbit-site/crm/dist/index.html
+      - name: Commit changes and remove workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qvbit-site/crm/src/components/Ticketing.jsx qvbit-site/crm/src/components/ticketing.css
+          git commit -m 'Add delete action for completed tickets'
+          git rm .github/workflows/add-ticket-delete.yml
+          git commit -m 'Remove ticket deletion workflow'
+          git push
