@@ -60,6 +60,7 @@ import EmailAttachmentPicker from './components/EmailAttachmentPicker'
 import Ticketing from './components/Ticketing'
 import SettingsUsers from './components/SettingsUsers'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
+import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
 
 
@@ -1347,7 +1348,8 @@ function Shell({ session }) {
             <div className="loading-screen">Checking CRM permissions…</div>
           ) : null}
 
-          <PermissionRouterGuard permissions={permissions} isOwner={isOwner} />
+          <PermissionRouterGuard permissions={permissions} isOwner={isOwner} ready={roleReady} />
+          <AccessEnforcer permissions={permissions} isOwner={isOwner} ready={roleReady} />
 
           <Routes>
 
