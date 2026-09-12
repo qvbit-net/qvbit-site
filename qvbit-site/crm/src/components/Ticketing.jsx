@@ -79,6 +79,29 @@ export default function Ticketing() {
     else { setSelected(data); await loadTickets() }
   }
 
+  async function deleteTicket() {
+    if (!selected || !['resolved', 'closed'].includes(selected.status)) return
+    if (!window.confirm(`Delete ticket #${selected.ticket_number}? This cannot be undone.`)) return
+    setBusy(true); setError('')
+    try {
+      const childDeletes = await Promise.all([
+        supabase.from('ticket_notes').delete().eq('ticket_id', selected.id),
+        supabase.from('ticket_messages').delete().eq('ticket_id', selected.id),
+        supabase.from('ticket_attachments').delete().eq('ticket_id', selected.id),
+      ])
+      const childError = childDeletes.find((result) => result.error)?.error
+      if (childError) throw childError
+      const { error: deleteError } = await supabase.from('tickets').delete().eq('id', selected.id)
+      if (deleteError) throw deleteError
+      setSelected(null); setNotes([]); setMessages([])
+      await loadTickets()
+    } catch (deleteError) {
+      setError(deleteError.message || 'Ticket could not be deleted.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function addNote(event) {
     event.preventDefault(); if (!note.trim() || !selected) return
     const { error: noteError } = await supabase.from('ticket_notes').insert({ ticket_id: selected.id, note: note.trim() })
@@ -131,7 +154,7 @@ export default function Ticketing() {
           })}
         </div>}
       </section>
-      {selected && <section className="panel-card"><div className="page-header compact"><div><div className="eyebrow">Ticket #{selected.ticket_number}</div><h2>{selected.subject}</h2><p className="muted">{selected.requester_name} {selected.requester_email ? `· ${selected.requester_email}` : ''}</p></div><select value={selected.status} onChange={(e) => updateStatus(e.target.value)}>{STATUSES.map((s) => <option key={s} value={s}>{label(s)}</option>)}</select></div><div className="detail-grid"><div><strong>Priority</strong><p>{label(selected.priority)}</p></div><div><strong>Issue type</strong><p>{selected.issue_type || '—'}</p></div></div><div className="ticket-description">{selected.description || 'No description provided.'}</div><hr /><h3>Internal notes</h3><form onSubmit={addNote} className="inline-form"><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add an internal note…" required /><button className="secondary-button">Add note</button></form><div className="timeline">{notes.map((n) => <div className="timeline-item" key={n.id}><strong>Note</strong><p>{n.note}</p><small>{new Date(n.created_at).toLocaleString()}</small></div>)}</div><hr /><h3>Email response</h3><form onSubmit={sendReply} className="stack-form"><input value={reply.subject} onChange={(e) => setReply({ ...reply, subject: e.target.value })} placeholder="Subject" required /><textarea value={reply.body} onChange={(e) => setReply({ ...reply, body: e.target.value })} placeholder="Write a response…" required /><EmailAttachmentPicker attachments={attachments} onChange={setAttachments} /><button className="primary-button" disabled={busy || !selected.requester_email}>{busy ? 'Sending…' : 'Send email response'}</button></form><div className="timeline">{messages.map((m) => <div className="timeline-item" key={m.id}><strong>{label(m.direction)} email</strong><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div></section>}
+      {selected && <section className="panel-card"><div className="page-header compact"><div><div className="eyebrow">Ticket #{selected.ticket_number}</div><h2>{selected.subject}</h2><p className="muted">{selected.requester_name} {selected.requester_email ? `· ${selected.requester_email}` : ''}</p></div><div className="ticket-detail-actions"><select value={selected.status} onChange={(e) => updateStatus(e.target.value)}>{STATUSES.map((s) => <option key={s} value={s}>{label(s)}</option>)}</select>{['resolved', 'closed'].includes(selected.status) && <button type="button" className="danger-button" onClick={deleteTicket} disabled={busy}>Delete ticket</button>}</div></div><div className="detail-grid"><div><strong>Priority</strong><p>{label(selected.priority)}</p></div><div><strong>Issue type</strong><p>{selected.issue_type || '—'}</p></div></div><div className="ticket-description">{selected.description || 'No description provided.'}</div><hr /><h3>Internal notes</h3><form onSubmit={addNote} className="inline-form"><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add an internal note…" required /><button className="secondary-button">Add note</button></form><div className="timeline">{notes.map((n) => <div className="timeline-item" key={n.id}><strong>Note</strong><p>{n.note}</p><small>{new Date(n.created_at).toLocaleString()}</small></div>)}</div><hr /><h3>Email response</h3><form onSubmit={sendReply} className="stack-form"><input value={reply.subject} onChange={(e) => setReply({ ...reply, subject: e.target.value })} placeholder="Subject" required /><textarea value={reply.body} onChange={(e) => setReply({ ...reply, body: e.target.value })} placeholder="Write a response…" required /><EmailAttachmentPicker attachments={attachments} onChange={setAttachments} /><button className="primary-button" disabled={busy || !selected.requester_email}>{busy ? 'Sending…' : 'Send email response'}</button></form><div className="timeline">{messages.map((m) => <div className="timeline-item" key={m.id}><strong>{label(m.direction)} email</strong><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div></section>}
     </div>
     {showNew && <div className="modal-backdrop"><section className="modal-card"><div className="page-header compact"><h2>New ticket</h2><button className="secondary-button" type="button" onClick={() => setShowNew(false)}>Close</button></div><form onSubmit={createTicket} className="stack-form"><input placeholder="Subject" value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })} required /><textarea placeholder="Describe the issue" value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /><div className="form-grid"><input placeholder="Requester name" value={draft.requester_name} onChange={(e) => setDraft({ ...draft, requester_name: e.target.value })} /><input type="email" placeholder="Requester email" value={draft.requester_email} onChange={(e) => setDraft({ ...draft, requester_email: e.target.value })} /><input placeholder="Phone" value={draft.requester_phone} onChange={(e) => setDraft({ ...draft, requester_phone: e.target.value })} /><input placeholder="Issue type" value={draft.issue_type} onChange={(e) => setDraft({ ...draft, issue_type: e.target.value })} /></div><label>Priority<select value={draft.priority} onChange={(e) => setDraft({ ...draft, priority: e.target.value })}>{PRIORITIES.map((p) => <option key={p} value={p}>{label(p)}</option>)}</select></label><button className="primary-button" disabled={busy}>{busy ? 'Creating…' : 'Create ticket'}</button></form></section></div>}
   </div>
