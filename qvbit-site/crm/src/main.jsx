@@ -11750,7 +11750,17 @@ function InvoiceDetail() {
                 onChange={(e) => updateField('amount_paid', e.target.value)}
               />
               <span style={{ fontSize: '12px', opacity: 0.7 }}>
-                Balance due: {money(liveBalanceDue)} · Status: {invoiceStatusLabel(liveInvoiceStatus)}
+                Balance due: {money(Math.max(Number(form.total || 0) - Number(form.amount_paid || 0), 0))} · Status: {invoiceStatusLabel(
+                  form.status === 'void'
+                    ? 'void'
+                    : Number(form.amount_paid || 0) >= Number(form.total || 0) && Number(form.total || 0) > 0
+                      ? 'paid'
+                      : Number(form.amount_paid || 0) > 0
+                        ? 'partial'
+                        : ['paid', 'partial'].includes(form.status)
+                          ? 'sent'
+                          : form.status
+                )}
               </span>
               <span style={{ fontSize: '12px', opacity: 0.7 }}>
                 Enter the corrected total amount received. This adjusts the invoice balance without changing individual payment transactions.
