@@ -1,0 +1,38 @@
+name: One-time government contracting navigation update
+
+on:
+  push:
+    paths:
+      - .github/trigger-government-contracting-nav
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Rename navigation item
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('qvbit-site/crm/src/main.jsx')
+          s = p.read_text(encoding='utf-8')
+          old = "    label: 'Assets & Contracts',"
+          new = "    label: 'Government Contracting',"
+          if old not in s:
+              raise SystemExit('Navigation label not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit and clean up
+        run: |
+          rm -f .github/trigger-government-contracting-nav .github/workflows/rename-government-contracting-nav.yml
+          git config user.name "qvb-it-automation"
+          git config user.email "automation@qvbit.net"
+          git add -A
+          git commit -m "Rename government contracting workspace navigation [skip ci]"
+          git push origin main
