@@ -1,0 +1,37 @@
+name: CRM build validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'qvbit-site/crm/**'
+  pull_request:
+    paths:
+      - 'qvbit-site/crm/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: qvbit-site/crm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: qvbit-site/crm/package.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build CRM
+        run: npm run build
