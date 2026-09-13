@@ -7093,6 +7093,19 @@ function QuoteDetail() {
   const displayedTax = displayedSubtotal * (Number(taxRate || 0) / 100)
   const displayedTotal = displayedSubtotal + displayedTax
 
+  const liveTotal = Number(form.total || 0)
+  const liveAmountPaid = Number(form.amount_paid || 0)
+  const liveBalanceDue = Math.max(liveTotal - liveAmountPaid, 0)
+  const liveInvoiceStatus = form.status === 'void'
+    ? 'void'
+    : (liveAmountPaid >= liveTotal && liveTotal > 0)
+      ? 'paid'
+      : liveAmountPaid > 0
+        ? 'partial'
+        : ['paid', 'partial'].includes(form.status)
+          ? 'sent'
+          : form.status
+
   return (
     <>
       <div style={{ marginBottom: '18px' }}>
@@ -10829,11 +10842,21 @@ function Invoices() {
       return
     }
 
+    const calculatedStatus = form.status === 'void'
+      ? 'void'
+      : (amountPaid >= total && total > 0)
+        ? 'paid'
+        : amountPaid > 0
+          ? 'partial'
+          : ['paid', 'partial'].includes(form.status)
+            ? 'sent'
+            : form.status
+
     const payload = {
       invoice_number: form.invoice_number.trim() || null,
       customer_id: form.customer_id,
       job_id: form.job_id || null,
-      status: form.status,
+      status: calculatedStatus,
       issue_date: form.issue_date || null,
       due_date: form.due_date || null,
       subtotal,
@@ -11325,6 +11348,18 @@ function InvoiceDetail() {
       return
     }
 
+    const previousAmountPaid = Number(invoice.amount_paid || 0)
+    if (Math.abs(previousAmountPaid - amountPaid) > 0.001) {
+      await logCrmActivity({
+        customer_id: invoice.customer_id,
+        job_id: invoice.job_id,
+        invoice_id: invoice.id,
+        activity_type: 'invoice_payment_adjustment',
+        subject: `Invoice payment amount corrected: ${invoice.invoice_number || 'Invoice'}`,
+        body: `Amount paid corrected from ${money(previousAmountPaid)} to ${money(amountPaid)}.`,
+      })
+    }
+
     setSaving(false)
     setEditing(false)
     await load()
@@ -11696,8 +11731,20 @@ function InvoiceDetail() {
 
             <label>
               Amount paid
-              <input type="number" min="0" step="0.01" value={form.amount_paid} readOnly />
-              <span style={{ fontSize: '12px', opacity: 0.7 }}>Use Record payment to add payment transactions.</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                max={form.status === 'void' ? undefined : Math.max(Number(form.total || 0), 0)}
+                value={form.amount_paid}
+                onChange={(e) => updateField('amount_paid', e.target.value)}
+              />
+              <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                Balance due: {money(liveBalanceDue)} · Status: {invoiceStatusLabel(liveInvoiceStatus)}
+              </span>
+              <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                Enter the corrected total amount received. This adjusts the invoice balance without changing individual payment transactions.
+              </span>
             </label>
 
             <label>
