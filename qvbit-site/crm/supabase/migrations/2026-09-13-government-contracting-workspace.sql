@@ -54,8 +54,8 @@ create table if not exists public.gov_compliance_items (
 );
 
 insert into public.gov_contracting_profile (id, legal_name, dba, certification_type, certification_status, certification_approval_date, sam_status, uei, cage_code, notes, last_verified_at)
-values (true, 'Q-VENTURES BAY LLC', 'QVB I.T.', 'SDVOSB', 'active', '2026-08-01', 'active', 'XWA3SL25N285', '224T6',
-  'SBA VetCert SDVOSB certification reported by QVB I.T. in September 2026. Certification expiration and SAM renewal dates should be verified against current official records before being treated as deadlines.', now())
+values (true, 'Q-VENTURES BAY LLC', 'QVB I.T.', 'SDVOSB', 'active', null, 'active', 'XWA3SL25N285', '224T6',
+  'SBA VetCert SDVOSB certification reported by QVB I.T. in August 2026. Exact approval date, certification expiration, and SAM renewal dates are not hard-coded until verified against current official records.', now())
 on conflict (id) do update set legal_name=excluded.legal_name, dba=excluded.dba, certification_type=excluded.certification_type,
   certification_status=excluded.certification_status, certification_approval_date=excluded.certification_approval_date,
   sam_status=excluded.sam_status, uei=excluded.uei, cage_code=excluded.cage_code, notes=excluded.notes,
