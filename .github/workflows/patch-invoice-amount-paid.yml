@@ -1,0 +1,168 @@
+name: Patch invoice amount paid editing
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: "!contains(github.event.head_commit.message, 'Enable editable invoice amount paid')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch InvoiceDetail
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('qvbit-site/crm/src/main.jsx')
+          text = path.read_text()
+
+          old_save = """    if (amountPaid > total && form.status !== 'void') {
+      setError('Amount paid cannot be greater than the invoice total.')
+      setSaving(false)
+      return
+    }
+
+    const payload = {
+      invoice_number: form.invoice_number.trim() || null,
+      customer_id: form.customer_id,
+      job_id: form.job_id || null,
+      status: form.status,
+"""
+          new_save = """    if (amountPaid > total && form.status !== 'void') {
+      setError('Amount paid cannot be greater than the invoice total.')
+      setSaving(false)
+      return
+    }
+
+    const calculatedStatus = form.status === 'void'
+      ? 'void'
+      : (amountPaid >= total && total > 0)
+        ? 'paid'
+        : amountPaid > 0
+          ? 'partial'
+          : ['paid', 'partial'].includes(form.status)
+            ? 'sent'
+            : form.status
+
+    const payload = {
+      invoice_number: form.invoice_number.trim() || null,
+      customer_id: form.customer_id,
+      job_id: form.job_id || null,
+      status: calculatedStatus,
+"""
+          if old_save not in text:
+              raise SystemExit('Expected invoice save block was not found.')
+          text = text.replace(old_save, new_save, 1)
+
+          old_return = """  return (
+    <>
+      <div style={{ marginBottom: '18px' }}>
+"""
+          new_return = """  const liveTotal = Number(form.total || 0)
+  const liveAmountPaid = Number(form.amount_paid || 0)
+  const liveBalanceDue = Math.max(liveTotal - liveAmountPaid, 0)
+  const liveInvoiceStatus = form.status === 'void'
+    ? 'void'
+    : (liveAmountPaid >= liveTotal && liveTotal > 0)
+      ? 'paid'
+      : liveAmountPaid > 0
+        ? 'partial'
+        : ['paid', 'partial'].includes(form.status)
+          ? 'sent'
+          : form.status
+
+  return (
+    <>
+      <div style={{ marginBottom: '18px' }}>
+"""
+          if old_return not in text:
+              raise SystemExit('Expected InvoiceDetail return block was not found.')
+          text = text.replace(old_return, new_return, 1)
+
+          old_amount = """            <label>
+              Amount paid
+              <input type=\"number\" min=\"0\" step=\"0.01\" value={form.amount_paid} readOnly />
+              <span style={{ fontSize: '12px', opacity: 0.7 }}>Use Record payment to add payment transactions.</span>
+            </label>
+"""
+          new_amount = """            <label>
+              Amount paid
+              <input
+                type=\"number\"
+                min=\"0\"
+                step=\"0.01\"
+                max={form.status === 'void' ? undefined : Math.max(Number(form.total || 0), 0)}
+                value={form.amount_paid}
+                onChange={(e) => updateField('amount_paid', e.target.value)}
+              />
+              <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                Balance due: {money(liveBalanceDue)} · Status: {invoiceStatusLabel(liveInvoiceStatus)}
+              </span>
+              <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                Enter the corrected total amount received. This adjusts the invoice balance without changing individual payment transactions.
+              </span>
+            </label>
+"""
+          if old_amount not in text:
+              raise SystemExit('Expected Amount paid field was not found.')
+          text = text.replace(old_amount, new_amount, 1)
+
+          old_update = """    if (updateError) {
+      setError(updateError.message)
+      setSaving(false)
+      return
+    }
+
+    setSaving(false)
+    setEditing(false)
+    await load()
+"""
+          new_update = """    if (updateError) {
+      setError(updateError.message)
+      setSaving(false)
+      return
+    }
+
+    const previousAmountPaid = Number(invoice.amount_paid || 0)
+    if (Math.abs(previousAmountPaid - amountPaid) > 0.001) {
+      await logCrmActivity({
+        customer_id: invoice.customer_id,
+        job_id: invoice.job_id,
+        invoice_id: invoice.id,
+        activity_type: 'invoice_payment_adjustment',
+        subject: `Invoice payment amount corrected: ${invoice.invoice_number || 'Invoice'}`,
+        body: `Amount paid corrected from ${money(previousAmountPaid)} to ${money(amountPaid)}.`,
+      })
+    }
+
+    setSaving(false)
+    setEditing(false)
+    await load()
+"""
+          if old_update not in text:
+              raise SystemExit('Expected invoice update completion block was not found.')
+          text = text.replace(old_update, new_update, 1)
+
+          path.write_text(text)
+          print('Invoice amount paid editing patch applied.')
+          PY
+
+      - name: Verify CRM build
+        working-directory: qvbit-site/crm
+        run: |
+          npm install
+          npm run build
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qvbit-site/crm/src/main.jsx
+          git diff --cached --quiet || git commit -m "Enable editable invoice amount paid"
+          git push
