@@ -59,3 +59,19 @@ FOR EACH ROW EXECUTE FUNCTION public.audit_crm_record_change('customer_assets');
 CREATE OR REPLACE TRIGGER audit_crm_service_contracts
 AFTER INSERT OR DELETE OR UPDATE ON public.service_contracts
 FOR EACH ROW EXECUTE FUNCTION public.audit_crm_record_change('service_contracts');
+
+CREATE OR REPLACE FUNCTION public.list_ticket_assignment_users()
+RETURNS TABLE(id uuid, display_name text, role text, email text)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT up.id, up.display_name, up.role, up.email
+  FROM public.user_profiles up
+  WHERE up.is_active = true
+    AND up.role IN ('owner','admin','manager','technician')
+  ORDER BY COALESCE(up.display_name, up.email), up.email;
+$$;
+REVOKE ALL ON FUNCTION public.list_ticket_assignment_users() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.list_ticket_assignment_users() TO authenticated;
