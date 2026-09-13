@@ -1,0 +1,46 @@
+name: Add MSP assets and contracts
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  wire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update main.jsx
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('qvbit-site/crm/src/main.jsx')
+          s=p.read_text(encoding='utf-8')
+          if "import MspAssetsContracts from './components/MspAssetsContracts'" not in s:
+              s=s.replace("import WorkflowCenter from './components/WorkflowCenter'\n", "import WorkflowCenter from './components/WorkflowCenter'\nimport MspAssetsContracts from './components/MspAssetsContracts'\n", 1)
+          if "  '/crm/assets-contracts': 'services'," not in s:
+              s=s.replace("  '/crm/workflow': 'workflow',\n", "  '/crm/workflow': 'workflow',\n  '/crm/assets-contracts': 'services',\n", 1)
+          if "to: '/crm/assets-contracts'" not in s:
+              marker="  {\n    to: '/crm/workflow',\n    label: 'Sales Workflow',\n    icon: ArrowUpRight,\n  },\n"
+              insert="  {\n    to: '/crm/assets-contracts',\n    label: 'Assets & Contracts',\n    icon: Package,\n  },\n"
+              if marker not in s: raise SystemExit('nav marker not found')
+              s=s.replace(marker, marker+insert, 1)
+          if 'path="assets-contracts"' not in s:
+              marker="            <Route\n              path=\"workflow\"\n              element={<WorkflowCenter />}\n            />\n\n"
+              insert="            <Route\n              path=\"assets-contracts\"\n              element={<MspAssetsContracts />}\n            />\n\n"
+              if marker not in s: raise SystemExit('route marker not found')
+              s=s.replace(marker, marker+insert, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Build CRM
+        working-directory: qvbit-site/crm
+        run: npm install --no-audit --no-fund && npm run build
+      - name: Commit changes and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/add-msp-assets.yml
+          git add qvbit-site/crm/src/main.jsx
+          git commit -m 'Add MSP assets and contracts to CRM'
+          git push
