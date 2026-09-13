@@ -337,7 +337,7 @@ const navItems = [
   },
   {
     to: '/crm/assets-contracts',
-    label: 'Assets & Contracts',
+    label: 'Government Contracting',
     icon: Package,
   },
   {
