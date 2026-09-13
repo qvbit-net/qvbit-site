@@ -1,0 +1,36 @@
+name: Fix sales workflow permission
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update workflow permission mapping
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('qvbit-site/crm/src/main.jsx')
+          s=p.read_text(encoding='utf-8')
+          old="  '/crm/workflow': 'workflow',"
+          new="  '/crm/workflow': 'quotes',"
+          if old not in s: raise SystemExit('workflow permission mapping not found')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Build CRM
+        working-directory: qvbit-site/crm
+        run: npm install --no-audit --no-fund && npm run build
+      - name: Commit and remove workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/fix-workflow-permission.yml
+          git add qvbit-site/crm/src/main.jsx
+          git commit -m 'Align sales workflow with quote permissions'
+          git push
