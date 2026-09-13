@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, FileText, Plus, RefreshCw, Trash2, Pencil, X } from 'lucide-react'
 import { supabase } from '../supabase'
+import GovernmentContractingPanel from './GovernmentContractingPanel'
 
 const emptyAsset = { customer_id: '', site_id: '', asset_name: '', asset_type: '', manufacturer: '', model: '', serial_number: '', asset_tag: '', installed_date: '', warranty_until: '', location: '', status: 'active', notes: '' }
 const emptyContract = { customer_id: '', service_id: '', name: '', status: 'active', billing_interval: 'monthly', recurring_amount: '', start_date: '', end_date: '', next_billing_date: '', auto_renew: true, notes: '' }
@@ -96,6 +97,7 @@ export default function MspAssetsContracts() {
   }
 
   return <section className="page-section">
+    <GovernmentContractingPanel />
     <div className="page-header"><div><div className="eyebrow">MSP operations</div><h1>Assets & Service Contracts</h1><p className="muted">Track customer equipment, warranties, and recurring managed services.</p></div><button className="secondary-button" type="button" onClick={load} disabled={loading}><RefreshCw size={16} /> {loading ? 'Refreshing…' : 'Refresh'}</button></div>
     {error && <div className="error-box">{error}</div>}{message && <div className="info-box">{message}</div>}
 
