@@ -62,6 +62,7 @@ import SettingsUsers from './components/SettingsUsers'
 import SettingsAuditLog from './components/SettingsAuditLog'
 import WorkflowCenter from './components/WorkflowCenter'
 import MspAssetsContracts from './components/MspAssetsContracts'
+import Customer360 from './components/Customer360'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -225,6 +226,7 @@ const CRM_UI_MODULES = {
   '/crm/follow-ups': 'follow_ups',
   '/crm/workflow': 'workflow',
   '/crm/assets-contracts': 'services',
+  '/crm/customer-360': 'customers',
 }
 
 function canAccessPath(pathname, permissions, isOwner) {
@@ -337,6 +339,11 @@ const navItems = [
     to: '/crm/assets-contracts',
     label: 'Assets & Contracts',
     icon: Package,
+  },
+  {
+    to: '/crm/customer-360',
+    label: 'Customer 360',
+    icon: Building2,
   },
   {
     to: '/crm/activity',
@@ -1528,6 +1535,11 @@ function Shell({ session }) {
             <Route
               path="assets-contracts"
               element={<MspAssetsContracts />}
+            />
+
+            <Route
+              path="customer-360"
+              element={<Customer360 />}
             />
 
             <Route
