@@ -43,7 +43,7 @@ export default function Ticketing() {
   }
 
   async function loadUsers() {
-    const { data, error: queryError } = await supabase.from('user_profiles').select('id, display_name, role, email, is_active').eq('is_active', true).order('display_name', { ascending: true })
+    const { data, error: queryError } = await supabase.rpc('list_ticket_assignment_users')
     if (queryError) return
     setUsers(data || [])
   }
