@@ -61,6 +61,7 @@ import Ticketing from './components/Ticketing'
 import SettingsUsers from './components/SettingsUsers'
 import SettingsAuditLog from './components/SettingsAuditLog'
 import WorkflowCenter from './components/WorkflowCenter'
+import MspAssetsContracts from './components/MspAssetsContracts'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -223,6 +224,7 @@ const CRM_UI_MODULES = {
   '/crm/activity': 'activity',
   '/crm/follow-ups': 'follow_ups',
   '/crm/workflow': 'workflow',
+  '/crm/assets-contracts': 'services',
 }
 
 function canAccessPath(pathname, permissions, isOwner) {
@@ -330,6 +332,11 @@ const navItems = [
     to: '/crm/workflow',
     label: 'Sales Workflow',
     icon: ArrowUpRight,
+  },
+  {
+    to: '/crm/assets-contracts',
+    label: 'Assets & Contracts',
+    icon: Package,
   },
   {
     to: '/crm/activity',
@@ -1516,6 +1523,11 @@ function Shell({ session }) {
             <Route
               path="workflow"
               element={<WorkflowCenter />}
+            />
+
+            <Route
+              path="assets-contracts"
+              element={<MspAssetsContracts />}
             />
 
             <Route
