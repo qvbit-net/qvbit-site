@@ -1,28 +1,23 @@
-name: Patch invoice amount paid editing
-
+name: Enable editable invoice amount paid
 on:
   push:
     branches: [main]
-
 permissions:
   contents: write
-
 jobs:
   patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Patch InvoiceDetail
+      - name: Update InvoiceDetail
+        shell: bash
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
+          p=Path('qvbit-site/crm/src/main.jsx')
+          s=p.read_text(encoding='utf-8')
 
-          path = Path('qvbit-site/crm/src/main.jsx')
-          text = path.read_text()
-
-          if 'value={form.amount_paid} readOnly' in text:
-              old_save = """    if (amountPaid > total && form.status !== 'void') {
+          old_save="""    if (amountPaid > total && form.status !== 'void') {
       setError('Amount paid cannot be greater than the invoice total.')
       setSaving(false)
       return
@@ -34,7 +29,7 @@ jobs:
       job_id: form.job_id || null,
       status: form.status,
 """
-              new_save = """    if (amountPaid > total && form.status !== 'void') {
+          new_save="""    if (amountPaid > total && form.status !== 'void') {
       setError('Amount paid cannot be greater than the invoice total.')
       setSaving(false)
       return
@@ -56,15 +51,14 @@ jobs:
       job_id: form.job_id || null,
       status: calculatedStatus,
 """
-              if old_save not in text:
-                  raise SystemExit('Expected invoice save block was not found.')
-              text = text.replace(old_save, new_save, 1)
+          if old_save not in s: raise SystemExit('invoice save block not found')
+          s=s.replace(old_save,new_save,1)
 
-              old_return = """  return (
+          old_return="""  return (
     <>
       <div style={{ marginBottom: '18px' }}>
 """
-              new_return = """  const liveTotal = Number(form.total || 0)
+          new_return="""  const liveTotal = Number(form.total || 0)
   const liveAmountPaid = Number(form.amount_paid || 0)
   const liveBalanceDue = Math.max(liveTotal - liveAmountPaid, 0)
   const liveInvoiceStatus = form.status === 'void'
@@ -81,17 +75,16 @@ jobs:
     <>
       <div style={{ marginBottom: '18px' }}>
 """
-              if old_return not in text:
-                  raise SystemExit('Expected InvoiceDetail return block was not found.')
-              text = text.replace(old_return, new_return, 1)
+          if old_return not in s: raise SystemExit('InvoiceDetail return block not found')
+          s=s.replace(old_return,new_return,1)
 
-              old_amount = """            <label>
+          old_amount="""            <label>
               Amount paid
               <input type=\"number\" min=\"0\" step=\"0.01\" value={form.amount_paid} readOnly />
               <span style={{ fontSize: '12px', opacity: 0.7 }}>Use Record payment to add payment transactions.</span>
             </label>
 """
-              new_amount = """            <label>
+          new_amount="""            <label>
               Amount paid
               <input
                 type=\"number\"
@@ -109,11 +102,10 @@ jobs:
               </span>
             </label>
 """
-              if old_amount not in text:
-                  raise SystemExit('Expected Amount paid field was not found.')
-              text = text.replace(old_amount, new_amount, 1)
+          if old_amount not in s: raise SystemExit('Amount paid field not found')
+          s=s.replace(old_amount,new_amount,1)
 
-              old_update = """    if (updateError) {
+          old_update="""    if (updateError) {
       setError(updateError.message)
       setSaving(false)
       return
@@ -123,7 +115,7 @@ jobs:
     setEditing(false)
     await load()
 """
-              new_update = """    if (updateError) {
+          new_update="""    if (updateError) {
       setError(updateError.message)
       setSaving(false)
       return
@@ -145,25 +137,20 @@ jobs:
     setEditing(false)
     await load()
 """
-              if old_update not in text:
-                  raise SystemExit('Expected invoice update completion block was not found.')
-              text = text.replace(old_update, new_update, 1)
-              path.write_text(text)
-              print('Invoice amount paid editing patch applied.')
-          else:
-              print('Invoice amount paid editing patch already applied; nothing to change.')
+          if old_update not in s: raise SystemExit('Invoice update completion block not found')
+          s=s.replace(old_update,new_update,1)
+
+          p.write_text(s,encoding='utf-8')
           PY
-
-      - name: Verify CRM build
+      - name: Build CRM
         working-directory: qvbit-site/crm
+        run: npm install --no-audit --no-fund && npm run build
+      - name: Commit and remove workflow
+        shell: bash
         run: |
-          npm install
-          npm run build
-
-      - name: Commit patch
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/patch-invoice-amount-paid.yml
           git add qvbit-site/crm/src/main.jsx
-          git diff --cached --quiet || git commit -m "Enable editable invoice amount paid"
+          git commit -m 'Enable editable invoice amount paid'
           git push
