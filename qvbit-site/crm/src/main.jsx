@@ -224,7 +224,7 @@ const CRM_UI_MODULES = {
   '/crm/purchase-orders': 'purchase_orders',
   '/crm/activity': 'activity',
   '/crm/follow-ups': 'follow_ups',
-  '/crm/workflow': 'workflow',
+  '/crm/workflow': 'quotes',
   '/crm/assets-contracts': 'services',
   '/crm/customer-360': 'customers',
 }
