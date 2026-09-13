@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Award, Building2, CalendarClock, CheckCircle2, FileText, Globe, Plus, RefreshCw, ShieldCheck, Target, Trash2, X } from 'lucide-react'
+import { Award, Building2, CalendarClock, CheckCircle2, FileText, Globe, Plus, RefreshCw, ShieldCheck, Target, Trash2, X, Pencil } from 'lucide-react'
 import { supabase } from '../supabase'
 
 const emptyOpp = {
@@ -156,7 +156,7 @@ export default function GovernmentContractingPanel() {
     {error && <div className="error-box">{error}</div>}{message && <div className="info-box">{message}</div>}
 
     <div className="card">
-      <div className="panel-header"><div><h2><Award size={18}/> QVB I.T. Federal Profile</h2><p>Keep the contracting identity and registration checkpoints in one place.</p></div>{canEdit && <button className="primary-button" type="button" onClick={() => setShowProfile(v => !v)}><PencilIcon/> Edit Profile</button>}</div>
+      <div className="panel-header"><div><h2><Award size={18}/> QVB I.T. Federal Profile</h2><p>Keep the contracting identity and registration checkpoints in one place.</p></div>{canEdit && <button className="primary-button" type="button" onClick={() => setShowProfile(v => !v)}><Pencil/> Edit Profile</button>}</div>
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))' }}>
         <Stat label="SDVOSB" value={profile?.certification_status === 'active' ? 'Certified' : (profile?.certification_status || '—')} icon={ShieldCheck}/>
         <Stat label="SAM.gov" value={profile?.sam_status === 'active' ? 'Active' : (profile?.sam_status || '—')} icon={Globe}/>
