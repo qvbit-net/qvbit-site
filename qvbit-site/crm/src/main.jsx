@@ -11323,11 +11323,21 @@ function InvoiceDetail() {
       return
     }
 
+    const calculatedStatus = form.status === 'void'
+      ? 'void'
+      : (amountPaid >= total && total > 0)
+        ? 'paid'
+        : amountPaid > 0
+          ? 'partial'
+          : ['paid', 'partial'].includes(form.status)
+            ? 'sent'
+            : form.status
+
     const payload = {
       invoice_number: form.invoice_number.trim() || null,
       customer_id: form.customer_id,
       job_id: form.job_id || null,
-      status: form.status,
+      status: calculatedStatus,
       issue_date: form.issue_date || null,
       due_date: form.due_date || null,
       subtotal,
