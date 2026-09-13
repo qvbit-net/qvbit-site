@@ -60,6 +60,7 @@ import EmailAttachmentPicker from './components/EmailAttachmentPicker'
 import Ticketing from './components/Ticketing'
 import SettingsUsers from './components/SettingsUsers'
 import SettingsAuditLog from './components/SettingsAuditLog'
+import WorkflowCenter from './components/WorkflowCenter'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -221,6 +222,7 @@ const CRM_UI_MODULES = {
   '/crm/purchase-orders': 'purchase_orders',
   '/crm/activity': 'activity',
   '/crm/follow-ups': 'follow_ups',
+  '/crm/workflow': 'workflow',
 }
 
 function canAccessPath(pathname, permissions, isOwner) {
@@ -323,6 +325,11 @@ const navItems = [
     to: '/crm/purchase-orders',
     label: 'Purchase Orders',
     icon: ShoppingCart,
+  },
+  {
+    to: '/crm/workflow',
+    label: 'Sales Workflow',
+    icon: ArrowUpRight,
   },
   {
     to: '/crm/activity',
@@ -1504,6 +1511,11 @@ function Shell({ session }) {
             <Route
               path="follow-ups"
               element={<FollowUps />}
+            />
+
+            <Route
+              path="workflow"
+              element={<WorkflowCenter />}
             />
 
             <Route
