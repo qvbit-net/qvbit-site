@@ -4,15 +4,16 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE v_invoice_id uuid;
+DECLARE v_invoice_id uuid; v_paid numeric;
 BEGIN
   v_invoice_id := COALESCE(NEW.invoice_id, OLD.invoice_id);
+  SELECT COALESCE(SUM(p.amount), 0) INTO v_paid FROM public.invoice_payments p WHERE p.invoice_id = v_invoice_id;
   UPDATE public.invoices i
-  SET amount_paid = COALESCE((SELECT SUM(p.amount) FROM public.invoice_payments p WHERE p.invoice_id = v_invoice_id), 0),
+  SET amount_paid = v_paid,
       status = CASE
-        WHEN COALESCE((SELECT SUM(p.amount) FROM public.invoice_payments p WHERE p.invoice_id = v_invoice_id), 0) >= i.total AND i.total > 0 THEN 'paid'
-        WHEN COALESCE((SELECT SUM(p.amount) FROM public.invoice_payments p WHERE p.invoice_id = v_invoice_id), 0) > 0 THEN 'partially_paid'
-        ELSE CASE WHEN i.status = 'paid' OR i.status = 'partially_paid' THEN 'sent' ELSE i.status END
+        WHEN v_paid >= i.total AND i.total > 0 THEN 'paid'
+        WHEN v_paid > 0 THEN 'partial'
+        ELSE CASE WHEN i.status IN ('paid','partial') THEN 'sent' ELSE i.status END
       END,
       updated_at = now()
   WHERE i.id = v_invoice_id;
