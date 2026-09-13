@@ -1,0 +1,39 @@
+name: Repair and build government contracting panel
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  repair-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Repair government panel icon import
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('qvbit-site/crm/src/components/GovernmentContractingPanel.jsx')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('ShieldCheck, Target, Trash2, X }', 'ShieldCheck, Target, Trash2, X, Pencil }', 1)
+          s = s.replace('<PencilIcon/>', '<Pencil/>', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Build CRM
+        working-directory: qvbit-site/crm
+        run: npm install --no-audit --no-fund && npm run build
+
+      - name: Persist repair and remove one-time workflow
+        run: |
+          git config user.name 'qvb-it-automation'
+          git config user.email 'automation@qvbit.net'
+          git add qvbit-site/crm/src/components/GovernmentContractingPanel.jsx
+          git commit -m 'Fix government contracting panel build'
+          git rm .github/workflows/repair-gov-panel-build.yml
+          git commit -m 'Remove government panel repair workflow [skip ci]'
+          git push origin main
