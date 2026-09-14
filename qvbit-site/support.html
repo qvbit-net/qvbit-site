@@ -28,13 +28,16 @@
     .support-form label { display: grid; gap: 6px; font-weight: 600; color: #333; }
     .support-form input, .support-form select, .support-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font: inherit; background: #fff; box-sizing: border-box; }
     .support-form textarea { min-height: 150px; resize: vertical; }
-    .support-form button { background: #0077cc; color: #fff; padding: 14px; border: 0; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; }
-    .support-form button:hover { background: #005fa3; }
+    .support-form button, .quote-button { display: inline-flex; align-items: center; justify-content: center; background: #0077cc; color: #fff; padding: 14px 18px; border: 0; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; box-sizing: border-box; }
+    .support-form button:hover, .quote-button:hover { background: #005fa3; }
     .support-form button:disabled { opacity: .7; cursor: wait; }
+    .support-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .quote-button { background: #fff; color: #0077cc; border: 2px solid #0077cc; }
+    .quote-button:hover { background: #eef7ff; color: #005fa3; }
     .support-note { font-size: 13px; color: #666; margin: 0 !important; }
     .support-alert { background: #f5f9fd; border-left: 4px solid #0077cc; padding: 12px 14px; margin-top: 18px; color: #444; font-size: 14px; }
     .support-error { background: #fff1f1; border-left-color: #c62828; }
-    @media (max-width: 800px) { .support-grid { grid-template-columns: 1fr; } .support-form .row { grid-template-columns: 1fr; } .support-hero h1 { font-size: 30px; } }
+    @media (max-width: 800px) { .support-grid { grid-template-columns: 1fr; } .support-form .row { grid-template-columns: 1fr; } .support-hero h1 { font-size: 30px; } .support-actions { flex-direction: column; align-items: stretch; } .support-actions button, .support-actions .quote-button { width: 100%; } }
   </style>
 </head>
 <body>
@@ -97,7 +100,7 @@
         <label>Preferred contact method<select name="preferred_contact"><option>Email</option><option>Phone</option><option>Either</option></select></label>
         <p class="support-note">By submitting this request, you are asking QVB I.T. to contact you regarding the support issue described above.</p>
         <div id="support-form-status" class="support-alert" role="status" aria-live="polite" hidden></div>
-        <button type="submit">Submit Support Request</button>
+        <div class="support-actions"><button type="submit">Submit Support Request</button><a class="quote-button" href="/quote.html">Request a Quote</a></div>
       </form>
     </section>
   </section>
