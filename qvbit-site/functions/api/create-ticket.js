@@ -55,8 +55,43 @@ export async function onRequestPost(context) {
     const ticket = Array.isArray(createdTickets) ? createdTickets[0] : createdTickets
     const ticketReference = ticket?.ticket_number || ticket?.id || 'your support ticket'
 
-    // Send the requester a confirmation after the ticket has been saved.
-    // A mail failure must not make a successfully-created ticket appear to fail.
+    let leadCreated = false
+    let leadError = null
+
+    // A quote request uses the same support workflow, but also creates a CRM lead.
+    if (data.request_type === 'quote') {
+      try {
+        const leadResponse = await fetch(`${url}/rest/v1/leads`, {
+          method: 'POST',
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({
+            contact_name: data.name,
+            company_name: data.company || null,
+            phone: data.phone || null,
+            email: data.email,
+            lead_source: 'Website - Request a Quote',
+            service_requested: data.issue_type,
+            notes: data.message,
+            status: 'new',
+          }),
+        })
+
+        if (!leadResponse.ok) {
+          leadError = await leadResponse.text()
+        } else {
+          leadCreated = true
+        }
+      } catch (error) {
+        leadError = error.message || 'Could not create the CRM lead.'
+      }
+    }
+
+    // Send the requester one confirmation using the existing support email workflow.
     let confirmationSent = false
     try {
       const brevoKey = context.env.BREVO_API_KEY
@@ -66,12 +101,12 @@ export async function onRequestPost(context) {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
+        .replace(/\"/g, '&quot;')
         .replace(/'/g, '&#39;')
 
       const confirmationHtml = `
         <p>Hello ${safe(data.name)},</p>
-        <p>We received your support request and created ticket <strong>${safe(ticketReference)}</strong>.</p>
+        <p>We received your ${data.request_type === 'quote' ? 'quote request' : 'support request'} and created ticket <strong>${safe(ticketReference)}</strong>.</p>
         <p><strong>Subject:</strong> ${safe(data.subject)}<br>
         <strong>Issue type:</strong> ${safe(data.issue_type)}<br>
         <strong>Priority:</strong> ${safe(normalizedPriority)}</p>
@@ -88,9 +123,9 @@ export async function onRequestPost(context) {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
-          sender: { name: 'QVB I.T. Support', email: context.env.SUPPORT_FROM_EMAIL || 'support@qvbit.net' },
+          sender: { name: 'QVB I.T. Support', email: context.env.QVB_CRM_FROM_EMAIL || context.env.SUPPORT_FROM_EMAIL || 'support@qvbit.net' },
           to: [{ email: data.email, name: data.name }],
-          subject: `Support request received - ${ticketReference}`,
+          subject: `${data.request_type === 'quote' ? 'Quote request received' : 'Support request received'} - ${ticketReference}`,
           htmlContent: confirmationHtml,
         }),
       })
@@ -108,6 +143,8 @@ export async function onRequestPost(context) {
       success: true,
       ticket_number: ticket?.ticket_number || null,
       confirmation_sent: confirmationSent,
+      lead_created: leadCreated,
+      lead_error: leadError,
     }), {
       headers: { 'Content-Type': 'application/json' },
     })
