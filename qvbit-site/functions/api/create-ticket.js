@@ -123,7 +123,7 @@ export async function onRequestPost(context) {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
-          sender: { name: 'QVB I.T. Support', email: context.env.SUPPORT_FROM_EMAIL || 'support@qvbit.net' },
+          sender: { name: 'QVB I.T. Support', email: context.env.QVB_CRM_FROM_EMAIL || context.env.SUPPORT_FROM_EMAIL || 'support@qvbit.net' },
           to: [{ email: data.email, name: data.name }],
           subject: `${data.request_type === 'quote' ? 'Quote request received' : 'Support request received'} - ${ticketReference}`,
           htmlContent: confirmationHtml,
