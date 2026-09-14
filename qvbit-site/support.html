@@ -29,12 +29,15 @@
     .support-form input, .support-form select, .support-form textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font: inherit; background: #fff; box-sizing: border-box; }
     .support-form textarea { min-height: 150px; resize: vertical; }
     .support-form button { background: #0077cc; color: #fff; padding: 14px; border: 0; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; }
-    .support-form button:hover { background: #005fa3; }
+    .support-form button.secondary { background: #fff; color: #0077cc; border: 1px solid #0077cc; }
+    .support-form button:hover { background: #005fa3; color: #fff; }
+    .support-form button.secondary:hover { background: #eef7ff; color: #005fa3; }
     .support-form button:disabled { opacity: .7; cursor: wait; }
     .support-note { font-size: 13px; color: #666; margin: 0 !important; }
     .support-alert { background: #f5f9fd; border-left: 4px solid #0077cc; padding: 12px 14px; margin-top: 18px; color: #444; font-size: 14px; }
     .support-error { background: #fff1f1; border-left-color: #c62828; }
-    @media (max-width: 800px) { .support-grid { grid-template-columns: 1fr; } .support-form .row { grid-template-columns: 1fr; } .support-hero h1 { font-size: 30px; } }
+    .support-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 800px) { .support-grid { grid-template-columns: 1fr; } .support-form .row, .support-actions { grid-template-columns: 1fr; } .support-hero h1 { font-size: 30px; } }
   </style>
 </head>
 <body>
@@ -86,18 +89,22 @@
     </aside>
 
     <section class="support-card">
-      <h2>Submit a support request</h2>
+      <h2>Submit a support request or request a quote</h2>
       <form class="support-form" id="support-request-form">
+        <input type="hidden" name="request_type" id="request-type" value="support">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
         <div class="row"><label>Name<input type="text" name="name" autocomplete="name" required></label><label>Company<input type="text" name="company" autocomplete="organization"></label></div>
         <div class="row"><label>Email<input type="email" name="email" autocomplete="email" required></label><label>Phone<input type="tel" name="phone" autocomplete="tel"></label></div>
         <div class="row"><label>Issue type<select name="issue_type" required><option value="">Select one</option><option>Network / Internet</option><option>Computer / Workstation</option><option>Email / Microsoft 365</option><option>Server / Cloud</option><option>Wi-Fi</option><option>Printer / Peripheral</option><option>Security</option><option>Website / Domain</option><option>On-site / Remote Hands</option><option>Other</option></select></label><label>Priority<select name="priority" required><option value="">Select one</option><option>Critical - business stopped</option><option>High - major impact</option><option>Normal - workaround available</option><option>Low - general assistance</option></select></label></div>
-        <label>Subject<input type="text" name="subject" placeholder="Brief description of the issue" required></label>
-        <label>Describe the issue<textarea name="message" placeholder="What is happening? Include error messages, affected equipment or users, and anything that changed recently." required></textarea></label>
+        <label>Subject<input type="text" name="subject" placeholder="Brief description of the issue or project" required></label>
+        <label>Describe the issue or project<textarea name="message" placeholder="What is happening, what work is needed, or what details should we review?" required></textarea></label>
         <label>Preferred contact method<select name="preferred_contact"><option>Email</option><option>Phone</option><option>Either</option></select></label>
-        <p class="support-note">By submitting this request, you are asking QVB I.T. to contact you regarding the support issue described above.</p>
+        <p class="support-note">By submitting this request, you are asking QVB I.T. to contact you regarding the information provided.</p>
         <div id="support-form-status" class="support-alert" role="status" aria-live="polite" hidden></div>
-        <button type="submit">Submit Support Request</button>
+        <div class="support-actions">
+          <button type="submit" data-request-type="support">Submit Support Request</button>
+          <button type="submit" class="secondary" data-request-type="quote">Request a Quote</button>
+        </div>
       </form>
     </section>
   </section>
@@ -112,11 +119,22 @@
     document.getElementById('year').textContent = new Date().getFullYear();
     const supportForm = document.getElementById('support-request-form');
     const supportStatus = document.getElementById('support-form-status');
+    const requestTypeInput = document.getElementById('request-type');
+    let selectedRequestType = 'support';
+
     if (supportForm) {
+      supportForm.querySelectorAll('button[data-request-type]').forEach((button) => {
+        button.addEventListener('click', () => {
+          selectedRequestType = button.dataset.requestType;
+          requestTypeInput.value = selectedRequestType;
+        });
+      });
+
       supportForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const button = supportForm.querySelector('button[type="submit"]');
+        const button = event.submitter || supportForm.querySelector('button[type="submit"]');
         const originalText = button.textContent;
+        requestTypeInput.value = selectedRequestType;
         supportStatus.hidden = true;
         supportStatus.classList.remove('support-error');
         button.disabled = true;
@@ -125,13 +143,21 @@
         try {
           const response = await fetch('/api/create-ticket', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(payload) });
           const result = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(result.error || 'Could not submit the support request.');
+          if (!response.ok) throw new Error(result.error || 'Could not submit the request.');
           supportForm.reset();
-          supportStatus.textContent = 'Your support request was submitted successfully. QVB I.T. will follow up using the contact information you provided.';
+          requestTypeInput.value = 'support';
+          selectedRequestType = 'support';
+          const requestLabel = payload.request_type === 'quote' ? 'quote request' : 'support request';
+          let message = `Your ${requestLabel} was submitted successfully. QVB I.T. will follow up using the contact information you provided.`;
+          if (payload.request_type === 'quote' && !result.lead_created) {
+            message += ' However, the CRM lead could not be created. Please contact QVB I.T. and provide this message: ' + (result.lead_error || 'Unknown lead creation error.');
+            supportStatus.classList.add('support-error');
+          }
+          supportStatus.textContent = message;
           supportStatus.hidden = false;
           button.textContent = 'Request Submitted';
         } catch (error) {
-          supportStatus.textContent = error.message || 'Could not submit the support request. Please call 561-907-8248.';
+          supportStatus.textContent = error.message || 'Could not submit the request. Please call 561-907-8248.';
           supportStatus.classList.add('support-error');
           supportStatus.hidden = false;
           button.disabled = false;
