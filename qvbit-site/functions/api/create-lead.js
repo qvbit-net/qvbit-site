@@ -53,14 +53,14 @@ export async function onRequestPost(context) {
 
     let confirmationSent = false
     const brevoKey = context.env.BREVO_API_KEY
-    const senderEmail = context.env.QVB_CRM_FROM_EMAIL || 'billing@qvbit.net'
+    const senderEmail = context.env.SUPPORT_FROM_EMAIL || context.env.QVB_CRM_FROM_EMAIL || 'billing@qvbit.net'
 
     if (brevoKey) {
       const safe = (value) => String(value || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
+        .replace(/\"/g, '&quot;')
         .replace(/'/g, '&#39;')
 
       const confirmationHtml = `
