@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Request a quote from QVB I.T. for structured cabling, network installation, managed IT, and related services.">
+  <title>QVB I.T. | Request a Quote</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .quote-hero{max-width:960px;margin:48px auto 24px;padding:0 20px;text-align:center}.quote-hero h1{font-size:38px;color:#111;margin-bottom:12px}.quote-hero p{max-width:760px;margin:0 auto;font-size:18px;color:#444}.quote-card{max-width:760px;margin:0 auto 50px;padding:28px;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1)}.quote-form{display:grid;gap:14px}.quote-form .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.quote-form label{display:grid;gap:6px;font-weight:600;color:#333}.quote-form input,.quote-form select,.quote-form textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;font:inherit;box-sizing:border-box}.quote-form textarea{min-height:160px;resize:vertical}.quote-form button{background:#0077cc;color:#fff;padding:14px;border:0;border-radius:6px;font-size:16px;font-weight:700;cursor:pointer}.quote-form button:hover{background:#005fa3}.quote-form button:disabled{opacity:.7;cursor:wait}.quote-note{font-size:13px;color:#666}.quote-alert{background:#f5f9fd;border-left:4px solid #0077cc;padding:12px 14px;color:#444;font-size:14px}.quote-error{background:#fff1f1;border-left-color:#c62828}@media(max-width:800px){.quote-form .row{grid-template-columns:1fr}.quote-hero h1{font-size:30px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-left"><div class="logo"><a href="index.html"><img src="images/QVB IT LOGO2.jpg" alt="QVB I.T. Logo" width="280" height="auto"></a></div><div class="contact-info"><p><strong>Structured Cabling Installations and I.T Services.</strong></p><p><a href="mailto:contact@qvbit.net">contact@qvbit.net</a> | <a href="tel:5619078248">561-90-QVBIT</a></p><p><a href="tel:5619078248">561-907-8248</a></p><p>QVB I.T. is a Proud SDVOSB.</p></div></div>
+  <nav><a href="index.html">Home</a><a href="structured-cabling.html">Structured Cabling</a><a href="network-installation.html">Network Installation</a><a href="remote-hands.html">Remote Hands</a><a href="managed-it.html">Managed IT</a><a href="network-staging.html">Network Staging</a><a href="about.html">About</a><a href="support.html" class="cta">Support</a></nav>
+</header>
+<section class="quote-hero"><h1>Request a Quote</h1><p>Tell us about your project or service needs. QVB I.T. will review your request and contact you to discuss the details and prepare a quote.</p></section>
+<section class="quote-card">
+<form class="quote-form" id="quote-form">
+<input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+<div class="row"><label>Name<input name="name" autocomplete="name" required></label><label>Company<input name="company" autocomplete="organization"></label></div>
+<div class="row"><label>Email<input type="email" name="email" autocomplete="email" required></label><label>Phone<input type="tel" name="phone" autocomplete="tel"></label></div>
+<label>Service requested<select name="service_requested" required><option value="">Select a service</option><option>Structured Cabling</option><option>Network Installation</option><option>Remote Hands</option><option>Managed IT</option><option>Network Staging</option><option>Microsoft 365 / Cloud Services</option><option>Other IT Services</option></select></label>
+<div class="row"><label>Project address<input name="site_address" autocomplete="street-address"></label><label>City<input name="city" autocomplete="address-level2"></label></div>
+<div class="row"><label>State<input name="state" autocomplete="address-level1"></label><label>ZIP code<input name="zip" autocomplete="postal-code"></label></div>
+<div class="row"><label>Number of drops, if applicable<input type="number" name="number_of_drops" min="0" step="1"></label><label>Estimated project value<input type="number" name="estimated_value" min="0" step="0.01" placeholder="Optional"></label></div>
+<label>Project details<textarea name="message" placeholder="Describe the work, approximate timeline, equipment, location, or other details that will help us prepare your quote." required></textarea></label>
+<p class="quote-note">Please do not submit passwords, MFA codes, private keys, payment information, or other credentials through this form.</p>
+<div id="quote-status" class="quote-alert" role="status" aria-live="polite" hidden></div>
+<button type="submit">Submit Quote Request</button>
+</form></section>
+<footer><p>© <span id="year"></span> QVB I.T. — All rights reserved.</p></footer>
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+const form=document.getElementById('quote-form');const status=document.getElementById('quote-status');
+form.addEventListener('submit',async event=>{event.preventDefault();const button=form.querySelector('button');const original=button.textContent;status.hidden=true;status.classList.remove('quote-error');button.disabled=true;button.textContent='Submitting…';try{const response=await fetch('/api/create-lead',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(form).entries()))});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Could not submit the quote request.');form.reset();status.textContent='Your quote request was submitted successfully. QVB I.T. will contact you to discuss your project.';status.hidden=false;button.textContent='Request Submitted';}catch(error){status.textContent=error.message||'Could not submit the quote request. Please call 561-907-8248.';status.classList.add('quote-error');status.hidden=false;button.disabled=false;button.textContent=original;}});
+</script>
+</body></html>
