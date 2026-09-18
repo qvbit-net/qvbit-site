@@ -7830,6 +7830,7 @@ function Jobs() {
   const [jobs, setJobs] = useState([])
   const [customers, setCustomers] = useState([])
   const [quotes, setQuotes] = useState([])
+  const [projects, setProjects] = useState([])
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -7840,6 +7841,7 @@ function Jobs() {
     job_number: '',
     customer_id: '',
     quote_id: '',
+    project_id: '',
     title: '',
     scope_of_work: '',
     status: 'scheduled',
@@ -7931,6 +7933,7 @@ function Jobs() {
       job_number: form.job_number.trim() || null,
       customer_id: form.customer_id,
       quote_id: form.quote_id || null,
+      project_id: form.project_id || null,
       title: form.title.trim(),
       scope_of_work: form.scope_of_work.trim() || null,
       status: form.status,
@@ -8081,6 +8084,21 @@ function Jobs() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '16px' }}>
+              <label>
+                Project
+                <select
+                  value={form.project_id}
+                  onChange={(e) => setForm({ ...form, project_id: e.target.value })}
+                >
+                  <option value="">No project linked</option>
+                  {projects.filter((project) => !form.customer_id || project.customer_id === form.customer_id).map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.project_number || 'Project'} · {project.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
               <label>
                 Quote
                 <select
@@ -8969,7 +8987,7 @@ function JobDetail() {
     setLoading(true)
     setError('')
 
-    const [jobResult, customersResult, quotesResult, invoicesResult] = await Promise.all([
+    const [jobResult, customersResult, quotesResult, projectsResult, invoicesResult] = await Promise.all([
       supabase
         .from('jobs')
         .select('*, customers(company_name), quotes(quote_number, title)')
@@ -8982,6 +9000,10 @@ function JobDetail() {
       supabase
         .from('quotes')
         .select('id, quote_number, title, customer_id, total, status')
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('projects')
+        .select('id, project_number, name, customer_id, status')
         .order('created_at', { ascending: false }),
       supabase
         .from('invoices')
@@ -9000,6 +9022,7 @@ function JobDetail() {
         job_number: nextJob.job_number || '',
         customer_id: nextJob.customer_id || '',
         quote_id: nextJob.quote_id || '',
+        project_id: nextJob.project_id || '',
         title: nextJob.title || '',
         scope_of_work: nextJob.scope_of_work || '',
         status: nextJob.status || 'scheduled',
@@ -9014,10 +9037,12 @@ function JobDetail() {
 
     if (customersResult.error) setError(customersResult.error.message)
     if (quotesResult.error) setError(quotesResult.error.message)
+    if (projectsResult.error) setError(projectsResult.error.message)
     if (invoicesResult.error) setError(invoicesResult.error.message)
 
     setCustomers(customersResult.data || [])
     setQuotes(quotesResult.data || [])
+    setProjects(projectsResult.data || [])
     setInvoices(invoicesResult.data || [])
     setLoading(false)
   }
@@ -9031,6 +9056,7 @@ function JobDetail() {
       job_number: job.job_number || '',
       customer_id: job.customer_id || '',
       quote_id: job.quote_id || '',
+      project_id: job.project_id || '',
       title: job.title || '',
       scope_of_work: job.scope_of_work || '',
       status: job.status || 'scheduled',
@@ -9677,6 +9703,12 @@ function JobDetail() {
                 label="Customer"
                 value={customerName}
                 link={job.customer_id ? `/crm/customers/${job.customer_id}` : undefined}
+              />
+              <DetailRow
+                icon={BriefcaseBusiness}
+                label="Project"
+                value={job.project_id ? 'Linked project' : 'No project linked'}
+                link={job.project_id ? `/crm/projects/${job.project_id}` : undefined}
               />
               <DetailRow
                 icon={FileText}
