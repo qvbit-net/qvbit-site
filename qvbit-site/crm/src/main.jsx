@@ -234,7 +234,7 @@ const CRM_UI_MODULES = {
   '/crm/customer-360': 'customers',
   '/crm/projects': 'projects',
   '/crm/dispatch': 'dispatch',
-  '/crm/technicians': 'dispatch',
+  '/crm/technicians': 'technicians',
 }
 
 function canAccessPath(pathname, permissions, isOwner) {
