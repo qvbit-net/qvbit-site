@@ -2147,7 +2147,7 @@ function Profitability() {
       }
       const startDate = start ? localDateKey(start) : null
 
-      const [invoiceResult, expenseResult, jobResult] = await Promise.all([
+      const [invoiceResult, expenseResult, jobResult, laborResult] = await Promise.all([
         supabase
           .from('invoices')
           .select('id, invoice_number, customer_id, job_id, issue_date, total, amount_paid, status, customers(company_name)')
@@ -2158,9 +2158,12 @@ function Profitability() {
         supabase
           .from('jobs')
           .select('id, job_number, title, customer_id, final_amount, estimated_amount, status, scheduled_date, customers(company_name)'),
+        supabase
+          .from('job_time_entries')
+          .select('id, job_id, work_date, hours, hourly_cost')
       ])
 
-      const firstError = [invoiceResult, expenseResult, jobResult].find((r) => r.error)?.error
+      const firstError = [invoiceResult, expenseResult, jobResult, laborResult].find((r) => r.error)?.error
       if (firstError) {
         setError(firstError.message)
         setLoading(false)
@@ -2169,12 +2172,15 @@ function Profitability() {
 
       const invoices = (invoiceResult.data || []).filter((x) => !startDate || (x.issue_date && x.issue_date >= startDate))
       const expenses = (expenseResult.data || []).filter((x) => !startDate || (x.expense_date && x.expense_date >= startDate))
+      const labor = (laborResult.data || []).filter((x) => !startDate || (x.work_date && x.work_date >= startDate))
       const jobs = jobResult.data || []
 
       const revenue = invoices.reduce((sum, x) => sum + Number(x.total || 0), 0)
       const collected = invoices.reduce((sum, x) => sum + Number(x.amount_paid || 0), 0)
       const expenseTotal = expenses.reduce((sum, x) => sum + Number(x.amount || 0), 0)
-      const profit = revenue - expenseTotal
+      const laborTotal = labor.reduce((sum, x) => sum + Number(x.hours || 0) * Number(x.hourly_cost || 0), 0)
+      const totalCost = expenseTotal + laborTotal
+      const profit = revenue - totalCost
       const margin = revenue > 0 ? (profit / revenue) * 100 : 0
 
       const categoryMap = new Map()
@@ -2182,13 +2188,17 @@ function Profitability() {
         const key = x.category || 'General'
         categoryMap.set(key, (categoryMap.get(key) || 0) + Number(x.amount || 0))
       })
+      if (laborTotal > 0) categoryMap.set('Labor', laborTotal)
 
       const jobMap = new Map()
       jobs.forEach((job) => {
         const jobInvoices = invoices.filter((x) => x.job_id === job.id)
         const jobExpenses = expenses.filter((x) => x.job_id === job.id)
+        const jobLabor = labor.filter((x) => x.job_id === job.id)
         const billed = jobInvoices.reduce((s, x) => s + Number(x.total || 0), 0)
-        const cost = jobExpenses.reduce((s, x) => s + Number(x.amount || 0), 0)
+        const expenseCost = jobExpenses.reduce((s, x) => s + Number(x.amount || 0), 0)
+        const laborCost = jobLabor.reduce((s, x) => s + Number(x.hours || 0) * Number(x.hourly_cost || 0), 0)
+        const cost = expenseCost + laborCost
         const value = billed || Number(job.final_amount || job.estimated_amount || 0)
         if (value || cost) {
           jobMap.set(job.id, {
@@ -2204,7 +2214,7 @@ function Profitability() {
       setData({
         revenue,
         collected,
-        expenses: expenseTotal,
+        expenses: totalCost,
         profit,
         margin,
         jobs: [...jobMap.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 10),
@@ -2221,7 +2231,7 @@ function Profitability() {
         <div>
           <div className="eyebrow">Financial reporting</div>
           <h1>Profitability</h1>
-          <p>Revenue, expenses, collections, and job-level profitability.</p>
+          <p>Revenue, recorded expenses, technician labor, collections, and job-level profitability.</p>
         </div>
         <div className="page-actions">
           <select value={period} onChange={(e) => setPeriod(e.target.value)} className="select-control">
@@ -2242,14 +2252,14 @@ function Profitability() {
           <div className="stats-grid">
             <StatCard label="Invoiced" value={money(data.revenue)} icon={FileText} />
             <StatCard label="Collected" value={money(data.collected)} icon={CreditCard} />
-            <StatCard label="Expenses" value={money(data.expenses)} icon={ReceiptText} />
+            <StatCard label="Total costs" value={money(data.expenses)} icon={ReceiptText} />
             <StatCard label="Gross profit" value={money(data.profit)} icon={ArrowUpRight} />
           </div>
 
           <div className="two-column-grid">
             <div className="card">
               <div className="card-header">
-                <div><h2>Profit margin</h2><p>Invoiced revenue less recorded expenses.</p></div>
+                <div><h2>Profit margin</h2><p>Invoiced revenue less recorded expenses and technician labor.</p></div>
               </div>
               <div className="metric-large">{data.margin.toFixed(1)}%</div>
               <div className="progress-track"><div className="progress-fill" style={{ width: `${Math.min(Math.max(data.margin, 0), 100)}%` }} /></div>
@@ -2275,7 +2285,7 @@ function Profitability() {
 
           <div className="card">
             <div className="card-header">
-              <div><h2>Job profitability</h2><p>Revenue compared with expenses linked directly to each job.</p></div>
+              <div><h2>Job profitability</h2><p>Revenue compared with direct expenses and recorded technician labor.</p></div>
             </div>
             {data.jobs.length === 0 ? (
               <div className="empty-state">No job financial activity is available for this period.</div>
