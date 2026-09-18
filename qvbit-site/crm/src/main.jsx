@@ -7360,7 +7360,7 @@ function QuoteDetail() {
               <h2>Project</h2>
               <p>{relatedProject.project_number || 'Project'} · {relatedProject.name || quote.title}</p>
             </div>
-            <button className="secondary-button" type="button" onClick={() => navigate(`/crm/projects`)}>
+            <button className="secondary-button" type="button" onClick={() => navigate(`/crm/projects/${relatedProject.id}`)}>
               <BriefcaseBusiness size={16} />
               Open projects
             </button>
