@@ -8363,28 +8363,31 @@ function JobTimeEntries({ jobId }) {
 function TimeTracking() {
   const [entries, setEntries] = useState([])
   const [jobs, setJobs] = useState([])
+  const [technicians, setTechnicians] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingEntry, setEditingEntry] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ job_id: '', technician_name: '', work_date: localTodayInputValue(), hours: '1', hourly_cost: '', notes: '' })
+  const [form, setForm] = useState({ job_id: '', technician_id: '', technician_name: '', work_date: localTodayInputValue(), hours: '1', hourly_cost: '', notes: '' })
 
   async function load() {
     setLoading(true); setError('')
-    const [entriesResult, jobsResult] = await Promise.all([
-      supabase.from('job_time_entries').select('id, job_id, technician_name, work_date, hours, hourly_cost, notes, jobs(job_number, title)').order('work_date', { ascending: false }).order('created_at', { ascending: false }),
+    const [entriesResult, jobsResult, techniciansResult] = await Promise.all([
+      supabase.from('job_time_entries').select('id, job_id, technician_id, technician_name, work_date, hours, hourly_cost, notes, jobs(job_number, title)').order('work_date', { ascending: false }).order('created_at', { ascending: false }),
       supabase.from('jobs').select('id, job_number, title').order('scheduled_date', { ascending: false, nullsFirst: false }).limit(500),
+      supabase.from('technicians').select('id, display_name, hourly_cost, active').order('display_name'),
     ])
     if (entriesResult.error) setError(entriesResult.error.message); else setEntries(entriesResult.data || [])
     if (jobsResult.error) setError(current => current || jobsResult.error.message); else setJobs(jobsResult.data || [])
+    if (techniciansResult.error) setError(current => current || techniciansResult.error.message); else setTechnicians(techniciansResult.data || [])
     setLoading(false)
   }
   useEffect(() => { load() }, [])
 
   function resetForm() {
-    setForm({ job_id: '', technician_name: '', work_date: localTodayInputValue(), hours: '1', hourly_cost: '', notes: '' })
+    setForm({ job_id: '', technician_id: '', technician_name: '', work_date: localTodayInputValue(), hours: '1', hourly_cost: '', notes: '' })
     setEditingEntry(null)
   }
 
@@ -8392,6 +8395,7 @@ function TimeTracking() {
     setEditingEntry(entry)
     setForm({
       job_id: entry.job_id || '',
+      technician_id: entry.technician_id || '',
       technician_name: entry.technician_name || '',
       work_date: entry.work_date || localTodayInputValue(),
       hours: String(entry.hours ?? '1'),
@@ -8408,11 +8412,21 @@ function TimeTracking() {
     setError('')
   }
 
+  function selectTechnician(technicianId) {
+    const technician = technicians.find((item) => item.id === technicianId)
+    setForm((current) => ({
+      ...current,
+      technician_id: technicianId,
+      technician_name: technician?.display_name || current.technician_name,
+      hourly_cost: technician?.hourly_cost ?? current.hourly_cost,
+    }))
+  }
+
   async function saveEntry(e) {
     e.preventDefault(); setSaving(true); setError('')
     const hours = Number(form.hours || 0), hourlyCost = Number(form.hourly_cost || 0)
     if (!form.job_id) { setError('Job is required.'); setSaving(false); return }
-    if (!form.technician_name.trim()) { setError('Technician name is required.'); setSaving(false); return }
+    if (!form.technician_name.trim()) { setError('Technician is required.'); setSaving(false); return }
     if (!form.work_date) { setError('Work date is required.'); setSaving(false); return }
     if (!Number.isFinite(hours) || hours <= 0) { setError('Hours must be greater than zero.'); setSaving(false); return }
     if (Math.round(hours * 2) !== hours * 2) { setError('Hours must be entered in 30-minute increments (0.5 hours).'); setSaving(false); return }
@@ -8420,6 +8434,7 @@ function TimeTracking() {
 
     const payload = {
       job_id: form.job_id,
+      technician_id: form.technician_id || null,
       technician_name: form.technician_name.trim(),
       work_date: form.work_date,
       hours,
@@ -8452,13 +8467,17 @@ function TimeTracking() {
     }}><Plus size={17} /> {showForm ? 'Close' : 'Add time'}</button>} />
     {error && <div className="error-box page-error">{error}</div>}
     {showForm && <section className="panel" style={{ marginBottom: '20px' }}><form className="stack-form" onSubmit={saveEntry}>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr', gap: '16px' }}>
+      <div className="form-grid-3">
         <label>Job<select value={form.job_id} onChange={e => setForm({ ...form, job_id: e.target.value })} required><option value="">Select job</option>{jobs.map(j => <option key={j.id} value={j.id}>{j.job_number || 'Job'} · {j.title}</option>)}</select></label>
-        <label>Technician / employee<input value={form.technician_name} onChange={e => setForm({ ...form, technician_name: e.target.value })} placeholder="Name" required /></label>
+        <label>Technician<select value={form.technician_id} onChange={e => selectTechnician(e.target.value)} required><option value="">Select technician</option>{technicians.filter(t => t.active || t.id === form.technician_id).map(t => <option key={t.id} value={t.id}>{t.display_name}</option>)}</select></label>
         <label>Date<input type="date" value={form.work_date} onChange={e => setForm({ ...form, work_date: e.target.value })} required /></label>
-        <label>Hours<input type="number" min="0.5" step="0.5" value={form.hours} onChange={e => setForm({ ...form, hours: e.target.value })} required /></label>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '16px' }}><label>Hourly cost<input type="number" min="0" step="0.01" value={form.hourly_cost} onChange={e => setForm({ ...form, hourly_cost: e.target.value })} placeholder="0.00" required /></label><label>Notes<textarea rows={2} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Optional notes" /></label></div>
+      <div className="form-grid-3">
+        <label>Hours<input type="number" min="0.5" step="0.5" value={form.hours} onChange={e => setForm({ ...form, hours: e.target.value })} required /></label>
+        <label>Hourly cost<input type="number" min="0" step="0.01" value={form.hourly_cost} onChange={e => setForm({ ...form, hourly_cost: e.target.value })} placeholder="0.00" required /></label>
+        <label>Technician name snapshot<input value={form.technician_name} onChange={e => setForm({ ...form, technician_name: e.target.value })} placeholder="Auto-filled from technician" required /></label>
+      </div>
+      <label>Notes<textarea rows={2} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Optional notes" /></label>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}><button type="button" className="secondary-button" onClick={cancelForm} disabled={saving}>Cancel</button><button type="submit" className="primary-button" disabled={saving}>{saving ? (editingEntry ? 'Saving…' : 'Adding…') : (editingEntry ? 'Save changes' : 'Add time')}</button></div>
     </form></section>}
     <div className="metric-grid"><div className="metric-card"><div className="metric-label"><Timer size={16} /> Hours shown</div><strong>{totalHours.toFixed(2)}</strong><span>Across filtered entries</span></div><div className="metric-card"><div className="metric-label"><CircleDollarSign size={16} /> Labor cost</div><strong>{money(totalCost)}</strong><span>Actual cost of filtered time</span></div></div>
@@ -8467,7 +8486,6 @@ function TimeTracking() {
     </section>
   </>
 }
-
 function SchedulingCalendar() {
   const navigate = useNavigate()
   const [month, setMonth] = useState(() => {
