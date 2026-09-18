@@ -2337,6 +2337,8 @@ function Dashboard() {
     outstanding: 0,
     overdue: 0,
     completedJobs: 0,
+    mrr: 0,
+    activeContracts: 0,
   })
 
   const [recentLeads, setRecentLeads] = useState([])
@@ -2369,6 +2371,7 @@ function Dashboard() {
         invoicesResult,
         monthInvoicesResult,
         yearInvoicesResult,
+        contractsResult,
         recentLeadsResult,
         upcomingJobsResult,
         followUpsResult,
@@ -2402,6 +2405,10 @@ function Dashboard() {
           .gte('issue_date', yearStart)
           .not('status', 'eq', 'void'),
         supabase
+          .from('service_contracts')
+          .select('id, billing_interval, recurring_amount, status')
+          .eq('status', 'active'),
+        supabase
           .from('leads')
           .select('id, contact_name, company_name, service_requested, status, estimated_value, created_at')
           .order('created_at', { ascending: false })
@@ -2434,6 +2441,7 @@ function Dashboard() {
         invoicesResult,
         monthInvoicesResult,
         yearInvoicesResult,
+        contractsResult,
         recentLeadsResult,
         upcomingJobsResult,
         followUpsResult,
@@ -2445,6 +2453,15 @@ function Dashboard() {
       const invoices = invoicesResult.data || []
       const monthInvoices = monthInvoicesResult.data || []
       const yearInvoices = yearInvoicesResult.data || []
+      const contracts = contractsResult.data || []
+      const mrr = contracts.reduce((sum, contract) => {
+        const amount = Number(contract.recurring_amount || 0)
+        if (contract.billing_interval === 'annual') return sum + amount / 12
+        if (contract.billing_interval === 'semi_annual') return sum + amount / 6
+        if (contract.billing_interval === 'quarterly') return sum + amount / 3
+        if (contract.billing_interval === 'one_time') return sum
+        return sum + amount
+      }, 0)
 
       let outstanding = 0
       let overdue = 0
@@ -2499,6 +2516,8 @@ function Dashboard() {
         outstanding,
         overdue,
         completedJobs: completedJobsResult.count || 0,
+        mrr,
+        activeContracts: contracts.length,
       })
 
       setRecentLeads(recentLeadsResult.data || [])
