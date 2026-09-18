@@ -191,3 +191,20 @@ td span { color: #8a95a6; margin-top: 3px; font-size: 11px; }
 .icon-button:hover {
   background: rgba(0, 0, 0, 0.04);
 }
+
+
+/* Service catalog */
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.info-box {
+  border: 1px solid var(--border, #d9dee7);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.025);
+  font-size: 13px;
+}
