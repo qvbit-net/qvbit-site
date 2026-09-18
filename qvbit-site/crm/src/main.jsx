@@ -6088,6 +6088,7 @@ function QuoteItemsEditor({ items, setItems, services, disabled = false }) {
       service_id: serviceId,
       description: service?.name || item.description,
       unit_price: service?.default_price ?? item.unit_price,
+      unit_cost: service?.default_cost ?? item.unit_cost,
     })
   }
 
@@ -6136,13 +6137,14 @@ function QuoteItemsEditor({ items, setItems, services, disabled = false }) {
         <div style={{ display: 'grid', gap: '12px' }}>
           {items.map((item, index) => {
             const lineTotal = Number(item.quantity || 0) * Number(item.unit_price || 0)
+            const lineCost = Number(item.quantity || 0) * Number(item.unit_cost || 0)
 
             return (
               <div
                 key={item.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'minmax(180px, 1.2fr) minmax(180px, 1.6fr) 90px 130px 130px 42px',
+                  gridTemplateColumns: 'minmax(160px, 1.1fr) minmax(180px, 1.5fr) 75px 115px 115px 120px 42px',
                   gap: '10px',
                   alignItems: 'end',
                   padding: '14px',
@@ -6201,6 +6203,19 @@ function QuoteItemsEditor({ items, setItems, services, disabled = false }) {
                   />
                 </label>
 
+                <label>
+                  Unit cost
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.unit_cost}
+                    onChange={(e) => updateItem(item.id, { unit_cost: e.target.value })}
+                    placeholder="0.00"
+                    disabled={disabled}
+                  />
+                </label>
+
                 <div style={{ paddingBottom: '10px' }}>
                   <div style={{ fontSize: '12px', opacity: 0.65, marginBottom: '6px' }}>
                     Line total
@@ -6229,6 +6244,9 @@ function QuoteItemsEditor({ items, setItems, services, disabled = false }) {
 
 function QuoteTotals({ items, taxRate, setTaxRate, readOnly = false }) {
   const subtotal = calculateQuoteSubtotal(items)
+  const cost = (items || []).reduce((sum, item) => sum + (Number(item.quantity || 0) * Number(item.unit_cost || 0)), 0)
+  const grossProfit = subtotal - cost
+  const grossMargin = subtotal > 0 ? (grossProfit / subtotal) * 100 : null
   const tax = subtotal * (Number(taxRate || 0) / 100)
   const total = subtotal + tax
 
@@ -6242,6 +6260,9 @@ function QuoteTotals({ items, taxRate, setTaxRate, readOnly = false }) {
       }}
     >
       <PriceRow label="Subtotal" value={money(subtotal)} />
+      <PriceRow label="Projected cost" value={money(cost)} />
+      <PriceRow label="Projected gross profit" value={money(grossProfit)} />
+      <PriceRow label="Projected gross margin" value={grossMargin == null ? '—' : `${grossMargin.toFixed(1)}%`} />
 
       {!readOnly && (
         <label>
@@ -6283,6 +6304,7 @@ function normalizeQuoteItems(items) {
     description: item.description || '',
     quantity: item.quantity ?? '1',
     unit_price: item.unit_price ?? '',
+    unit_cost: item.unit_cost ?? '0',
   }))
 }
 
@@ -6294,6 +6316,7 @@ function quotePayloadFromItems(items) {
       description: item.description.trim(),
       quantity: Number(item.quantity || 0),
       unit_price: Number(item.unit_price || 0),
+      unit_cost: Number(item.unit_cost || 0),
       line_total: Number(item.quantity || 0) * Number(item.unit_price || 0),
     }))
 }
@@ -6341,7 +6364,7 @@ function Quotes() {
         .order('company_name'),
       supabase
         .from('services')
-        .select('id, name, description, active, unit, default_price')
+        .select('id, name, description, active, unit, default_price, default_cost')
         .eq('active', true)
         .order('name'),
     ])
@@ -6807,12 +6830,12 @@ function QuoteDetail() {
         .order('company_name'),
       supabase
         .from('services')
-        .select('id, name, description, active, unit, default_price')
+        .select('id, name, description, active, unit, default_price, default_cost')
         .eq('active', true)
         .order('name'),
       supabase
         .from('quote_items')
-        .select('id, quote_id, service_id, description, quantity, unit_price, line_total, created_at')
+        .select('id, quote_id, service_id, description, quantity, unit_price, unit_cost, line_total, line_cost, created_at')
         .eq('quote_id', quoteId)
         .order('created_at'),
       supabase
