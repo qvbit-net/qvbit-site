@@ -64,6 +64,7 @@ import WorkflowCenter from './components/WorkflowCenter'
 import MspAssetsContracts from './components/MspAssetsContracts'
 import Customer360 from './components/Customer360'
 import Projects from './components/Projects'
+import ProjectDetail from './components/ProjectDetail'
 import Dispatch from './components/Dispatch'
 import Technicians from './components/Technicians'
 import ServiceCatalog from './components/ServiceCatalog'
@@ -245,6 +246,7 @@ function canAccessPath(pathname, permissions, isOwner) {
   if (pathname.startsWith('/crm/customers/')) return permissions.customers?.can_view === true
   if (pathname.startsWith('/crm/quotes/')) return permissions.quotes?.can_view === true
   if (pathname.startsWith('/crm/jobs/')) return permissions.jobs?.can_view === true
+  if (pathname.startsWith('/crm/projects/')) return permissions.projects?.can_view === true
   if (pathname.startsWith('/crm/invoices/')) return permissions.invoices?.can_view === true
   const module = CRM_UI_MODULES[pathname]
   if (!module) return true
@@ -1498,6 +1500,11 @@ function Shell({ session }) {
             <Route
               path="projects"
               element={<Projects />}
+            />
+
+            <Route
+              path="projects/:projectId"
+              element={<ProjectDetail />}
             />
 
             <Route
