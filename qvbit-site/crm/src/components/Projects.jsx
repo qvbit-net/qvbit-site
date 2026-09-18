@@ -5,7 +5,7 @@ import { supabase } from '../supabase'
 const STATUSES = ['planning','scheduled','in_progress','on_hold','completed','cancelled']
 const emptyForm = { customer_id:'', site_id:'', opportunity_id:'', quote_id:'', name:'', description:'', status:'planning', start_date:'', target_date:'', estimated_revenue:'', estimated_cost:'', notes:'' }
 const money = (v) => '$' + Number(v || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
-const label = (v) => String(v || '').replaceAll('_',' ').replace(/\\b\\w/g,c=>c.toUpperCase())
+const label = (v) => String(v || '').replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())
 
 export default function Projects() {
   const [projects,setProjects]=useState([]), [customers,setCustomers]=useState([]), [sites,setSites]=useState([])
