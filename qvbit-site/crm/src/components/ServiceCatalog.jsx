@@ -18,7 +18,7 @@ const BILLING_MODELS = [
   ['usage', 'Usage'],
 ]
 
-const UNITS = ['job', 'run', 'hour', 'day', 'each']
+const UNITS = ['job', 'run', 'hour', 'day', 'each', 'user', 'device', 'site', 'month']
 
 const emptyForm = {
   name: '',
