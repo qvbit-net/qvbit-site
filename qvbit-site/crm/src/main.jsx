@@ -67,6 +67,7 @@ import Projects from './components/Projects'
 import Dispatch from './components/Dispatch'
 import Technicians from './components/Technicians'
 import ServiceCatalog from './components/ServiceCatalog'
+import JobAssignmentsPanel from './components/JobAssignmentsPanel'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -9256,6 +9257,8 @@ function JobDetail() {
       />
 
       {error && <div className="error-box" style={{ marginBottom: '18px' }}>{error}</div>}
+
+      {!editing && <JobAssignmentsPanel jobId={jobId} />}
 
       {completing && !editing && (
         <section className="panel" style={{ marginBottom: '20px' }}>
