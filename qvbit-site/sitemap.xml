@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://qvbit.net/</loc>
-    <priority>1.00</priority>
-  </url>
-  <url><loc>https://qvbit.net/structured-cabling.html</loc><priority>0.85</priority></url>
-  <url><loc>https://qvbit.net/network-installation.html</loc><priority>0.85</priority></url>
-  <url><loc>https://qvbit.net/remote-hands.html</loc><priority>0.90</priority></url>
-  <url><loc>https://qvbit.net/managed-it.html</loc><priority>0.90</priority></url>
-  <url><loc>https://qvbit.net/network-staging.html</loc><priority>0.85</priority></url>
-  <url>
-    <loc>https://qvbit.net/services</loc>
-    <priority>0.80</priority>
-  </url>
-  <url><loc>https://qvbit.net/about.html</loc><priority>0.70</priority></url>
-  <url>
-    <loc>https://qvbit.net/contact</loc>
-    <priority>0.70</priority>
-  </url>
-  <url>
-    <loc>https://qvbit.net/support</loc>
-    <priority>0.90</priority>
-  </url>
+  <url><loc>https://www.qvbit.net/</loc><priority>1.00</priority></url>
+  <url><loc>https://www.qvbit.net/services.html</loc><priority>0.90</priority></url>
+  <url><loc>https://www.qvbit.net/structured-cabling.html</loc><priority>0.85</priority></url>
+  <url><loc>https://www.qvbit.net/network-installation.html</loc><priority>0.90</priority></url>
+  <url><loc>https://www.qvbit.net/remote-hands.html</loc><priority>0.90</priority></url>
+  <url><loc>https://www.qvbit.net/managed-it.html</loc><priority>0.90</priority></url>
+  <url><loc>https://www.qvbit.net/network-staging.html</loc><priority>0.85</priority></url>
+  <url><loc>https://www.qvbit.net/about.html</loc><priority>0.70</priority></url>
+  <url><loc>https://www.qvbit.net/contact.html</loc><priority>0.75</priority></url>
+  <url><loc>https://www.qvbit.net/support.html</loc><priority>0.90</priority></url>
 </urlset>
