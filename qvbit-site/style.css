@@ -447,3 +447,10 @@ footer .footer-contact strong { color: #fff; }
   .service-cta { flex-direction: column; align-items: flex-start; padding: 26px 22px; }
   .cta-button { width: 100%; }
 }
+
+
+/* Navigation polish */
+nav a { transition: color .15s ease, background .15s ease; }
+nav a.active:not(.cta) { color: #145da0; }
+nav a.active:not(.cta)::after { content: ""; display: block; height: 2px; background: #145da0; margin-top: 3px; border-radius: 2px; }
+@media (max-width: 900px) { nav a.active:not(.cta)::after { display: none; } nav a.active:not(.cta) { background: #eef6ff; padding: 4px 7px; border-radius: 5px; } }
