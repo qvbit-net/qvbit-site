@@ -7322,6 +7322,22 @@ function QuoteDetail() {
         />
       )}
 
+      {relatedProject && (
+        <section className="panel" style={{ marginBottom: '18px' }}>
+          <div className="panel-header">
+            <div>
+              <h2>Project</h2>
+              <p>{relatedProject.project_number || 'Project'} · {relatedProject.name || quote.title}</p>
+            </div>
+            <button className="secondary-button" type="button" onClick={() => navigate(`/crm/projects`)}>
+              <BriefcaseBusiness size={16} />
+              Open projects
+            </button>
+          </div>
+          <div className="muted">Status: {capitalize(relatedProject.status || 'planning')}</div>
+        </section>
+      )}
+
       {quote.opportunities && (
         <section className="panel" style={{ marginBottom: '18px' }}>
           <div className="panel-header">
