@@ -65,6 +65,7 @@ import MspAssetsContracts from './components/MspAssetsContracts'
 import Customer360 from './components/Customer360'
 import Projects from './components/Projects'
 import Dispatch from './components/Dispatch'
+import Technicians from './components/Technicians'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -231,6 +232,7 @@ const CRM_UI_MODULES = {
   '/crm/customer-360': 'customers',
   '/crm/projects': 'projects',
   '/crm/dispatch': 'dispatch',
+  '/crm/technicians': 'dispatch',
 }
 
 function canAccessPath(pathname, permissions, isOwner) {
@@ -288,6 +290,11 @@ const navItems = [
     to: '/crm/projects',
     label: 'Projects',
     icon: BriefcaseBusiness,
+  },
+  {
+    to: '/crm/technicians',
+    label: 'Technicians',
+    icon: Users,
   },
   {
     to: '/crm/invoices',
@@ -1489,6 +1496,11 @@ function Shell({ session }) {
             <Route
               path="projects"
               element={<Projects />}
+            />
+
+            <Route
+              path="technicians"
+              element={<Technicians />}
             />
 
             <Route
