@@ -63,6 +63,8 @@ import SettingsAuditLog from './components/SettingsAuditLog'
 import WorkflowCenter from './components/WorkflowCenter'
 import MspAssetsContracts from './components/MspAssetsContracts'
 import Customer360 from './components/Customer360'
+import Projects from './components/Projects'
+import Dispatch from './components/Dispatch'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -227,6 +229,8 @@ const CRM_UI_MODULES = {
   '/crm/workflow': 'quotes',
   '/crm/assets-contracts': 'services',
   '/crm/customer-360': 'customers',
+  '/crm/projects': 'projects',
+  '/crm/dispatch': 'dispatch',
 }
 
 function canAccessPath(pathname, permissions, isOwner) {
@@ -273,6 +277,16 @@ const navItems = [
   {
     to: '/crm/jobs',
     label: 'Jobs',
+    icon: BriefcaseBusiness,
+  },
+  {
+    to: '/crm/dispatch',
+    label: 'Dispatch',
+    icon: Truck,
+  },
+  {
+    to: '/crm/projects',
+    label: 'Projects',
     icon: BriefcaseBusiness,
   },
   {
@@ -1465,6 +1479,16 @@ function Shell({ session }) {
             <Route
               path="jobs/:jobId"
               element={<JobDetail />}
+            />
+
+            <Route
+              path="dispatch"
+              element={<Dispatch />}
+            />
+
+            <Route
+              path="projects"
+              element={<Projects />}
             />
 
             <Route
