@@ -83,7 +83,8 @@ export default function MspAssetsContracts() {
 
   async function saveContract(event) {
     event.preventDefault(); setSaving('contract'); setError(''); setMessage('')
-    let payload = { ...contractForm, service_id: contractForm.service_id || null, recurring_amount: Number(contractForm.recurring_amount || 0), end_date: contractForm.end_date || null, next_billing_date: contractForm.next_billing_date || null, start_date: contractForm.start_date || null }
+    const itemTotal = contractItems.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.unit_price || 0), 0)
+    let payload = { ...contractForm, service_id: contractForm.service_id || null, recurring_amount: contractItems.length ? itemTotal : Number(contractForm.recurring_amount || 0), end_date: contractForm.end_date || null, next_billing_date: contractForm.next_billing_date || null, start_date: contractForm.start_date || null }
     if (!editingContract) {
       const { data: number, error: numberError } = await supabase.rpc('next_service_contract_number')
       if (numberError) { setError(numberError.message); setSaving(''); return }
