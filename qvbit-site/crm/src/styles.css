@@ -154,3 +154,9 @@ td span { color: #8a95a6; margin-top: 3px; font-size: 11px; }
 
 .customer-email-grid-item { grid-column: 2; min-width: 0; }
 @media (max-width: 900px) { .customer-email-grid-item { grid-column: 1; } }
+
+/* Field services / project management */
+.page-stack { display: grid; gap: 18px; }
+.form-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.form-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
