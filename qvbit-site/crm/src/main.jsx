@@ -2576,6 +2576,11 @@ function Dashboard() {
 
           <div className="metric-grid">
             <div className="metric-card">
+              <div className="metric-label"><RefreshCw size={16} /> Monthly recurring revenue</div>
+              <strong>{money(stats.mrr)}</strong>
+              <span>{stats.activeContracts} active recurring contracts</span>
+            </div>
+            <div className="metric-card">
               <div className="metric-label"><ReceiptText size={16} /> Invoiced this month</div>
               <strong>{money(stats.invoicedMonth)}</strong>
               <span>Invoices issued since the start of this month</span>
