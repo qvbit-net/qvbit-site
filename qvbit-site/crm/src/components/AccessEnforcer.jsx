@@ -13,6 +13,7 @@ const MODULES = {
   '/crm/inventory': 'inventory',
   '/crm/services': 'services',
   '/crm/tickets': 'tickets',
+  '/crm/technicians': 'technicians',
   '/crm/reports': 'profitability',
   '/crm/time-tracking': 'time_tracking',
   '/crm/calendar': 'calendar',
