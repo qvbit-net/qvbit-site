@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BriefcaseBusiness, Plus, RefreshCw, Search } from 'lucide-react'
 import { supabase } from '../supabase'
 
@@ -8,6 +9,7 @@ const money = (v) => '$' + Number(v || 0).toLocaleString(undefined,{minimumFract
 const label = (v) => String(v || '').replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())
 
 export default function Projects() {
+  const navigate = useNavigate()
   const [projects,setProjects]=useState([]), [customers,setCustomers]=useState([]), [sites,setSites]=useState([])
   const [loading,setLoading]=useState(true), [error,setError]=useState(''), [search,setSearch]=useState(''), [status,setStatus]=useState('')
   const [showForm,setShowForm]=useState(false), [editing,setEditing]=useState(null), [form,setForm]=useState(emptyForm), [saving,setSaving]=useState(false)
@@ -45,7 +47,7 @@ export default function Projects() {
       <div style={{display:'flex',justifyContent:'flex-end',gap:'8px'}}><button type="button" className="secondary-button" onClick={()=>setShowForm(false)}>Cancel</button><button className="primary-button" disabled={saving}>{saving?'Saving…':editing?'Save changes':'Create project'}</button></div>
     </form></section>}
     <section className="panel"><div className="toolbar"><div className="search-box"><Search size={16}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search projects…"/></div><select value={status} onChange={e=>setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map(s=><option key={s} value={s}>{label(s)}</option>)}</select></div>
-      {loading?<div className="loading-box">Loading projects…</div>:filtered.length===0?<div className="empty-state"><div className="empty-icon"><BriefcaseBusiness size={20}/></div><h3>No projects</h3><p>Create an infrastructure or network engineering project to start tracking delivery.</p></div>:<div className="table-wrap"><table><thead><tr><th>Project</th><th>Customer / Site</th><th>Status</th><th>Dates</th><th>Estimated</th><th></th></tr></thead><tbody>{filtered.map(p=><tr key={p.id}><td><strong>{p.project_number||'Project'}</strong><span>{p.name}</span></td><td><strong>{p.customers?.company_name||'—'}</strong><span>{p.sites?.site_name||'No site'}</span></td><td><span className="status">{label(p.status)}</span></td><td>{p.start_date||'—'} → {p.target_date||'—'}</td><td><strong>{money(p.estimated_revenue)}</strong><span>Cost {money(p.estimated_cost)}</span></td><td><button className="text-button" onClick={()=>openEdit(p)}>Edit</button><button className="text-button danger" onClick={()=>remove(p)}>Delete</button></td></tr>)}</tbody></table></div>}
+      {loading?<div className="loading-box">Loading projects…</div>:filtered.length===0?<div className="empty-state"><div className="empty-icon"><BriefcaseBusiness size={20}/></div><h3>No projects</h3><p>Create an infrastructure or network engineering project to start tracking delivery.</p></div>:<div className="table-wrap"><table><thead><tr><th>Project</th><th>Customer / Site</th><th>Status</th><th>Dates</th><th>Estimated</th><th></th></tr></thead><tbody>{filtered.map(p=><tr key={p.id}><td><button className="text-button" type="button" onClick={()=>navigate(`/crm/projects/${p.id}`)}><strong>{p.project_number||'Project'}</strong><span>{p.name}</span></button></td><td><strong>{p.customers?.company_name||'—'}</strong><span>{p.sites?.site_name||'No site'}</span></td><td><span className="status">{label(p.status)}</span></td><td>{p.start_date||'—'} → {p.target_date||'—'}</td><td><strong>{money(p.estimated_revenue)}</strong><span>Cost {money(p.estimated_cost)}</span></td><td><button className="text-button" onClick={()=>openEdit(p)}>Edit</button><button className="text-button danger" onClick={()=>remove(p)}>Delete</button></td></tr>)}</tbody></table></div>}
     </section>
   </div>
 }
