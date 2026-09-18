@@ -66,6 +66,7 @@ import Customer360 from './components/Customer360'
 import Projects from './components/Projects'
 import Dispatch from './components/Dispatch'
 import Technicians from './components/Technicians'
+import ServiceCatalog from './components/ServiceCatalog'
 import PermissionRouterGuard from './components/PermissionRouterGuard'
 import AccessEnforcer from './components/AccessEnforcer'
 import './styles.css'
@@ -1460,7 +1461,7 @@ function Shell({ session }) {
 
             <Route
               path="services"
-              element={<Services />}
+              element={<ServiceCatalog />}
             />
 
             <Route
