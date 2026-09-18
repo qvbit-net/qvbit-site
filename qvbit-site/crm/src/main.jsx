@@ -6061,6 +6061,7 @@ function blankQuoteItem() {
     description: '',
     quantity: '1',
     unit_price: '',
+    unit_cost: '0',
   }
 }
 
