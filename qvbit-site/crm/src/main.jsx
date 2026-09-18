@@ -6807,6 +6807,7 @@ function QuoteDetail() {
   const [services, setServices] = useState([])
   const [items, setItems] = useState([])
   const [relatedJob, setRelatedJob] = useState(null)
+  const [relatedProject, setRelatedProject] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -6830,7 +6831,7 @@ function QuoteDetail() {
     setLoading(true)
     setError('')
 
-    const [quoteResult, customersResult, servicesResult, itemsResult, jobResult] = await Promise.all([
+    const [quoteResult, customersResult, servicesResult, itemsResult, jobResult, projectResult] = await Promise.all([
       supabase
         .from('quotes')
         .select('*, customers(company_name, email), opportunities(opportunity_number, title, stage)')
@@ -6853,6 +6854,11 @@ function QuoteDetail() {
       supabase
         .from('jobs')
         .select('id, job_number, title, status, scheduled_date, estimated_amount, final_amount')
+        .eq('quote_id', quoteId)
+        .maybeSingle(),
+      supabase
+        .from('projects')
+        .select('id, project_number, name, status, start_date, target_date')
         .eq('quote_id', quoteId)
         .maybeSingle(),
     ])
@@ -6879,11 +6885,13 @@ function QuoteDetail() {
     if (servicesResult.error) setError(servicesResult.error.message)
     if (itemsResult.error) setError(itemsResult.error.message)
     if (jobResult.error) setError(jobResult.error.message)
+    if (projectResult.error) setError((current) => current || projectResult.error.message)
 
     setCustomers(customersResult.data || [])
     setServices(servicesResult.data || [])
     setItems(normalizeQuoteItems(itemsResult.data || []))
     setRelatedJob(jobResult.data || null)
+    setRelatedProject(projectResult.data || null)
 
     const subtotal = Number(quoteResult.data?.subtotal || 0)
     const storedTax = Number(quoteResult.data?.tax || 0)
@@ -7074,14 +7082,70 @@ function QuoteDetail() {
       return
     }
 
-    const jobNumber = defaultJobNumber()
+    // Project-billing services create a project container first; the operational
+    // job is then linked to that project.
+    let projectId = relatedProject?.id || null
+    let projectNumber = relatedProject?.project_number || null
 
+    if (!projectId) {
+      const { data: projectItems, error: projectItemsError } = await supabase
+        .from('quote_items')
+        .select('id, services(billing_model)')
+        .eq('quote_id', quoteId)
+
+      if (projectItemsError) {
+        setError(projectItemsError.message)
+        return
+      }
+
+      const isProjectQuote = (projectItems || []).some((item) => item.services?.billing_model === 'project')
+
+      if (isProjectQuote) {
+        const { data: project, error: projectError } = await supabase
+          .from('projects')
+          .insert({
+            customer_id: quote.customer_id,
+            opportunity_id: quote.opportunity_id || null,
+            quote_id: quote.id,
+            name: quote.title,
+            description: quote.scope_of_work || null,
+            status: 'planning',
+            estimated_revenue: Number(quote.total || 0),
+            estimated_cost: (items || []).reduce((sum, item) => sum + Number(item.line_cost || 0), 0),
+            notes: quote.notes || null,
+          })
+          .select('id, project_number')
+          .single()
+
+        if (projectError) {
+          setError(projectError.message)
+          return
+        }
+
+        projectId = project.id
+        projectNumber = project.project_number
+        setRelatedProject({ id: project.id, project_number: project.project_number, name: quote.title, status: 'planning' })
+
+        await logCrmActivity({
+          customer_id: quote.customer_id,
+          quote_id: quote.id,
+          opportunity_id: quote.opportunity_id || null,
+          activity_type: 'project_created',
+          subject: `Project created from quote: ${quote.title}`,
+          body: `Project ${project.project_number} was created from ${quote.quote_number || 'the accepted quote'}.`,
+          activity_date: localNowIso(),
+        })
+      }
+    }
+
+    const jobNumber = defaultJobNumber()
     const { data, error: insertError } = await supabase
       .from('jobs')
       .insert({
         job_number: jobNumber,
         customer_id: quote.customer_id,
         quote_id: quote.id,
+        project_id: projectId,
         title: quote.title,
         scope_of_work: quote.scope_of_work || null,
         status: 'scheduled',
@@ -7113,7 +7177,9 @@ function QuoteDetail() {
       job_id: data.id,
       activity_type: 'job_created',
       subject: `Job created from quote: ${quote.title}`,
-      body: `Job ${jobNumber} was created from ${quote.quote_number || 'the accepted quote'}.`,
+      body: projectNumber
+        ? `Job ${jobNumber} was created from ${quote.quote_number || 'the accepted quote'} and linked to project ${projectNumber}.`
+        : `Job ${jobNumber} was created from ${quote.quote_number || 'the accepted quote'}.`,
       activity_date: localNowIso(),
     })
 
