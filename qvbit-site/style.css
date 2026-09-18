@@ -8,8 +8,8 @@
 body {
   font-family: "Roboto", Arial, sans-serif;
   line-height: 1.6;
-  background: #cce7ff;
-  color: #222;
+  background: #f4f7fb;
+  color: #172033;
   padding: 0;
   margin: 0;
 }
@@ -21,7 +21,7 @@ img {
 
 header {
   background: #fff;
-  border-bottom: 2px solid #0077cc;
+  border-bottom: 1px solid #dce4ef;
   padding: 20px 40px;
   display: flex;
   justify-content: space-between;
@@ -33,7 +33,7 @@ header {
 header .logo {
   font-size: 26px;
   font-weight: bold;
-  color: #0077cc;
+  color: #145da0;
 }
 
 .header-left {
@@ -63,14 +63,14 @@ nav {
 nav a {
   margin-left: 0;
   text-decoration: none;
-  color: #333;
-  font-weight: 500;
+  color: #344054;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 nav a.cta,
 .hero .cta {
-  background: #0077cc;
+  background: #145da0;
   color: #fff;
   padding: 10px 18px;
   border-radius: 6px;
@@ -79,13 +79,13 @@ nav a.cta,
 nav a:hover,
 .services .btn-link:hover,
 footer a:hover {
-  color: #005fa3;
+  color: #0f4d82;
 }
 
 .hero {
   text-align: center;
-  padding: 72px 20px 56px;
-  max-width: 960px;
+  padding: 86px 20px 66px;
+  max-width: 1000px;
   margin: auto;
 }
 
@@ -93,11 +93,12 @@ footer a:hover {
   font-size: clamp(28px, 4vw, 42px);
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #111;
+  color: #172033;
 }
 
 .hero p {
   font-size: 18px;
+  color: #536176;
   margin: 0 auto 24px;
   max-width: 820px;
 }
@@ -109,25 +110,26 @@ footer a:hover {
 }
 
 .hero .cta:hover {
-  background: #005fa3;
+  background: #0f4d82;
   color: #fff;
 }
 
 .services {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-  gap: 24px;
-  padding: 48px 40px;
-  max-width: 1200px;
+  gap: 22px;
+  padding: 50px 40px 70px;
+  max-width: 1240px;
   margin: auto;
 }
 
 .services .svc {
   background: #fff;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 24px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border: 1px solid #e1e8f0;
+  box-shadow: 0 10px 30px rgba(23,32,51,.06);
 }
 
 .services img {
@@ -215,11 +217,11 @@ footer a:hover {
 }
 
 footer {
-  background: #cce7ff;
-  padding: 30px 20px;
+  background: #0f1b2d;
+  padding: 42px 20px;
   text-align: center;
   margin-top: 40px;
-  border-top: 2px solid #0077cc;
+  border-top: 1px solid #263b58;
 }
 
 footer .footer-contact {
@@ -228,27 +230,28 @@ footer .footer-contact {
 
 footer p {
   margin: 6px 0;
-  color: #222;
+  color: #dbe5f1;
 }
 
 footer a {
-  color: #0077cc;
+  color: #8fc7ff;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .page-section {
   background: #fff;
   width: min(900px, calc(100% - 32px));
   margin: 50px auto;
-  padding: 40px 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 44px 34px;
+  border-radius: 14px;
+  border: 1px solid #e1e8f0;
+  box-shadow: 0 12px 35px rgba(23,32,51,.06);
 }
 
 .page-section h2 {
   text-align: center;
-  color: #0077cc;
+  color: #145da0;
   margin-bottom: 25px;
   font-size: 28px;
   line-height: 1.25;
@@ -257,7 +260,7 @@ footer a {
 .page-section p {
   text-align: center;
   font-size: 16px;
-  color: #333;
+  color: #536176;
   margin-bottom: 20px;
 }
 
@@ -265,8 +268,8 @@ footer a {
   list-style-type: disc;
   padding-left: 30px;
   font-size: 16px;
-  color: #333;
-  line-height: 1.6;
+  color: #536176;
+  line-height: 1.7;
 }
 
 .page-section li {
@@ -389,4 +392,24 @@ textarea {
   .page-section li {
     font-size: 15px;
   }
+}
+
+
+/* QVB I.T. brand refresh */
+.contact-info strong { color: #172033; }
+.contact-info a { color: #145da0; }
+nav a.cta { box-shadow: 0 6px 18px rgba(20,93,160,.18); }
+.hero h1 { max-width: 900px; margin-left: auto; margin-right: auto; }
+.services .svc { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.services .svc:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(23,32,51,.09); border-color: #cbd8e8; }
+.services .btn-link { color: #145da0; }
+#testimonials { border-top: 1px solid #e1e8f0; }
+#testimonials h2 { color: #145da0; }
+footer p { color: #dbe5f1; }
+footer .footer-contact strong { color: #fff; }
+.page-section li::marker { color: #145da0; }
+@media (max-width: 600px) {
+  header .logo img { width: 205px; }
+  .hero { padding-top: 52px; }
+  .hero h1 { font-size: 30px; }
 }
