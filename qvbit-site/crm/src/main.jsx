@@ -52,6 +52,7 @@ import {
   MessageSquare,
   CalendarDays,
   Target,
+  RefreshCw,
 } from 'lucide-react'
 
 import { supabase } from './supabase'
