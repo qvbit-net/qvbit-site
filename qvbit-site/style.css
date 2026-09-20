@@ -454,3 +454,18 @@ nav a { transition: color .15s ease, background .15s ease; }
 nav a.active:not(.cta) { color: #145da0; }
 nav a.active:not(.cta)::after { content: ""; display: block; height: 2px; background: #145da0; margin-top: 3px; border-radius: 2px; }
 @media (max-width: 900px) { nav a.active:not(.cta)::after { display: none; } nav a.active:not(.cta) { background: #eef6ff; padding: 4px 7px; border-radius: 5px; } }
+
+/* Small Business Website Service */
+.eyebrow{display:inline-block;color:#145da0;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.website-hero .hero-actions{margin-top:28px}
+.website-intro{width:min(1100px,calc(100% - 32px));margin:0 auto 42px;padding:38px;background:#fff;border:1px solid #e1e8f0;border-radius:14px;box-shadow:0 12px 35px rgba(23,32,51,.06);display:grid;grid-template-columns:1.2fr .8fr;gap:34px;align-items:center}
+.website-intro h2,.website-process h2,.website-choice h2{margin:6px 0 12px;color:#172033;font-size:30px;line-height:1.2}
+.website-intro p,.website-process li,.website-choice p{color:#536176}
+.ownership-card{display:grid;gap:12px}.ownership-card div{background:#f4f7fb;border:1px solid #e1e8f0;border-radius:10px;padding:14px 16px}.ownership-card strong{display:block;color:#145da0}.ownership-card span{color:#536176;font-size:14px}
+.website-grid{width:min(1100px,calc(100% - 32px));margin:0 auto 42px;display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.website-card{background:#fff;border:1px solid #e1e8f0;border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(23,32,51,.05)}.website-card h2{color:#145da0;font-size:21px;margin-bottom:9px}.website-card p{color:#536176}
+.website-checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 28px;max-width:850px;margin:auto;color:#536176}
+.website-process{width:min(1100px,calc(100% - 32px));margin:0 auto 50px;padding:38px;background:#f9fbff;border:1px solid #e1e8f0;border-radius:14px}.website-process ol{margin:20px 0 0 22px}.website-process li{margin-bottom:14px;padding-left:6px}
+.website-choice{width:min(1100px,calc(100% - 32px));margin:0 auto 60px;padding:32px 34px;background:#0f1b2d;color:#fff;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:24px}.website-choice h2{color:#fff}.website-choice p{color:#c6d2e1;max-width:760px}.website-choice .eyebrow{color:#8fc7ff}
+.website-service-image{display:flex;align-items:center;justify-content:center;min-height:160px;border-radius:8px;background:#eef6ff;color:#145da0;font-weight:900;font-size:32px;letter-spacing:.08em}
+@media (max-width:800px){.website-intro{grid-template-columns:1fr;padding:28px 22px}.website-grid{grid-template-columns:1fr}.website-checklist{grid-template-columns:1fr}.website-choice{flex-direction:column;align-items:flex-start;padding:28px 22px}.website-choice .cta-button{width:100%}}
