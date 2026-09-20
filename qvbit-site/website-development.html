@@ -16,7 +16,7 @@
     <div class="website-brand">
       <a href="index.html"><img src="images/QVB IT LOGO2.jpg" alt="QVB I.T. Logo"></a>
     </div>
-    <nav>
+    <button class="mobile-menu-button" type="button" aria-label="Open navigation menu" aria-expanded="false"><span></span><span></span><span></span></button><nav class="site-nav">
       <a href="index.html">Home</a>
       <a href="services.html">Services</a>
       <a href="structured-cabling.html">Structured Cabling</a>
@@ -112,5 +112,5 @@
     <img src="images/Service-Disabled Veteran-Owned-Certified.png" alt="SDVOSB" width="140" height="auto">
   </footer>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-</body>
+<script>document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".mobile-menu-button").forEach(function(btn){btn.addEventListener("click",function(){const nav=btn.nextElementSibling;const open=nav.classList.toggle("open");btn.setAttribute("aria-expanded",open?"true":"false");btn.classList.toggle("open",open);});});});</script></body>
 </html>
