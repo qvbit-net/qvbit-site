@@ -553,3 +553,41 @@ nav a.active:not(.cta)::after { content: ""; display: block; height: 2px; backgr
   .website-account-grid>div:last-child{border-bottom:0}
   .website-bottom-ctas{width:calc(100% - 24px)}
 }
+
+
+/* Final pixel-level polish for the Small Business Websites page */
+.website-page-body{background:#fff}
+.website-page-body .website-header{height:58px;padding:8px max(18px,calc((100% - 1225px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:nowrap;background:#fff;border-bottom:1px solid #dce4ef}
+.website-page-body .website-brand{width:150px;height:40px;overflow:hidden;flex:0 0 150px;display:flex;align-items:center}
+.website-page-body .website-brand a{display:block;width:100%;height:100%}
+.website-page-body .website-brand img{width:365px;max-width:none;height:auto;display:block;transform:translate(-1px,-4px)}
+.website-page-body .website-header nav{margin-left:auto;gap:7px 15px;align-items:center;flex-wrap:nowrap}
+.website-page-body .website-header nav a{font-size:12px;font-weight:700;color:#24364d}
+.website-page-body .website-header nav a.cta{padding:9px 18px;font-size:12px}
+.website-page-body .website-header nav a.active:not(.cta)::after{margin-top:2px}
+.website-page-body .website-hero-new{min-height:318px}
+.website-page-body .website-hero-content{padding:48px 0}
+.website-page-body .website-hero-content h1{font-size:48px;max-width:690px;margin-bottom:12px}
+.website-page-body .website-hero-content p{font-size:17px;max-width:600px;margin-bottom:19px}
+.website-page-body .website-primary-btn{padding:11px 22px}
+.website-page-body .website-highlights{min-height:82px}
+.website-page-body .website-owner-section{padding:43px 0 32px}
+.website-page-body .website-owner-copy h2{font-size:29px}
+.website-page-body .website-accounts-card{padding:22px 20px 18px}
+.website-page-body .website-process-new{padding-bottom:28px}
+.website-page-body .website-bottom-ctas{margin-bottom:8px}
+.website-page-body footer{margin-top:0}
+@media(max-width:1100px){
+  .website-page-body .website-header nav{gap:6px 10px}
+  .website-page-body .website-header nav a{font-size:11px}
+  .website-page-body .website-header nav a.cta{padding:8px 12px}
+}
+@media(max-width:900px){
+  .website-page-body .website-header{height:auto;padding:12px 20px;flex-wrap:wrap;justify-content:center}
+  .website-page-body .website-brand{flex-basis:140px}
+  .website-page-body .website-header nav{width:100%;justify-content:center;flex-wrap:wrap}
+}
+@media(max-width:600px){
+  .website-page-body .website-brand{margin-bottom:0}
+  .website-page-body .website-hero-content h1{font-size:37px}
+}
