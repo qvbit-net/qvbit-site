@@ -2,7 +2,7 @@
 set -e
 
 # Always run from the directory where this script lives.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
 echo "Build script directory: $SCRIPT_DIR"
@@ -28,6 +28,7 @@ cp remote-hands.html _site/
 cp services.html _site/
 cp structured-cabling.html _site/
 cp support.html _site/
+cp website-development.html _site/
 cp sitemap.xml _site/
 cp style.css _site/
 cp favicon.png _site/
