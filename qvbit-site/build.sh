@@ -15,6 +15,7 @@ echo "Preparing Cloudflare Pages output..."
 
 rm -rf _site
 mkdir -p _site/crm
+mkdir -p _site/cwna
 
 echo "Copying public QVB I.T. website..."
 
@@ -35,6 +36,12 @@ cp favicon.png _site/
 
 cp -R images _site/images
 
+# Copy the CWNA practice test into the public deployment.
+# This must be explicit because _site is rebuilt from scratch on every deployment.
+if [ -f cwna/index.html ]; then
+  cp cwna/index.html _site/cwna/index.html
+fi
+
 # Cloudflare Pages Functions must be present in the deployment output.
 if [ -d functions ]; then
   cp -R functions _site/functions
@@ -47,5 +54,4 @@ cp -R crm/dist/. _site/crm/
 echo "Configuring CRM SPA fallback..."
 
 cp _site/crm/index.html _site/crm/404.html
-
 echo "QVB I.T. deployment build complete."
