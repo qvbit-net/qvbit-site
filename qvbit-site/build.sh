@@ -26,7 +26,6 @@ cp network-installation.html _site/
 cp network-staging.html _site/
 cp remote-hands.html _site/
 cp services.html _site/
-cp structured-cabling.html _site/
 cp support.html _site/
 cp website-development.html _site/
 cp sitemap.xml _site/
