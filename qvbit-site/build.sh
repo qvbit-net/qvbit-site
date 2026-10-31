@@ -14,7 +14,7 @@ npm run build --prefix crm
 echo "Preparing Cloudflare Pages output..."
 
 rm -rf _site
-mkdir -p _site/crm
+mkdir -p _site/crm _site/cwna
 
 echo "Copying public QVB I.T. website..."
 
@@ -33,6 +33,14 @@ cp style.css _site/
 cp favicon.png _site/
 
 cp -R images _site/images
+
+# Restore the CWNA practice test at /cwna/.
+if [ -f cwna/index.html ]; then
+  cp cwna/index.html _site/cwna/index.html
+else
+  echo "ERROR: cwna/index.html is missing; refusing to publish without the CWNA page."
+  exit 1
+fi
 
 # Cloudflare Pages Functions must be present in the deployment output.
 if [ -d functions ]; then
